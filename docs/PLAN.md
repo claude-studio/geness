@@ -797,26 +797,75 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 
 ## 20. 구현 단계
 
+Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소유한다. 아래 checkbox와
+완료 조건은 미래 작업 계약이며 그 자체로 `CLEAR` evidence가 아니다. 단계 사이에는 다음
+의존 경계를 적용한다.
+
+- Phase 0의 host·runtime prototype은 후보 계약을 비교하는 **폐기 가능한 조사 spike**다.
+  제품 manifest, package와 Controller scaffold는 Phase 0 `CLEAR` 뒤 Phase 1에서 만든다.
+- Phase 3은 Phase 5 memory 구현을 전제하지 않는다. 아직 초기화되지 않은 memory를 어떻게
+  다룰지는 Phase 0에서 bootstrap contract로 확정한다.
+- Phase 4는 Phase 0에서 채택한 host-neutral canonical command API와 CLI/MCP 경계의
+  contract harness로 실행·재개 계약을 검증한다.
+  설치된 Codex·Claude adapter를 오가는 E2E는 adapter가 생기는 Phase 6에서 수행한다.
+- Phase 0 decision packet, fixture와 prototype 결과는 계획이 아니라 실제 command, exit
+  status, artifact와 한계를 포함한 evidence로 남긴다.
+
 ### Phase 0 — 핵심 계약과 ADR 확정
 
-- [ ] 공통 Controller 구현 언어와 패키징 방식 결정
-- [ ] CLI와 MCP 중 정본 API 경계 결정
-- [ ] background daemon 필요성에 대한 기술 spike
-- [ ] task 상태 머신 및 정확한 전이표 확정
-- [ ] project ID 및 workspace ID 알고리즘 확정
-- [ ] 문서 frontmatter와 DB schema v1 확정
-- [ ] contract/plan digest canonicalization 확정
-- [ ] lesson fingerprint와 evaluator threshold 확정
-- [ ] runtime retention과 evidence 용량 정책 확정
-- [ ] Codex·Claude 지원 최소 버전 및 OS matrix 확정
+질문의 문구, 권장 방향과 결정 권한은
+[Open Questions](./research/OPEN_QUESTIONS.md)가 소유한다. 아래 표는 각 질문을 닫기 위해
+필요한 계획 artifact와 evidence를 추적한다. 모든 packet은 후보와 trade-off, 고정 출처,
+사용한 fixture, 정확한 command와 exit status, 생성 artifact, 미해결 위험, 권고안과 필요한
+사용자 결정을 기록한다. `Status`는 Open Questions의 `Resolved` 근거가 생길 때만 바꾼다.
+
+| OQ | 계획 artifact | 최소 evidence | 반영 대상 | Status |
+| --- | --- | --- | --- | --- |
+| OQ-001 | `docs/research/phase-0/OQ-001-controller-runtime.md` | 후보별 배포 크기, FTS5 capability, stdio round-trip과 dual-host 설치 spike | Architecture ADR | OPEN |
+| OQ-002 | `docs/research/phase-0/OQ-002-canonical-command-api.md` | 동일 fixture를 후보 application/CLI/MCP 경계로 실행한 typed result·idempotency 비교 | Architecture ADR | OPEN |
+| OQ-003 | `docs/research/phase-0/OQ-003-daemon-lease-liveness.md` | daemon 유무별 두 process heartbeat, 중단, grace와 takeover trace | Runtime ADR | OPEN |
+| OQ-004 | `docs/research/phase-0/OQ-004-task-lifecycle.md` | 허용·거부 전이, `FAILED`·`CANCELLED`, reopen과 completion/learning 순서 fixture | Lifecycle | OPEN |
+| OQ-005 | `docs/research/phase-0/OQ-005-project-workspace-identity.md` | clone, fork, rename, 동명 repository와 worktree identity fixture | Storage ADR | OPEN |
+| OQ-006 | `docs/research/phase-0/OQ-006-schema-lineage.md` | frontmatter/DB round-trip, stable ID lineage, stale write와 projection recovery fixture | Schema/Storage ADR | OPEN |
+| OQ-007 | `docs/research/phase-0/OQ-007-digest-canonicalization.md` | versioned test vector, editorial/semantic 변경과 spec/plan invalidation fixture | Specification ADR | OPEN |
+| OQ-008 | `docs/research/phase-0/OQ-008-plan-approval-policy.md` | risk, scope 확대, 외부 write와 일반 plan별 actor/policy decision table | Lifecycle/Specification | OPEN |
+| OQ-009 | `docs/research/phase-0/OQ-009-completion-lease-atomicity.md` | terminal checkpoint, projection과 lease release 각 crash point의 replay fixture | Lifecycle/Runtime ADR | OPEN |
+| OQ-010 | `docs/research/phase-0/OQ-010-lesson-evaluator.md` | event replay 기반 false-positive/negative, 승격·감쇠·만료 비교 | Learning ADR | OPEN |
+| OQ-011 | `docs/research/phase-0/OQ-011-runtime-retention.md` | 상태·위험도·용량별 prune simulation과 active/blocked/memory 보존 evidence | Storage ADR | OPEN |
+| OQ-012 | `docs/research/phase-0/OQ-012-host-os-compatibility.md` | 지원 후보 OS·host version의 manifest, Skill, hook와 stdio MCP capability matrix | Host ADR | OPEN |
+| OQ-013 | `docs/research/phase-0/OQ-013-config-machine-contract.md` | frontmatter-only와 별도 config/JSON 후보의 round-trip, validation과 threat fixture | Storage/Schema ADR | OPEN |
+| OQ-014 | `docs/research/phase-0/OQ-014-command-surface.md` | workflow, status와 resume 후보 command의 user-flow 및 CLI/MCP parity fixture | Host/CLI ADR | OPEN |
+
+Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시적으로 포함하거나 새 OQ로
+등록한다. 어느 packet이 소유하는지 정해지지 않은 상태에서는 Phase 0를 `CLEAR`로 만들 수
+없다.
+
+- cross-workspace `project_id + task_id` lease의 전역 writer 권위와
+  project-scoped memory writer arbitration: OQ-003, OQ-006, OQ-009와 함께 검토
+- requirement → AC → step → attempt → evidence → verdict의 stable identity, revision,
+  spec/plan digest와 evidence freshness envelope: OQ-006, OQ-007과 함께 검토
+- reviewer/verifier 독립성, 동일 worker 결과의 최종 검증 제한과 불일치 결과 합성:
+  OQ-004, OQ-008과 함께 검토
+- Phase 3에서 Phase 5 이전의 uninitialized/empty memory를 처리하는 bootstrap contract:
+  OQ-006, OQ-010과 함께 검토
+
+- [ ] OQ-001부터 OQ-014까지 각 decision packet과 필요한 spike/fixture evidence 작성
+- [ ] 교차 concern을 기존 OQ에 귀속하거나 결정 권한이 있는 새 OQ로 등록
 - [ ] threat model과 권한 정책 작성
-- [ ] 관련 결정은 ADR 또는 이 문서의 결정 기록에 반영
+- [ ] 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
+- [ ] Open Questions의 `Resolved` 표와 위 Status를 근거 링크로 동기화
 
 완료 조건:
 
-- 구현에 영향을 주는 미결정 항목이 모두 닫혔다.
-- schema와 state transition을 fixture로 표현할 수 있다.
-- 두 호스트의 최소 플러그인 prototype이 공통 entrypoint를 실행한다.
+- OQ-001부터 OQ-014와 새로 등록한 blocking question이 evidence와 사용자 결정으로 모두
+  닫혔다.
+- 각 packet에 실제 command, exit status, artifact, 미해결 위험과 결정 근거가 남아 있다.
+- schema, lineage, digest, evidence envelope와 state transition을 versioned fixture로 표현할
+  수 있다.
+- lease/memory writer 경쟁과 crash reconciliation을 다중 process fixture로 재현할 수 있다.
+- 두 호스트의 폐기 가능한 최소 contract prototype이 같은 후보 entrypoint를 실행하며,
+  그 결과를 제품 scaffold나 구현 `CLEAR`로 간주하지 않는다.
+- 채택 결과가 ADR, Architecture/Lifecycle/Storage/Stage Guide와 이 PLAN에 정렬됐다.
 
 ### Phase 1 — 플러그인 골격과 프로젝트 초기화
 
@@ -860,12 +909,18 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 
 ### Phase 3 — 실행 전 점검, AC와 계획
 
+이 단계의 memory 조회는 Phase 0에서 확정한 bootstrap/capability contract에 의존한다.
+Phase 5가 아직 구현되지 않았다는 이유로 암묵적인 lesson을 만들거나 성공으로 가장하지
+않으며, 허용할 empty/unavailable 결과와 진행 Gate는 해당 contract가 정한다.
+
 - [ ] branch/worktree/dirty state snapshot 구현
 - [ ] relevant path, symbol, test와 명령 존재 확인 구현
+- [ ] memory capability와 초기화 상태 preflight 구현
 - [ ] 코드 근거가 없는 assumption 탐지·재질문 구현
-- [ ] requirement-to-AC traceability 구현
+- [ ] stable reference를 사용하는 requirement → AC → plan step traceability 구현
 - [ ] outcome-oriented AC validator 구현
 - [ ] artifact path와 verify/expect validator 구현
+- [ ] AC별 verifier 유형, 독립성 요구와 evidence 산출 계약 검증 구현
 - [ ] dependency-aware plan 생성 구현
 - [ ] `plan.md` 생성 및 갱신 구현
 - [ ] plan 승인 정책과 digest 구현
@@ -874,30 +929,42 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 완료 조건:
 
 - 모든 요구사항이 하나 이상의 검증 가능한 AC와 연결된다.
-- 각 AC가 구현 단계, verifier 및 evidence 산출 방식과 연결된다.
+- 각 AC가 stable reference로 구현 단계, verifier 및 evidence 산출 방식과 연결된다.
+- memory가 아직 초기화되지 않은 repository에서도 Phase 0 contract에 따른 명시적 Gate를
+  반환하며 Phase 5 구현을 숨은 entry condition으로 요구하지 않는다.
 - 잘못된 가정은 실행 전에 spec/interview 단계로 되돌아간다.
 
 ### Phase 4 — 실행·검증·재개
 
+이 단계는 Phase 0에서 채택한 host-neutral canonical command API와 CLI/MCP 경계의 contract
+harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재개하는 검증은 Phase 6의
+책임이다.
+
 - [ ] runtime SQLite schema 및 migration 구현
-- [ ] run, step, attempt, AC result 및 evidence reference 저장 구현
+- [ ] run, step, attempt, evidence와 AC verdict의 stable lineage 저장 구현
 - [ ] writer lease와 heartbeat 구현
 - [ ] observer 및 safe takeover 구현
 - [ ] AC/dependency 단위 checkpoint 구현
 - [ ] subagent 작업 결과 수집 계약 구현
+- [ ] reviewer/verifier provenance, 독립성 및 결과 합성 계약 구현
 - [ ] command/result redaction 및 evidence hash 구현
+- [ ] Phase 0에서 채택한 protocol 기반 DB/document projection crash reconciliation 구현
 - [ ] retry budget와 typed blocker 구현
 - [ ] spec/AC 영향에 따른 reopen·재승인 구현
 - [ ] `run.md` projection 구현
 - [ ] 모든 AC를 재검증하는 completion gate 구현
-- [ ] Codex에서 시작해 Claude에서 재개하는 E2E 구현
-- [ ] Claude에서 시작해 Codex에서 재개하는 E2E 구현
+- [ ] 채택된 canonical command API와 CLI/MCP 경계의 contract fixture 구현
+- [ ] 두 독립 transport client의 중단·재개 integration fixture 구현
 
 완료 조건:
 
 - 중간 종료 후 정확한 다음 checkpoint에서 재개한다.
+- requirement → AC → step → attempt → evidence → verdict graph를 stable ID와 current
+  revision/digest로 재구성할 수 있다.
 - 같은 task에 두 writer가 동시에 실행되지 않는다.
 - spec/plan digest가 바뀐 stale run을 차단한다.
+- 정의된 crash point 뒤 재시작해도 terminal checkpoint, projection과 lease 상태가
+  모순되지 않는다.
 - 모든 필수 AC가 증거와 함께 통과해야 완료된다.
 
 ### Phase 5 — 실패 기억
@@ -909,6 +976,8 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 - [ ] evaluator rule version 기록 구현
 - [ ] memory JSONL event log 구현
 - [ ] memory SQLite schema, trigger와 FTS5 index 구현
+- [ ] project-scoped memory writer arbitration 구현
+- [ ] empty event log와 손상·미생성 index의 bootstrap/rebuild 구현
 - [ ] exact lookup, structured filter, FTS top-K 구현
 - [ ] compact context serializer 및 token budget 구현
 - [ ] evidence lazy-load 구현
@@ -922,6 +991,7 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 - 일회성 후보는 장기 기억 검색에 노출되지 않는다.
 - 반복 또는 guard evidence가 확인된 lesson만 memory에 승격된다.
 - 관련 없는 실행 성공은 lesson 감쇠 근거로 계산되지 않는다.
+- 여러 workspace Controller가 같은 project memory를 동시에 변경하지 못한다.
 - compiled guard는 프롬프트 토큰을 사용하지 않는다.
 
 ### Phase 6 — 호스트 어댑터와 hook
@@ -929,6 +999,8 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 - [ ] Codex adapter의 MCP와 hook 연결 구현
 - [ ] Claude adapter의 MCP와 hook 연결 구현
 - [ ] 공통 Skill의 host-neutral tool routing 검증
+- [ ] Codex에서 시작해 Claude에서 재개하는 installed-host E2E 구현
+- [ ] Claude에서 시작해 Codex에서 재개하는 installed-host E2E 구현
 - [ ] session start preflight 보조 hook 검토
 - [ ] 관련 memory top-K context 보조 hook 검토
 - [ ] tool failure 수집 보조 hook 검토
@@ -940,6 +1012,7 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 
 - 핵심 흐름이 hook 없이도 Controller로 동작한다.
 - hook을 활성화해도 두 호스트의 상태 전이 결과가 동일하다.
+- 두 방향 installed-host E2E가 같은 checkpoint, digest와 completion verdict를 산출한다.
 - 호스트 업데이트 또는 plugin reload가 진행 중인 run을 잃지 않는다.
 
 ### Phase 7 — 품질, 배포와 운영
@@ -983,8 +1056,10 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 - 네 문서 template의 생성 결과
 - Markdown frontmatter parse/serialize round trip
 - schema version 호환성
+- stable ID, revision, spec/plan digest와 evidence freshness test vector
+- requirement → AC → step → attempt → evidence → verdict lineage fixture
 - manifest 및 host adapter fixture
-- MCP input/output schema
+- 채택된 canonical API와 CLI/MCP 경계의 typed result, idempotency 및 schema contract
 - `run.md` projection의 안정성
 
 ### 21.3 Integration tests
@@ -994,20 +1069,29 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 - 인터뷰 state resume
 - 승인 invalidate/reapprove
 - preflight에서 잘못된 assumption 발견
+- memory가 없거나 초기화되지 않은 project의 Phase 3 bootstrap Gate
 - runtime restart와 checkpoint resume
+- DB commit과 document projection 사이 crash reconciliation
+- current digest의 AC evidence와 independent verdict 재구성
 - memory JSONL에서 SQLite rebuild
 - secret redaction과 evidence lazy loading
 
 ### 21.4 Concurrency 및 recovery tests
 
 - 두 writer의 lease 경쟁
+- 서로 다른 workspace의 동일 project/task lease 경쟁
+- 여러 workspace Controller의 project-scoped memory writer 경쟁
 - heartbeat 중단과 safe takeover
 - SQLite busy, crash 및 transaction rollback
+- terminal checkpoint·projection·lease release 각 지점의 crash replay
+- memory JSONL append와 SQLite/FTS projection 사이 crash replay
 - stale spec/plan digest 실행 차단
 - 손상된 FTS index 복구
 - orphan runtime cleanup
 
 ### 21.5 Dual-host E2E
+
+이 suite는 adapter가 구현된 Phase 6에서 시작하고 Phase 7 release matrix에서 반복한다.
 
 - Codex에서 project/task 생성 후 Claude에서 조회
 - Claude에서 interview 시작 후 Codex에서 재개
@@ -1034,9 +1118,11 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 - [ ] 코드 사실, 사용자 결정과 외부 조사의 provenance가 구분된다.
 - [ ] 인터뷰와 계획 완료는 명시된 gate로만 결정된다.
 - [ ] spec 또는 plan contract가 바뀌면 stale 실행이 차단된다.
-- [ ] AC별 실행·검증·증거가 `run.md`에서 추적된다.
+- [ ] requirement부터 AC, step, attempt, evidence와 verdict까지 stable lineage로 추적된다.
+- [ ] 최종 verdict에 verifier provenance와 독립성 판정 근거가 남는다.
 - [ ] Codex 실행을 Claude에서, Claude 실행을 Codex에서 재개할 수 있다.
 - [ ] 두 호스트가 동일 task를 동시에 수정하지 못한다.
+- [ ] 여러 workspace가 project-scoped memory를 동시에 변경하지 못한다.
 - [ ] 실행 중 잘못된 가정이 발견되면 올바른 단계로 되돌아가 재승인된다.
 - [ ] 최초 실패는 runtime candidate로만 남는다.
 - [ ] 관련 trigger의 unassisted success만 감쇠 근거로 사용한다.
@@ -1055,12 +1141,17 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 | Controller 언어 | 배포 크기·SQLite FTS5·stdio MCP 호환성을 spike 후 선택 | Phase 0 |
 | CLI/MCP 경계 | 공통 library + CLI/MCP thin transport | Phase 0 |
 | Background daemon | 첫 버전에서는 제외, lease heartbeat 필요성 측정 후 결정 | Phase 0/4 |
+| cross-workspace lease authority | workspace-local runtime과 project/task 전역 writer arbitration 후보를 race fixture로 비교 | Phase 0 |
+| project memory writer | 여러 workspace Controller 사이의 project-scoped append/index 권위와 crash 복구 후보 비교 | Phase 0/5 |
 | 사용자 명령 이름 | 하나의 주 진입점과 status/resume 보조 진입점 | Phase 0 |
 | `.geness/config.yaml` | 프로젝트별 허용 범위·테스트 정책이 필요하면 포함 | Phase 0 |
 | task별 machine JSON | Markdown frontmatter로 충분한지 먼저 검증 | Phase 0/2 |
 | project ID clone/fork 의미 | clone은 공유, fork는 명시적 detach/rekey 후보 | Phase 0 |
 | 진행 중 문서 Git 정책 | 기본 tracked, 민감·대용량 데이터는 홈에만 저장 | Phase 0 |
 | plan 별도 승인 | 고위험·범위 확장은 필수, 일반 작업의 정책은 결정 필요 | Phase 0/3 |
+| trace/evidence envelope | stable ID, revision, spec/plan digest, freshness와 verifier provenance를 versioned contract로 비교 | Phase 0/3/4 |
+| verifier independence | 동일 worker 결과의 제한, 독립 actor 자격과 불일치 결과 합성 policy 결정 | Phase 0/4 |
+| memory bootstrap | 미생성·empty·unavailable memory의 typed result와 Phase 3 진행 Gate 결정 | Phase 0/3/5 |
 | lesson fingerprint | project + phase + module/symbol + failure class + violated rule | Phase 0/5 |
 | 승격 threshold | 독립 재발 2회 또는 재현 가능한 guard evidence 후보 | Phase 0/5 |
 | 만료 threshold | eligible unassisted success 3회 + 최소 TTL 후보 | Phase 0/5 |
@@ -1078,13 +1169,16 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 | Codex·Claude plugin schema drift | 한 호스트 설치 실패 | 두 manifest 분리, compatibility fixture와 E2E gate |
 | 호스트별 hook 의미 차이 | 상태 불일치 | hook을 보조 기능으로 한정하고 Controller를 권위자로 유지 |
 | project ID clone/fork 충돌 | 잘못된 memory 공유 | committed project ID 정책과 explicit detach/rekey 제공 |
-| worktree 동시 실행 | 중복 수정·증거 오염 | project/task lease + workspace ID + observer mode |
+| workspace-local runtime과 전역 task lease의 권위 불일치 | 두 writer 허용 또는 영구 stale lease | Phase 0 arbitration 결정, 두 workspace race와 takeover fixture |
+| project-scoped memory writer 충돌 | JSONL event와 SQLite/FTS projection 불일치 | 전역 writer 결정, append/index crash replay와 rebuild fixture |
 | SQLite write contention | 체크포인트 유실 | single writer, WAL 검토, 짧은 transaction, busy retry 제한 |
 | FTS5 런타임 미지원 | memory 검색 실패 | install preflight, capability check, 구조 검색 fallback |
 | 원본 로그의 비밀정보 | 보안 사고 | 저장 전 redaction, owner-only 권한, 프로젝트 문서에는 요약만 저장 |
 | LLM의 과도한 기억 승격 | 잘못된 장기 규칙 | 후보와 memory 분리, deterministic evaluator, evidence 요구 |
 | 관련 없는 성공으로 lesson 만료 | 필요한 교훈 유실 | eligible exposure만 계산하고 rule version 기록 |
-| 문서와 DB drift | 잘못된 재개 | digest, projection version, startup reconciliation |
+| 불완전한 ID/digest/evidence lineage | stale evidence 재사용 또는 잘못된 verdict | versioned envelope, full trace fixture와 freshness rejection |
+| reviewer/verifier 자기 승인 또는 합성 drift | 근거 없는 completion | actor provenance, 독립성 policy와 deterministic synthesis fixture |
+| 문서와 DB drift | 잘못된 재개 | digest, 채택된 reconciliation protocol, projection version과 startup reconciliation |
 | 컨텍스트 과다 주입 | 비용·속도 저하 | exact/filter/FTS top-K, 짧은 serializer, evidence lazy-load |
 | plugin uninstall 시 데이터 손실 | 작업·기억 유실 | 공통 `GENESS_HOME`, 명시적인 prune와 보존 확인 |
 
@@ -1118,3 +1212,4 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 | --- | --- |
 | 2026-08-10 | 초기 계획 작성. 인터뷰, dual-host plugin, target `.geness/`, local memory/runtime 및 실패 교훈 lifecycle 합의 반영. |
 | 2026-08-10 | docs-first 구조, Ouroboros·MCX 출처와 차용 경계, plan approval actor 및 completion lease 순서 정렬. |
+| 2026-08-10 | 전체 문서 감사 결과를 반영해 Phase 0 OQ/evidence matrix, 교차 concern Gate, trace lineage, memory bootstrap과 transport/installed-host E2E 단계 경계를 보강. |
