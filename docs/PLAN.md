@@ -1493,8 +1493,12 @@ checkpoint, lease, evidence lineage와 자동 done/resume 전이를 관리한다
 harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재개하는 검증은 Phase 6의
 책임이다.
 
+artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification-artifacts.md)이
+소유하고, final verdict와 completion 순서는 [Verification Stage Guide](./08_VERIFICATION.md#6-completion-gate)와
+[Task Lifecycle](./02_TASK_LIFECYCLE.md#9-completion)이 소유한다.
+
 - [ ] runtime SQLite schema 및 migration 구현
-- [ ] run, step, attempt, evidence와 AC verdict의 stable lineage 저장 구현
+- [ ] run, step, attempt, evidence, AC verdict와 runtime final verdict의 stable lineage 저장 구현
 - [ ] writer lease와 heartbeat 구현
 - [ ] observer 및 safe takeover 구현
 - [ ] AC/dependency 단위 checkpoint 구현
@@ -1511,8 +1515,9 @@ harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재�
 - [ ] Phase 0에서 채택한 protocol 기반 DB/document projection crash reconciliation 구현
 - [ ] retry budget와 typed blocker 구현
 - [ ] spec/AC 영향에 따른 reopen·재승인 구현
-- [ ] `run.md` projection 구현
-- [ ] 모든 AC를 재검증하는 completion gate 구현
+- [ ] final `run.md`와 `verification.md` projection 및 runtime reconciliation 구현
+- [ ] 모든 AC를 재검증하고 current digest의 final verdict와 `READY_TO_COMPLETE` Gate를 산출하는 completion gate 구현
+- [ ] `READY_TO_COMPLETE` 이후 terminal checkpoint 기록과 writer lease release를 한 runtime completion transaction으로 수행하고, active lease가 없을 때만 `COMPLETED`를 노출하는 구현
 - [ ] 채택된 canonical command API와 CLI/MCP 경계의 contract fixture 구현
 - [ ] 두 독립 transport client의 중단·재개 integration fixture 구현
 
@@ -1525,7 +1530,13 @@ harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재�
 - spec/plan digest가 바뀐 stale run을 차단한다.
 - 정의된 crash point 뒤 재시작해도 terminal checkpoint, projection과 lease 상태가
   모순되지 않는다.
-- 모든 필수 AC가 증거와 함께 통과해야 완료된다.
+- current digest의 모든 필수 AC가 evidence와 함께 PASS이면 final verdict `APPROVED`와
+  `READY_TO_COMPLETE` Gate를 기록하고, 그 외에는 `REVISE` 또는 `BLOCKED`로 완료를
+  보류한다.
+- final `run.md`와 `verification.md` projection/reconciliation이 runtime final verdict,
+  AC evidence freshness와 일치한다.
+- `READY_TO_COMPLETE` 뒤 terminal checkpoint와 writer lease release가 하나의 runtime
+  completion transaction에서 성공하고, active lease가 없을 때만 `COMPLETED`를 노출한다.
 
 ### Phase 5 — 실패 기억
 
@@ -1830,6 +1841,7 @@ harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재�
 | 2026-08-20 | 사용자 결정: v1 cross-host resume은 같은 machine·같은 사용자 데이터 루트·사용자 준비 worktree로 제한하고, machine 간 동기화는 후속 export/import로 연기. |
 | 2026-08-20 | 사용자 결정: v1 task당 active writer 하나만 허용하고, 두 번째 host/process는 observer, stale writer만 제한적으로 takeover. |
 | 2026-08-20 | 사용자 결정: 기존 Stage Guide schema를 재사용하지 않고 brief/profile/verifier/retry/source lineage를 포함한 Geness v1 contract schema를 새로 정의. |
+| 2026-08-20 | Phase 4 checklist와 완료 조건을 ADR-0007 및 Verification Stage Guide에 맞춰 runtime final verdict, run/verification projection과 completion transaction으로 정렬. |
 | 2026-08-10 | 초기 계획 작성. 인터뷰, dual-host plugin, target `.geness/`, local memory/runtime 및 실패 교훈 lifecycle 합의 반영. |
 | 2026-08-10 | docs-first 구조, Ouroboros·MCX 출처와 차용 경계, plan approval actor 및 completion lease 순서 정렬. |
 | 2026-08-10 | 전체 문서 감사 결과를 반영해 Phase 0 OQ/evidence matrix, 교차 concern Gate, trace lineage, memory bootstrap과 transport/installed-host E2E 단계 경계를 보강. |

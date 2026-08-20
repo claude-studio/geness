@@ -150,6 +150,7 @@ template 또는 문서 문구를 복사·번안하면 같은 변경에서 원본
 - 예: `docs(agents): 문서 기반 작업 지침에 Git 규칙 추가`
 - 커밋 전 staged·unstaged diff와 자격증명 포함 여부를 확인하고 관련 파일만 명시적으로
   stage한다.
+- 이슈 작업을 완료하는 커밋은 본문에 `Closes #<issueNumber>`를 포함한다.
 - 사용자가 커밋을 요청하면 별도 금지 지시가 없는 한 같은 작업에서 현재 브랜치를
   `origin`에 push한다. 커밋 요청 전에는 commit이나 push하지 않는다.
 - tag, release, PR과 외부 메시지는 각각 사용자 승인 없이 만들지 않는다.
