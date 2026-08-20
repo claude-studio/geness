@@ -1,0 +1,20 @@
+{
+  "fixture_id": "FX-COMMAND-API-TYPED-RESULT-001",
+  "packet_id": "OQ-002",
+  "hold_request": {
+    "action": "gate.check",
+    "idempotency_key": "fx-hold-001",
+    "approved": false
+  },
+  "replay_request": {
+    "action": "record_decision",
+    "idempotency_key": "fx-replay-001",
+    "decision": "synthetic-decision"
+  },
+  "invalid_cli_wire": "{not-json",
+  "invalid_mcp_message": {
+    "jsonrpc": "2.0",
+    "id": 99,
+    "method": "fixture/unknown"
+  }
+}

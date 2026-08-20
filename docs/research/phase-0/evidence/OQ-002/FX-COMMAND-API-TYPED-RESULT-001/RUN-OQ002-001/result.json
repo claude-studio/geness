@@ -1,0 +1,70 @@
+{
+  "artifact_schema": "fixture.oq002.redacted-result.v1",
+  "run_id": "RUN-OQ002-001",
+  "fixture_id": "FX-COMMAND-API-TYPED-RESULT-001",
+  "packet_id": "OQ-002",
+  "input_sha256": "29060dc89322dfe5227631b42f3852eb7ec06233b4b0fa5be9cdd0046b379cf2",
+  "runner_python": "3.9.6",
+  "network": "disabled",
+  "external_writes": false,
+  "domain_parity": {
+    "hold": {
+      "kind": "domain_result",
+      "schema": "fixture.command_result.v1",
+      "status": "HOLD",
+      "code": "APPROVAL_REQUIRED",
+      "operation_id": "fx-hold-001",
+      "side_effect_count": 0
+    },
+    "first": {
+      "kind": "domain_result",
+      "schema": "fixture.command_result.v1",
+      "status": "APPLIED",
+      "code": "DECISION_RECORDED",
+      "operation_id": "fx-replay-001",
+      "effect_id": "effect-c39f2569e6a7",
+      "side_effect_count": 1
+    },
+    "replay": {
+      "kind": "domain_result",
+      "schema": "fixture.command_result.v1",
+      "status": "REPLAYED",
+      "code": "DECISION_RECORDED",
+      "operation_id": "fx-replay-001",
+      "effect_id": "effect-c39f2569e6a7",
+      "side_effect_count": 1
+    },
+    "transports": ["library", "cli", "mcp"]
+  },
+  "transport_errors": {
+    "library": {
+      "status": "not_applicable",
+      "reason": "direct library call has no wire transport"
+    },
+    "cli": {
+      "kind": "transport_error",
+      "schema": "fixture.transport_error.v1",
+      "code": "INVALID_JSON",
+      "exit_status": 2,
+      "service_state_created": false
+    },
+    "mcp": {
+      "kind": "transport_error",
+      "schema": "fixture.transport_error.v1",
+      "code": "METHOD_NOT_FOUND",
+      "jsonrpc_code": -32601,
+      "exit_status": 0,
+      "service_state_created": false
+    }
+  },
+  "thin_boundary": {
+    "shared_service_imported": true,
+    "domain_codes_in_transport_adapters": false
+  },
+  "assertions_passed": 14,
+  "raw_stdout": {
+    "locator": "/tmp/geness-oq002-RUN-OQ002-001.json",
+    "sha256": "ce18e6d622fc639da5964ebbf5a4ca375e8fb8ba1c5ac7446ac2b2e939a7f3e0",
+    "retention": "discarded-after-redacted-summary"
+  }
+}

@@ -58,6 +58,26 @@ Python은 각각 dependency tree/site-packages disk usage를 측정했다.
 이 결과는 후보 비교 evidence이지 구현 `CLEAR`, host 설치 E2E 또는 사용자 결정이 아니다.
 OQ-001은 사용자 후보 선택 전까지 `OPEN`으로 유지한다.
 
+### Phase 0 OQ-002 disposable fixture — VERIFIED OBSERVATION
+
+2026-08-20에 [OQ-002 decision packet](../research/phase-0/OQ-002-canonical-command-api.md)과
+폐기 가능한 typed-result/idempotency fixture를 실행했다. 같은 합성 입력을 fixture-local
+common application service, CLI thin transport와 MCP-like stdio thin transport로 보냈고,
+세 경로의 domain `HOLD`, `APPLIED`, `REPLAYED` projection이 일치했다. malformed CLI JSON와
+unknown MCP method는 typed transport error로 분리됐고, valid domain `HOLD`는 transport
+성공으로 유지됐다. 동일 idempotency key replay는 effect ID와 side-effect count `1`을
+유지했다.
+
+실제 evidence는
+[`result.json`](../research/phase-0/evidence/OQ-002/FX-COMMAND-API-TYPED-RESULT-001/RUN-OQ002-001/result.json)에
+보존했으며 SHA-256은
+`502cf76ff555770e45dce6a3945a8f1eb30403de04ef2b94b6cefe0aa3f175aa`다. fixture runner는
+14 assertions를 exit `0`으로 통과했고, `git diff --check --`는 exit `0`, read-only Markdown
+검사는 39개 파일·119개 local link·8개 local anchor link·errors `[]`를 반환했다. 이 결과는
+공통 service 경계의 조사 관찰이지 OQ-002 `Resolved`, Architecture ADR, 제품 schema/runtime
+선택 또는 Implementation `CLEAR`가 아니다. OQ-001 사용자 결정과 OQ-002 사용자 decision
+receipt는 모두 pending/open으로 유지한다.
+
 ## 3. 검증된 repository 사실
 
 - Git repository root는 이 프로젝트 디렉터리다.
