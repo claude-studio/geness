@@ -5,9 +5,11 @@
 ## 1. 목적
 
 승인된 spec/plan을 allowed scope 안에서 실행하고, AC 단위 checkpoint와 evidence를
-남겨 중단·재계획·cross-host resume를 가능하게 한다.
+남겨 중단·재계획·v1 same-machine host handoff를 가능하게 한다.
 
-Execution은 자신의 결과를 최종 검증하거나 contract를 바꾸는 단계가 아니다.
+Execution은 public `impl` 단계이며, 자신의 결과를 최종 검증하거나 contract를 바꾸는
+단계가 아니다. 기본 cross-model profile에서는 Codex worker가 구현을 담당하고, Claude
+verify가 독립적으로 결과를 판정한다.
 
 ## 2. Entry contract
 
@@ -16,6 +18,7 @@ Execution은 자신의 결과를 최종 검증하거나 contract를 바꾸는 �
 - preflight snapshot이 stale하지 않다.
 - project/task writer lease를 획득했다.
 - 실행 권한과 sandbox가 allowed scope를 만족한다.
+- 현재 task의 profile과 capability snapshot이 contract digest와 일치한다.
 
 ## 3. Work derivation
 
@@ -24,6 +27,9 @@ Execution은 자신의 결과를 최종 검증하거나 contract를 바꾸는 �
 - 독립적인 research/implementation/verification 준비는 subagent로 병렬화할 수 있다.
 - worker마다 input revision, allowed paths, expected output과 금지 capability를 전달한다.
 - delegated worker는 Geness Controller를 재귀 호출하거나 DB를 직접 쓰지 않는다.
+- Claude plugin이 Codex를 호출하는 경우 Controller가 task/run ID, worktree, digest,
+  allowed scope, AC, checkpoint와 protocol version을 포함한 handoff envelope를 만든다.
+  Codex 결과는 Controller로 돌아오며 runtime DB와 project 문서는 Controller만 갱신한다.
 
 ## 4. Attempt contract
 
@@ -65,7 +71,11 @@ next action
 
 정확한 retry threshold는 ADR로 확정하기 전까지 TBD다.
 
-## 7. Cross-host resume
+## 7. Resume와 workspace 경계
+
+v1 resume은 같은 컴퓨터·같은 `GENESS_HOME`·사용자가 준비한 같은 branch/worktree에서만
+지원한다. Geness는 Git checkout, branch 전환, worktree 생성·삭제·정리를 수행하지 않는다.
+사용자가 원하는 작업공간을 먼저 준비하고 `gee resume`을 호출한다.
 
 Resume 절차:
 
@@ -74,11 +84,17 @@ Resume 절차:
 3. spec/plan digest를 재계산한다.
 4. Git state와 changed paths를 last checkpoint와 비교한다.
 5. incomplete external side effect를 확인한다.
-6. 안전하면 새 host가 명시적으로 lease를 takeover한다.
+6. 안전하면 새 host가 명시적으로 lease를 takeover한다. 두 번째 process/host는 기존
+   writer가 살아 있는 동안 observer로 제한한다.
 7. 기록된 next action에서 재개한다.
 
 상태를 확정할 수 없으면 추측해 재실행하지 않고 `BLOCKED` 또는 reconciliation으로
 전환한다.
+
+verify가 수정 가능한 실패를 반환하면 동일한 contract/AC를 유지하는 successor impl을
+자동으로 만들 수 있다. task당 최대 5회이며, 반복 fingerprint·진전 없음·예산 소진은
+`BLOCKED`와 사용자 attention으로 종료한다. contract, scope, 권한 또는 안전 경계 변경은
+brief/contract Gate로 되돌린다.
 
 ## 8. Exit
 
@@ -102,3 +118,6 @@ Exit는 `COMPLETED`가 아니라 `VERIFYING` 진입 자격이다.
 - missing/indeterminate external side effect
 - worker result가 evidence 없이 success 주장
 - `run.md` idempotent projection
+- Codex handoff envelope의 digest/scope 검증
+- five-successor bounded resume과 oscillation stop
+- 사용자가 준비하지 않은 branch/worktree 변경 시도 차단
