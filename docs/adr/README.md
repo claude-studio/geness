@@ -20,6 +20,8 @@ ADR은 되돌리기 어렵거나 여러 계층의 계약을 바꾸는 결정을 
 | [0003](./0003-failure-candidate-is-not-memory.md) | Accepted | 실패 후보는 검증 없이 장기 memory가 되지 않는다. |
 | [0004](./0004-ouroboros-interview-principles.md) | Accepted | Ouroboros에서 관찰한 인터뷰 원칙을 독립적인 Geness 계약으로 재정의한다. |
 | [0005](./0005-docs-driven-development.md) | Accepted | Geness 자체 개발을 docs-first Gate로 운영한다. |
+| [0006](./0006-v1-stage-and-host-profile.md) | Accepted | V1 public stage alias, host profile, user-owned worktree와 one-writer 범위를 정의한다. |
+| [0007](./0007-v1-contract-and-verification-artifacts.md) | Accepted | V1 contract schema, artifact projection, acting verification과 bounded successor를 정의한다. |
 
 ## ADR이 필요한 변경
 
