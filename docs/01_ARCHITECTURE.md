@@ -190,4 +190,4 @@ tests/               unit, contract, integration, E2E
 ## 10. 구현 전 결정
 
 구현 언어, CLI/MCP entrypoint, daemon 여부, DB migration 도구와 package 배포 방식은
-[Open Questions](./research/OPEN_QUESTIONS.md)와 [PLAN Phase 0](./PLAN.md#phase-0--핵심-계약과-adr-확정)에서 닫는다.
+[Open Questions](./research/OPEN_QUESTIONS.md)와 [PLAN Phase 0](./PLAN.md#phase-0-핵심-계약과-adr-확정)에서 닫는다.
