@@ -16,6 +16,8 @@
 - [MCX Reference Findings](./MCX_REFERENCE_FINDINGS.md) — docs-first 작업 체계에서
   채택·변형한 요소
 - [Open Questions](./OPEN_QUESTIONS.md) — 구현 전에 닫아야 할 미결정과 결정 권한
+- [OQ-001 Controller runtime packet](./phase-0/OQ-001-controller-runtime.md) — 언어·패키지·runtime
+  후보의 FTS5, stdio와 disposable dual-host proxy 비교
 - [Reference and Reuse Policy](./REFERENCE_POLICY.md) — 외부 자료의 인용, 차용,
   라이선스 기록 규칙
 - [Phase 0 packet and fixture convention](./phase-0/README.md) — 결정 packet의 공통
