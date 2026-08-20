@@ -9,6 +9,7 @@ AC와 구현 plan을 확정한다.
 
 ## 2. Entry contract
 
+- `setup`이 `SETUP_READY`이며 task의 host profile과 capability snapshot이 저장됐다.
 - current interview revision의 closure audit가 통과했다.
 - 사용자가 one-sentence restatement를 승인했다.
 - blocking open question과 contradiction이 없다.
@@ -16,28 +17,52 @@ AC와 구현 plan을 확정한다.
 
 ## 3. `spec.md` 최소 계약
 
-```yaml
+~~~yaml
 schema_version: 1
-task_id: task-...
-status: draft | approved | reopened
-source_interview_revision: 1
+task_id: ...
+contract_revision: 1
+status: candidate | approved | reopened
+source:
+  brief_id: ...
+  brief_revision: 1
+profile: auto
 contract_digest: sha256:...
 approval:
+  brief_restate: approved
+  contract_adoption: pending | approved
   approved_at: null
   approved_by: null
 goal: ...
 non_goals: []
 constraints: []
+decisions: []
 context:
-  cwd: .
   relevant_paths: []
-acceptance_criteria: []
-open_questions: []
+  verified_facts: []
+acceptance_criteria:
+  - id: AC-001
+    outcome: ...
+    required: true
+    mechanical:
+      command: null
+      expect: null
+    acting:
+      required: false
+      procedure: null
+      timeout_seconds: null
+    manual:
+      procedure: null
+      observer: null
+    artifacts: []
+    source_refs: []
 execution:
   allowed_scope: []
+  forbidden_scope: []
   test_policy: ...
+  retry:
+    max_successors: 5
 completion_policy: all_required_acceptance_criteria_verified
-```
+~~~
 
 본문은 problem, decisions, domain rules, exceptions, assumptions와 source refs를 사람이
 읽을 수 있게 설명한다.
@@ -54,15 +79,16 @@ completion_policy: all_required_acceptance_criteria_verified
 
 각 AC는 다음을 가진다.
 
-```text
+~~~text
 id
 outcome
-verify command 또는 manual check
-exact artifact paths
-expected observable result
-required 여부
-source requirement refs
-```
+required
+mechanical command/expect
+acting required/procedure/timeout_seconds
+manual procedure/observer
+artifacts
+source_refs
+~~~
 
 규칙:
 
@@ -70,6 +96,9 @@ source requirement refs
 - 최소 한 개 이상의 AC가 필요하다.
 - 모든 requirement가 하나 이상의 AC로 추적된다.
 - 자동 검증이 불가능하면 명확한 수동 evidence 절차가 필요하다.
+- API·CLI·UI·integration처럼 동작을 주장하는 AC는 mechanical 결과와 acting observation을
+  모두 요구한다. 정적 artifact는 mechanical로, 자동화할 수 없는 AC는 승인된 manual
+  procedure로 검증한다.
 - repository에 존재하지 않는 명령을 사실처럼 만들지 않는다.
 - artifact path는 target root 기준의 정확한 상대 경로다.
 - AC identity는 revision 사이에서 추적 가능해야 한다.
@@ -82,6 +111,19 @@ source requirement refs
 - 사용자는 digest가 표현하는 현재 spec을 명시적으로 승인한다.
 - 의미 있는 hash 대상 변경은 approval과 downstream plan/run을 무효화한다.
 - 에이전트가 approval actor를 사칭하거나 implicit approval로 처리하지 않는다.
+
+### Contract QA와 adoption
+
+public `contract` 단계는 Codex가 candidate와 구조적 QA를 만들고, Claude가 결과를
+사용자에게 설명하는 흐름이다.
+
+1. QA `PASS`면 사용자는 compact digest를 확인한다.
+2. QA `REVISE`면 제안된 후보별로 adoption/reject를 결정한다.
+3. 채택한 후보만 새 contract revision에 반영하고 digest를 다시 계산한다.
+4. `CONTRACT_APPROVED` 전에는 plan이나 impl을 시작하지 않는다.
+
+brief restatement 승인과 contract digest adoption은 서로 다른 승인이며, QA PASS 후에는
+같은 내용을 장문으로 반복 승인받지 않는다.
 
 ## 7. Preflight
 
@@ -112,7 +154,7 @@ Plan은 다음을 포함한다.
 - destructive/external action approval point
 - 필요할 경우 plan digest와 approval
 
-모든 plan은 `PLAN_APPROVED` Gate를 거치되 approval actor는 `user | policy`다. 일반
+public `plan` 단계의 모든 plan은 `PLAN_APPROVED` Gate를 거치되 approval actor는 `user | policy`다. 일반
 plan을 policy가 승인할 수 있는지는 Phase 0에서 확정한다. 결정 전에는 사용자 승인을
 생략하지 않는다. scope 확대, 파괴적 행동, 외부 쓰기와 high-risk migration은 항상
 별도 사용자 승인 없이는 실행할 수 없다.

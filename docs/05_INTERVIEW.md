@@ -11,6 +11,8 @@ Interview는 spec을 바로 쓰거나 코드를 실행하는 단계가 아니다
 
 ## 2. Entry contract
 
+- `gee setup` 결과가 `SETUP_READY`다. setup은 target root, project identity, shared
+  `GENESS_HOME`과 선택된 host profile을 확인하며 Git branch/worktree를 변경하지 않는다.
 - target project root와 project ID가 확인됐다.
 - task ID와 초기 요청이 저장됐다.
 - read-only repository exploration 권한이 정해졌다.
@@ -118,6 +120,10 @@ Audit 통과 후 합의 목표를 한 문장으로 restate한다. 사용자는 �
 여기서의 승인은 “인터뷰가 사용자의 의도를 정확히 담았다”는 승인이다.
 [Specification](./06_SPECIFICATION.md)의 contract digest 승인을 대신하지 않는다.
 
+이 단계의 public 이름은 `brief`다. restatement 승인 후 다음 `contract` 단계에서
+Codex가 만든 candidate와 구조적 QA를 검토한다. QA의 REVISE 후보는 사용자에게
+adoption 여부를 묻고, 사용자가 채택한 변경만 contract에 반영한다.
+
 ## 9. Output
 
 - `.geness/tasks/<task-slug>--<task-id>/interview.md`
@@ -125,6 +131,7 @@ Audit 통과 후 합의 목표를 한 문장으로 restate한다. 사용자는 �
 - closure audit record
 - 승인된 restatement와 source revision
 - spec 생성에 필요한 handoff
+- 다음 단계에 전달할 `brief_id`, `brief_revision`, profile과 setup receipt
 
 ## 10. HOLD 예시
 
