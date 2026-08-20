@@ -16,6 +16,10 @@ Geness는 Codex와 Claude Code에서 작동하는 인터뷰 기반 작업 제어
 Geness는 코딩 모델 자체가 아니다. 모델과 작업 에이전트를 조정하고, 계약과 상태를
 보존하며, 승인과 완료 Gate를 강제하는 control plane이다.
 
+사용자에게 노출하는 표준 stage는 `brief → contract → plan → impl → verify → done`이며,
+검증 실패를 자동으로 복구할 수 있을 때 `resume`으로 이어진다. 이 이름들은 UX alias이고
+상태 전이의 권위는 아래 canonical lifecycle과 Controller에 있다.
+
 ## 2. North Star
 
 사용자는 어느 호스트에서 시작하더라도 다음 경험을 가져야 한다.
@@ -31,6 +35,10 @@ Geness는 코딩 모델 자체가 아니다. 모델과 작업 에이전트를 �
 
 대화가 끊기거나 Codex와 Claude 사이를 이동해도 target repository의 문서와 공통
 Controller 상태만으로 작업을 이어갈 수 있어야 한다.
+
+v1의 resume은 같은 컴퓨터, 같은 `GENESS_HOME`, 사용자가 미리 준비한 같은
+branch/worktree에서만 보장한다. Geness는 Git branch/worktree를 생성·전환·삭제하지
+않는다. task에는 active writer 하나만 두고, 두 번째 host/process는 observer로 제한한다.
 
 ## 3. 규범 언어
 
@@ -185,6 +193,19 @@ INITIALIZING
 정확한 terminal/recovery 의미와 전이는 [Task Lifecycle](./02_TASK_LIFECYCLE.md)과
 Phase 0 결정이 소유한다.
 
+Public alias와 내부 상태의 관계는 다음과 같다.
+
+| Public alias | Canonical state 또는 의미 |
+| --- | --- |
+| `brief` | `INTERVIEWING` |
+| `contract` | `SPEC_READY → SPEC_APPROVED` |
+| `plan` | `PREFLIGHT → PLAN_READY → PLAN_APPROVED` |
+| `impl` | `RUNNING` |
+| `verify` | `VERIFYING` |
+| `done` | Controller가 `COMPLETED`를 닫는 transaction |
+| `resume` | `PAUSED`, `BLOCKED`, `REOPENED`에서 재개하는 action |
+| `setup` | task 이전 project/workspace readiness |
+
 ## 9. 완료의 의미
 
 Geness task가 완료되려면 최소한 다음이 모두 사실이어야 한다.
@@ -195,6 +216,7 @@ Geness task가 완료되려면 최소한 다음이 모두 사실이어야 한다
 - 승인되지 않은 scope·요구사항 변경이 없다.
 - blocker가 열려 있지 않다.
 - `run.md`와 runtime checkpoint가 최종 상태를 반영한다.
+- `verification.md`가 최종 verify verdict와 evidence projection을 반영한다.
 - writer lease가 해제됐다.
 
 ## 10. 변경 거버넌스

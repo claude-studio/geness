@@ -85,7 +85,7 @@ Persistence / Runtime / Filesystem / Search adapters
 ### Runtime persistence adapter
 
 - 실행 state, attempt, lease와 evidence reference를 저장한다.
-- restart와 cross-host resume를 지원한다.
+- restart와 v1 same-machine host handoff resume을 지원한다.
 - 단일 writer transaction을 보장한다.
 
 ### Memory adapter
@@ -109,7 +109,7 @@ sequenceDiagram
     participant Controller
     participant Docs as target .geness
     participant Runtime as ~/.geness/runtime
-    participant Worker
+    participant Worker as Codex/Claude worker
 
     User->>Skill: 목표와 답변
     Skill->>Controller: 구조화 command
@@ -119,23 +119,31 @@ sequenceDiagram
     Skill-->>User: 질문/승인 요청
     User->>Skill: 승인 후 run
     Skill->>Controller: run start
-    Controller->>Worker: 승인된 범위 작업
+    Controller->>Worker: 승인된 범위 handoff
     Worker-->>Controller: 결과와 evidence
     Controller->>Runtime: attempt/AC 결과
-    Controller->>Docs: run summary
+    Controller->>Docs: run/verification projection
 ```
 
 ## 6. Canonical state와 projection
 
-- 대상 task의 승인 계약은 `.geness/tasks/**/spec.md`다.
-- 실행 중 mutable state는 `runtime.sqlite3`가 소유한다.
+- 대상 task의 승인 계약은 `.geness/tasks/**/spec.md`로 사람이 읽는 portable projection을
+  제공한다. contract digest, mutable state, AC verdict, evidence freshness, verifier
+  provenance와 completion authority의 정본은 `runtime.sqlite3`다.
 - `run.md`는 runtime state의 사람이 읽는 projection이며 raw log가 아니다.
+- `verification.md`는 final verify 결과의 사람이 읽는 projection이며, 문서만으로 완료를
+  선언할 수 없다.
 - memory event JSONL은 lesson history의 감사 원본이다.
 - memory SQLite FTS는 재구축 가능한 검색 index다.
 - host session과 대화 transcript는 canonical state가 아니다.
 
 문서와 DB가 불일치하면 digest, revision과 event lineage를 사용해 reconciliation한다.
 어느 한쪽을 조용히 덮어쓰지 않는다.
+
+v1의 host bridge는 Controller가 Codex child process에 digest·scope·AC·checkpoint를
+포함한 handoff envelope를 전달하고, 결과를 다시 runtime에 기록하는 구조다. worker와
+adapter는 DB를 직접 쓰지 않는다. Geness는 사용자의 current branch/worktree를 검증할
+뿐 Git workspace lifecycle을 관리하지 않는다.
 
 ## 7. 원자성 경계
 
@@ -182,4 +190,4 @@ tests/               unit, contract, integration, E2E
 ## 10. 구현 전 결정
 
 구현 언어, CLI/MCP entrypoint, daemon 여부, DB migration 도구와 package 배포 방식은
-[Open Questions](./research/OPEN_QUESTIONS.md)와 [PLAN Phase 0](./PLAN.md#phase-0--핵심-계약과-adr-확정)에서 닫는다.
+[Open Questions](./research/OPEN_QUESTIONS.md)와 [PLAN Phase 0](./PLAN.md#phase-0-핵심-계약과-adr-확정)에서 닫는다.

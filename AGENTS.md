@@ -13,6 +13,11 @@ Ouroboros에서 관찰한 인터뷰 원칙을 참고해 독립 설계하지만 O
 
 > Geness turns tacit decisions into verified work.
 
+사용자-facing workflow는 `gee setup → brief → contract → plan → impl → verify → done`이며,
+수정 가능한 검증 실패는 bounded `resume`으로 이어진다. `brief/plan/verify`는 Claude,
+`contract/impl`은 기본 cross-model profile에서 Codex가 담당한다. `auto`는 Codex가
+없을 때 새 task에 한해 claude-only로 fallback한다.
+
 ## 세션 시작 절차
 
 작업 전 다음을 순서대로 수행한다.
@@ -76,6 +81,10 @@ Target `.geness/`를 Geness plugin source의 `docs/`와 혼동하지 않는다. 
 저장소에서 workflow를 시작하라고 하지 않은 한 이 저장소에 task artifact를 시험 삼아
 생성하지 않는다. path write 전 resolved Git root와 containment를 확인하고 symlink escape,
 secret log와 민감정보를 차단한다.
+
+Geness는 사용자가 준비한 current branch/worktree를 검증하지만 checkout, branch/worktree
+생성·삭제·전환을 수행하지 않는다. v1 resume은 같은 컴퓨터·같은 `GENESS_HOME`·같은
+사용자 준비 worktree를 전제로 한다.
 
 ## Host-neutral Core와 subagent
 

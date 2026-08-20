@@ -5,10 +5,31 @@
 
 ## 현재 상태
 
-- 제품과 구현 계획은 [PLAN](./PLAN.md)에 정리돼 있다.
+- 제품과 구현 계획은 [PLAN](./PLAN.md)에 정리돼 있다. PLAN은 계획을 소유하며,
+  Lifecycle·Storage·Host Integration·Stage Guide의 정본을 대체하지 않는다.
 - 구현은 시작하지 않았다.
 - 검증된 현재 상태와 구현 가능 여부는 [Progress](./progress/README.md)가 소유한다.
 - 아직 확정하지 않은 구현 선택은 [Open Questions](./research/OPEN_QUESTIONS.md)에 둔다.
+
+## 사용자-facing workflow
+
+대상 저장소에서는 자연어 description을 `gee` router가 다음 public stage로 해석한다.
+`setup`은 task stage 이전의 project/workspace readiness bootstrap이다.
+
+| Public stage | 역할 | 기본 host | 다음 상태 |
+| --- | --- | --- | --- |
+| `brief` | 인터뷰·closure·restatement | Claude | `contract` |
+| `contract` | contract candidate QA·adoption·digest 승인 | Codex + Claude/user | `plan` |
+| `plan` | preflight와 실행 plan·Plan Gate | Claude | `impl` |
+| `impl` | 승인 plan에 따른 구현 | Codex | `verify` |
+| `verify` | 독립 mechanical/acting/semantic 검증 | Claude | `done` 또는 `resume` |
+| `done` | Controller completion transaction | Controller | terminal |
+| `resume` | checkpoint·blocker 기반 재개 | Controller + 해당 worker | 다음 runnable stage |
+
+`auto` profile은 Codex capability가 있으면 cross-model을 선택하고, 없으면 새 task에
+한해 claude-only로 fallback한다. 진행 중 task의 profile은 조용히 바꾸지 않는다.
+`gee setup`이 `SETUP_READY`가 아니면 `brief`를 시작하지 않는다. Geness는 사용자가
+준비한 현재 branch/worktree를 검증하지만 Git branch/worktree를 생성·전환·삭제하지 않는다.
 
 ## 진실의 원천 우선순위
 

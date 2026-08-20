@@ -84,6 +84,22 @@ policy_version
 
 ## 5. 단계별 entry/exit
 
+사용자-facing stage는 내부 상태를 대체하지 않는 public alias다.
+
+| Public stage | Canonical state 또는 의미 |
+| --- | --- |
+| `brief` | `INTERVIEWING` |
+| `contract` | `SPEC_READY → SPEC_APPROVED` |
+| `plan` | `PREFLIGHT → PLAN_READY → PLAN_APPROVED` |
+| `impl` | `RUNNING` |
+| `verify` | `VERIFYING` |
+| `done` | Controller completion transaction으로 `COMPLETED` 노출 |
+| `resume` | `PAUSED`, `BLOCKED`, `REOPENED`에서 재개하는 action |
+| `setup` | task 이전 project/workspace readiness |
+
+`gee` router와 compact status report는 public 이름을 사용하고, Controller와 runtime DB는
+canonical state를 기록한다. `done`과 `resume`은 새로운 task state가 아니다.
+
 | 단계 | Entry | Exit |
 | --- | --- | --- |
 | Interview | project/task 초기화 | closure audit 통과, restatement 승인 |
@@ -116,6 +132,11 @@ policy_version
 - host session ID가 없어도 resume할 수 있어야 한다.
 - `BLOCKED → VERIFYING`은 구현 수정 없이 누락 evidence/dependency만 해소된 경우에만
   허용한다. contract가 바뀌면 반드시 `REOPENED`로 간다.
+- verify의 수정 가능한 실패는 현재 contract와 AC를 유지하는 successor attempt로
+  재개할 수 있다. task당 successor는 최대 5회이며, 반복 fingerprint·진전 없음·예산
+  소진은 `BLOCKED`와 사용자 attention으로 끝낸다.
+- v1 resume은 같은 컴퓨터·같은 `GENESS_HOME`·사용자가 준비한 같은 branch/worktree에서만
+  지원한다. Geness는 checkout, worktree 생성·삭제·전환을 수행하지 않는다.
 
 ## 8. Writer lease
 
@@ -136,6 +157,7 @@ policy_version
 - 승인되지 않은 scope drift 없음
 - 열린 blocker 없음
 - run summary와 checkpoint 동기화
+- final `verification.md` projection과 runtime verdict 동기화
 - 독립 verification 결과
 - completion commit에서 writer lease가 원자적으로 해제됨
 

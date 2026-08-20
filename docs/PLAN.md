@@ -1,27 +1,56 @@
 # Geness 구현 계획
 
 > 상태: Draft
-> 작성일: 2026-08-10
+> 작성일: 2026-08-20
 > 저장소: `claude-studio/geness`
-> 제품 구현 상태: 시작 전
-> 문서 foundation: 완료
+> 제품 구현 상태: HOLD
+> 문서 foundation: CLEAR
 
 ## 1. 문서 목적
 
-이 문서는 Geness의 제품 경계, 저장 구조, 상태 머신, 구현 순서 및 완료 조건을 정의하는 현재 계획의 정본이다.
+이 문서는 Geness의 제품 경계, 문서 계약, 상태 머신, 저장 경계, 구현 순서와 완료
+조건을 소유한다. 현재 repository의 검증된 상태는 Progress가 소유하고, 채택된
+설계 결정은 Accepted ADR이 소유한다.
 
-Geness는 Ouroboros 전체를 복제하지 않는다. 사용자의 암묵지를 반복 질문으로 드러내고, 승인된 문서를 실행 계약으로 사용하며, 실제 검증이 끝날 때까지 작업을 재개할 수 있는 경험만 경량화해 제공한다.
+Geness는 사용자의 암묵지를 질문으로 드러내고, 검증된 실행 계약으로 결정화한 뒤,
+계획·구현·관찰·검증·재개를 관리하는 host-neutral control plane이다.
 
 ```text
-인터뷰
-→ 명세 승인
-→ 실행 전 점검
-→ AC 및 계획 확정
-→ 실행
-→ 검증
-→ 완료
-→ 실패 교훈 평가
+brief
+→ contract
+→ plan
+→ impl
+→ verify
+→ done
+       ↘ resume
 ```
+
+공개 단계 명칭은 다음으로 고정한다.
+
+| 단계 | 의미 | 기본 호출 예 |
+| --- | --- | --- |
+| brief | Interview와 요구사항 정리 | gee brief 주제 |
+| contract | 검증된 실행 계약 생성·승인 | gee contract task |
+| plan | 승인 계약에서 실행 계획 생성 | gee plan task |
+| impl | 승인 계획의 단계별 구현 | gee impl task |
+| verify | 실제 evidence 기반 최종 검증 | gee verify task |
+| done | verify 승인 후 자동 종료 | gee done task |
+| resume | checkpoint 또는 blocker에서 재개 | gee resume task |
+
+gee는 slash command를 직접 호출하는 방식이 아니라 description 기반 intent router를
+통해 단계를 선택한다. 자연어 요청도 stage description으로 라우팅하며, 설명 간
+충돌이 있으면 자동 추론하지 않고 한 번만 선택을 요청한다.
+
+각 단계의 기본 화면은 전체 tool log가 아니라 핵심 상태만 보여준다.
+
+- 현재 stage와 상태 변화
+- 완료 AC 또는 task 수와 전체 수
+- 사용자 판단 필요 여부
+- blocker, retry, resume 필요 여부
+- 최종 verdict와 다음 stage
+
+raw command output, subagent transcript, heartbeat와 대용량 evidence는 runtime/log/
+evidence 영역에 저장하고, 상세 내용은 사용자가 요청할 때만 조회한다.
 
 Geness는 단일 문서 생성 스킬이 아니라 다음 요소를 함께 배포하는 상태 기반 플러그인이다.
 
@@ -41,8 +70,10 @@ Socratic interview와 specification-first workflow를 참고했다. 질문과 �
 사양을 실행 계약으로 쓰는 원칙을 설계 입력으로 삼았다.
 
 Geness는 Ouroboros를 포팅하거나 호환 구현하지 않는다. Seed, ontology, model routing,
-EventStore와 전체 evolution loop는 Geness 계약이 아니다. 문서 형식, 상태 모델, 저장
-경계와 실패 학습 알고리즘은 독립 사양으로 정의한다. 정확한 채택·변형·비채택 범위와
+EventStore와 전체 evolution loop는 Geness 계약이 아니다. 대신 contract stage에서
+사람이 읽는 spec 문서, machine-readable frontmatter, digest, QA와 user adoption gate를
+독립적으로 정의한다. 문서 형식, 상태 모델, 저장 경계와 실패 학습 알고리즘은 독립
+사양으로 정의한다. 정확한 채택·변형·비채택 범위와
 MIT 라이선스 처리는
 [Ouroboros Reference Findings](./research/OUROBOROS_REFERENCE_FINDINGS.md)가 소유한다.
 
@@ -60,7 +91,9 @@ Geness 자체의 docs-first 개발 방식은
 - 목표, 범위, 예외, 실패 동작과 검증 방법을 명시적으로 결정한다.
 - 인터뷰 결과를 대상 저장소의 재개 가능한 문서로 남긴다.
 - 승인된 명세를 검증 가능한 Acceptance Criteria와 실행 계획으로 변환한다.
+- plan Gate를 승인한 뒤에는 사용자 재확인 없이 impl부터 verify, done 또는 resume까지 자동으로 진행한다.
 - Codex 또는 Claude Code에서 실행을 시작하고, 중단 후 다른 호스트에서도 이어갈 수 있게 한다.
+- impl 이후에는 stage transition, AC 진행률, blocker와 최종 verdict만 기본 화면에 표시한다.
 - 모든 필수 AC에 증거가 연결되기 전에는 작업을 완료 처리하지 않는다.
 - 실행 중 발견된 잘못된 가정을 기록하되, 알고리즘을 통과한 교훈만 장기 기억으로 승격한다.
 - 관련 기억만 짧게 조회하여 속도와 컨텍스트 토큰을 보호한다.
@@ -73,9 +106,11 @@ Geness 자체의 docs-first 개발 방식은
 - 인터뷰가 차단 미결정과 모순을 남긴 채 자동 종료되지 않는다.
 - 승인된 계약이 변경되면 기존 승인이 자동으로 무효화된다.
 - 실행 중단 후 체크포인트에서 안전하게 재개할 수 있다.
-- 모든 AC가 검증돼야 `COMPLETED`가 된다.
+- 모든 required AC와 evidence가 검증돼야 done으로 전환된다.
 - 일회성 실패는 장기 기억으로 자동 주입되지 않는다.
 - memory 검색은 구조 필터와 FTS 상위 결과만 반환한다.
+- 일반적인 수정·재검증은 자동 loop로 처리하고, contract·scope·권한·안전 경계를
+  바꾸는 경우에만 사용자에게 멈춰서 질문한다.
 
 ## 3. 비목표
 
@@ -87,6 +122,9 @@ Geness 자체의 docs-first 개발 방식은
 - 웹 GUI나 별도 데스크톱 애플리케이션
 - vector DB 또는 embedding 기반 검색
 - 사용자 승인 없는 Git commit, push, PR 생성
+- branch checkout, worktree 생성·삭제·전환과 Git 작업공간 lifecycle 관리
+- v1에서 다른 컴퓨터 간 자동 runtime/evidence 동기화와 cloud resume
+- v1에서 여러 worktree가 같은 task를 동시에 수정하는 multi-writer 실행
 - 사용자 승인 없는 요구사항·AC 변경
 - 무제한 background daemon 또는 무한 재시도
 - 저장소 밖 임의 경로에 대한 자동 수정
@@ -97,6 +135,9 @@ Geness 자체의 docs-first 개발 방식은
 - [x] 플러그인 이름은 `geness`다.
 - [x] 이 저장소가 Geness 플러그인의 소스 루트다.
 - [x] 하나의 소스 저장소에서 Codex와 Claude Code를 함께 지원한다.
+- [x] branch와 worktree는 사용자가 준비하며 Geness는 이를 생성·삭제·전환하지 않는다.
+- [x] v1 cross-host resume은 같은 컴퓨터·같은 사용자 데이터 루트·사용자 준비 worktree로 제한한다.
+- [x] v1에서는 task당 active writer 하나만 허용하고 다른 host/process는 observer로 제한한다.
 - [x] 공통 기능은 하나의 Controller와 상태 머신으로 구현한다.
 - [x] 호스트별 매니페스트와 필요한 어댑터만 분리한다.
 - [x] 프로젝트 문서는 Geness 설치 경로가 아니라 실제 작업 대상 저장소에 생성한다.
@@ -183,6 +224,7 @@ geness/
 │   └── plugin.json
 ├── .claude-plugin/
 │   └── plugin.json
+├── .mcp.json
 ├── skills/
 │   └── workflow/
 │       ├── SKILL.md
@@ -205,7 +247,8 @@ geness/
 ├── schemas/
 ├── templates/
 ├── bin/
-│   └── geness
+│   ├── geness
+│   └── geness-controller
 ├── tests/
 ├── AGENTS.md
 ├── CLAUDE.md -> AGENTS.md
@@ -227,7 +270,10 @@ geness/
     └── research/
 ```
 
-호스트별 파일에는 공통 비즈니스 규칙을 중복하지 않는다. 두 매니페스트는 동일한 plugin name과 version을 사용하고, 빌드 또는 검증 과정에서 불일치를 차단한다.
+호스트별 파일에는 공통 비즈니스 규칙을 중복하지 않는다. 두 매니페스트는 동일한
+plugin name과 version을 사용하고, 빌드 또는 검증 과정에서 불일치를 차단한다.
+Claude plugin의 MCP 설정은 plugin root의 .mcp.json에 두고 plugin-root path variable로
+geness-controller를 실행한다. .claude-plugin/에는 manifest만 둔다.
 
 문서별 소유권, 읽는 순서와 HOLD/CLEAR 규칙은 [문서 안내](./README.md)가 소유한다.
 PLAN은 미래 구현과 완료 조건이고, 실제 현재 상태는
@@ -247,7 +293,8 @@ Geness를 사용하는 실제 대상 저장소에는 다음 구조를 생성한�
             ├── interview.md
             ├── spec.md
             ├── plan.md
-            └── run.md
+            ├── run.md
+            └── verification.md
 ```
 
 ### 8.1 `project.json`
@@ -325,6 +372,22 @@ Geness를 사용하는 실제 대상 저장소에는 다음 구조를 생성한�
 
 원본 명령 출력, 비밀정보 또는 대용량 evidence는 프로젝트 문서에 넣지 않는다. `run.md`에는 정제된 요약과 로컬 evidence reference만 남긴다.
 
+#### verification.md
+
+- verify stage의 spec/plan digest와 execution lineage
+- mechanical command와 결과 요약
+- 실제 실행·화면·API·파일 observation
+- semantic AC verdict와 evidence reference
+- verifier identity/type와 independence
+- PASS, FAIL, INDETERMINATE 또는 NOT_RUN
+- 최종 APPROVED, REVISE 또는 BLOCKED verdict
+
+verification.md는 별도 human-readable final verification projection이다. AC verdict,
+evidence freshness, verifier provenance와 completion authority의 정본은 runtime DB이며,
+verification.md는 그 결과를 revision/digest와 함께 portable하게 보여준다. 수동 편집이나
+stale projection이 발견되면 Controller가 자동으로 덮어쓰지 않고 reconciliation을
+수행한다.
+
 ## 9. 사용자 로컬 데이터 구조
 
 기본 경로는 `GENESS_HOME`으로 재정의할 수 있고, 미설정 시 `~/.geness/`를 사용한다.
@@ -397,7 +460,7 @@ Geness를 사용하는 실제 대상 저장소에는 다음 구조를 생성한�
 
 ## 10. task 상태 머신
 
-권장 상태는 다음과 같다.
+Controller가 저장하는 canonical 상태는 다음과 같다.
 
 ```text
 INITIALIZING
@@ -412,7 +475,21 @@ INITIALIZING
 → COMPLETED
 ```
 
-Happy path 밖의 상태 후보:
+Happy path 밖의 상태:
+
+PUBLIC_STAGE:
+brief | contract | plan | impl | verify | done | resume
+
+자동 진행 규칙:
+
+- brief, contract와 plan은 사용자 판단이 필요한 Gate를 포함한다.
+- plan approval가 끝나면 impl은 자동으로 시작할 수 있다.
+- impl의 정상 종료는 verify로 자동 전환한다.
+- verify PASS는 done으로 자동 전환한다.
+- verify의 수정 가능한 실패는 resume으로 자동 전환하고, checkpoint에서 수정 후
+  다시 verify한다.
+- contract, scope, 권한, 안전 경계를 바꾸는 문제는 자동 진행을 멈추고 사용자에게
+  질문한다.
 
 ```text
 PAUSED
@@ -433,12 +510,34 @@ CANCELLED
 - 실행 중 기대 동작, 범위 또는 AC를 바꿔야 하면 사용자 재승인을 요구한다.
 - 구현 방법만 바뀌고 계약에 영향이 없으면 plan 이력과 runtime checkpoint만 갱신한다.
 - 두 호스트가 동일 task의 writer가 될 수 없다.
-- 모든 필수 AC와 evidence가 충족돼야 `COMPLETED`로 전환한다.
+- 모든 필수 AC와 evidence가 충족돼야 `COMPLETED`를 외부에 노출한다.
 - 반복 실패, 권한 부족, 외부 의존성 등의 중단은 typed `BLOCKED` reason으로 기록한다.
-- `PLAN_APPROVED`는 Plan Gate 통과를 뜻한다. actor는 `user | policy`로 기록하며,
+- plan stage의 Gate 통과를 뜻하는 내부 상태는 PLAN_APPROVED로 기록한다. actor는
+  user 또는 policy로 기록하며,
   일반 plan의 policy 승인 범위는 Phase 0 결정 전까지 사용자 승인을 생략하지 않는다.
 
-## 11. 인터뷰 설계
+### 10.1 Public stage와 internal state 매핑
+
+public stage는 사용자·gee router·compact report에 노출하고, Controller는 기존
+canonical internal state를 저장한다.
+
+| Public stage | Internal state 또는 의미 |
+| --- | --- |
+| brief | INTERVIEWING |
+| contract | SPEC_READY → SPEC_APPROVED |
+| plan | PREFLIGHT → PLAN_READY → PLAN_APPROVED |
+| impl | RUNNING |
+| verify | VERIFYING |
+| done | COMPLETED를 닫는 idempotent Controller transition |
+| resume | PAUSED, BLOCKED 또는 REOPENED에서 재개하는 action |
+| setup | task 이전 project/workspace readiness |
+
+done과 resume은 별도의 새로운 terminal state가 아니다. `gee done`은 verify PASS 뒤
+Controller completion transaction을 idempotently 재확인하는 명령으로만 사용할 수 있고,
+일반 흐름에서는 사용자에게 다시 묻지 않고 자동 호출한다. 내부 state의 의미와 completion
+authority는 Constitution, Lifecycle과 Controller가 소유한다.
+
+## 11. brief stage 설계
 
 ### 11.1 역할 분리
 
@@ -498,7 +597,7 @@ Codebase context
 
 ### 11.5 인터뷰 종료 게이트
 
-다음 조건을 모두 충족해야 `SPEC_READY`가 될 수 있다.
+다음 조건을 모두 충족해야 contract candidate가 CONTRACT_READY가 될 수 있다.
 
 - 차단 상태 open question이 0개다.
 - 결정 간 unresolved contradiction이 0개다.
@@ -515,7 +614,7 @@ Restatement가 수정되면 답변 refine부터 다시 확인하고 interview를
 revision으로 closure audit을 재실행한다. 이 승인은 interview 이해 확인이며 이후
 `spec.md` digest의 명시적 승인을 대신하지 않는다.
 
-## 12. 명세와 AC 계약
+## 12. contract stage와 AC 계약
 
 `spec.md`는 Markdown 본문과 machine-readable frontmatter를 함께 사용하는 방향을 우선 검토한다.
 
@@ -525,30 +624,47 @@ revision으로 closure audit을 재실행한다. 이 승인은 interview 이해 
 ---
 schema_version: 1
 task_id: task-01J...
-status: approved
-source_interview_id: interview-01J...
+contract_revision: 1
+status: candidate
+source:
+  brief_id: brief-01J...
+  brief_revision: 1
+profile: auto
 contract_digest: sha256:...
 approval:
-  approved_at: 2026-08-10T12:00:00+09:00
-  approved_by: user
-goal: 사용자가 볼 수 있는 완료 상태
+  brief_restate: approved
+  contract_adoption: pending
+  approved_at: null
+  approved_by: null
+goal: ...
 non_goals: []
 constraints: []
+decisions: []
 context:
-  cwd: .
   relevant_paths: []
+  verified_facts: []
 acceptance_criteria:
   - id: AC-001
-    outcome: 완료된 결과 상태
-    verify: 단일 행 검증 명령 또는 null
-    manual_check: 명령으로 검증할 수 없을 때의 절차 또는 null
-    artifacts:
-      - workspace-relative/exact/path
-    expect: stdout/stderr literal 또는 관찰 가능한 결과
-open_questions: []
+    outcome: ...
+    required: true
+    mechanical:
+      command: null
+      expect: null
+    acting:
+      required: false
+      procedure: null
+      timeout_seconds: null
+    manual:
+      procedure: null
+      observer: null
+    artifacts: []
+    source_refs: []
 execution:
   allowed_scope: []
-  test_policy: 프로젝트 정책
+  forbidden_scope: []
+  test_policy: ...
+  retry:
+    max_successors: 5
 completion_policy: all_required_acceptance_criteria_verified
 ---
 ```
@@ -563,15 +679,53 @@ AC 작성 규칙:
 - 모든 요구사항은 하나 이상의 AC에 연결된다.
 - 하나의 AC가 지나치게 많은 독립 결과를 묶지 않는다.
 
+이 schema는 기존 RPI Stage Guide의 field 이름을 호환성 정본으로 사용하지 않는다.
+brief revision, contract revision, profile, mechanical/acting/manual verifier, source refs와
+bounded successor policy를 Geness v1의 새 contract로 정의한다. 기존 문서와의 매핑은
+Phase 0 migration/ADR에서 결정하고, 구현 전에는 schema example만으로 compatibility를
+주장하지 않는다.
+
 ### 12.1 승인 digest
 
-- digest는 goal, non-goals, constraints, relevant context, AC 및 execution policy를 canonical serialization한 값의 SHA-256으로 계산한다.
+- digest는 profile, goal, non-goals, constraints, decisions, relevant context, AC 및
+  execution/retry policy를 canonical serialization한 값의 SHA-256으로 계산한다.
 - status, 실행 시각, run 결과처럼 변하는 필드는 contract digest에서 제외한다.
 - 해시 대상 필드가 바뀌면 승인과 하위 plan을 무효화한다.
 - 승인 receipt와 digest는 `spec.md` 및 runtime DB 양쪽에 기록한다.
 - 사용자 승인을 받지 않은 silent rewrite를 허용하지 않는다.
 
-## 13. 실행 전 점검과 계획
+### 12.2 contract QA
+
+contract stage는 Interview 결과를 받아 spec을 만든 뒤 다음 검사를 통과해야 한다.
+
+- goal, non-goal, constraint와 AC 간 내부 모순이 없다.
+- AC는 구현 방법이 아니라 관찰 가능한 outcome이다.
+- 모든 requirement가 하나 이상의 AC에 연결된다.
+- 각 required AC에 실제 command 또는 명시적인 manual evidence 절차가 있다.
+- artifact path가 target root 밖으로 나가지 않는다.
+- execution allowed scope가 plan으로 분해 가능하다.
+- 기존 code context와 stale reference가 확인된다.
+- closer, contrarian, gap-hunter 관점의 high severity gap이 남지 않는다.
+
+QA 결과는 PASS, REVISE, FAIL로 기록한다. REVISE 후보는 사용자가 채택한 것만 다음
+spec revision에 적용하며, 승인되지 않은 자동 수정은 금지한다.
+
+Ouroboros에서 관찰한 adoption 원칙을 Geness에 독립적으로 적용한다.
+
+1. brief에서 사용자가 restated goal을 승인한다.
+2. Codex가 contract candidate와 구조적 QA 결과를 만든다.
+3. QA가 REVISE를 반환하면 Claude가 후보를 compact하게 보여주고 사용자가 채택·거절한다.
+4. 채택된 후보만 spec revision과 digest에 반영한다.
+5. QA PASS 뒤에는 전체 계약을 다시 장문으로 승인받지 않고, goal·required AC·constraint·
+   out-of-scope·digest를 보여주는 compact adoption confirmation만 사용한다.
+6. adoption confirmation과 valid digest가 있을 때 CONTRACT_APPROVED를 만든다.
+
+brief의 restate approval과 contract의 digest adoption은 서로 다른 artifact를 승인한다.
+그러나 사용자가 같은 내용을 두 번 읽고 승인하게 만들지 않는다. 계약 후보에 의미 있는
+QA 수정이 없으면 compact confirmation으로 끝내고, 의미 있는 수정이 있으면 adoption
+질문을 거친다.
+
+## 13. plan stage와 실행 전 점검
 
 명세 승인 후, 실제 실행 계획을 확정하기 전에 다음을 점검한다.
 
@@ -598,7 +752,43 @@ AC 작성 규칙:
 - policy 승인 범위가 확정되기 전이거나 고위험·scope 확대 작업이면 명시적 사용자
   승인이 있다.
 
-## 14. 실행·검증·재개
+## 14. impl·verify·done/resume stages
+
+### 14.0 impl 이후 자동 진행
+
+impl은 plan approval 이후 Codex worker가 소유한다. 다음 흐름은 기본적으로 사용자
+질문 없이 Controller가 진행한다.
+
+~~~text
+impl started
+  → phase checkpoint
+  → self-validation
+  → implementation result
+  → verify
+  → APPROVED: done
+  → REVISE/repairable failure: resume
+  → checkpoint repair
+  → verify
+~~~
+
+자동 resume은 단순 무제한 retry가 아니라 Ouroboros에서 관찰한 bounded convergence
+원칙을 독립적으로 적용한다. verify가 REVISE를 반환하면 현재 failure evidence와
+feedback을 고정하고, 같은 approved contract/AC를 유지하는 successor attempt만 만든다.
+기본 successor 상한은 task당 5회이며, 정확한 wall-clock budget과 동일 fingerprint
+조기 중단 규칙은 Phase 0에서 결정한다.
+
+- implementation/test 오류는 Codex successor impl로 자동 전달한다.
+- Claude verify가 매 successor를 다시 평가한다.
+- acceptance criteria, constraints, scope와 completion policy를 자동 완화하지 않는다.
+- 같은 failure fingerprint 반복, progress 부재, oscillation 또는 5회 successor budget
+  초과는 BLOCKED다.
+- contract/goal/AC/scope/권한/외부 write/destructive action 변경은 자동 loop 밖이다.
+- 자동 loop 밖의 변경은 brief 또는 contract stage의 사용자 결정으로 되돌린다.
+- bounded loop가 PASS를 얻은 경우에만 done transaction을 실행한다.
+
+각 successor에는 predecessor attempt, feedback, changed paths, current digest와
+iteration/budget을 연결한다. 사용자에게는 iteration N/M, AC 진행률, attention/blocker와
+최종 verdict만 표시한다.
 
 ### 14.1 실행 시작
 
@@ -632,6 +822,15 @@ AC 작성 규칙:
 
 ### 14.4 호스트 간 재개
 
+Geness는 branch 또는 worktree를 자동으로 만들거나 전환하지 않는다. resume을 실행하는
+사용자가 target root와 원하는 current worktree를 먼저 준비해야 하며, Controller는
+현재 경로·project_id·workspace_id·digest가 checkpoint와 맞는지만 검증한다. 불일치하면
+자동 전환하지 않고 사용자에게 SETUP_ATTENTION을 반환한다.
+
+v1에서 호스트 간 재개는 같은 machine의 Claude↔Codex 전환만 지원한다. 다른 machine의
+runtime/evidence 이동, cloud sync와 자동 workspace discovery는 v1의 지원 범위가 아니다.
+필요한 경우 후속 버전에서 명시적 export/import artifact와 사용자 승인 절차로 추가한다.
+
 - host session ID는 참고 메타데이터일 뿐 portable state가 아니다.
 - Controller checkpoint는 mutable 실행 상태의 정본이고 `.geness/tasks/**`는 portable
   계약과 사람이 읽는 projection이다. 둘은 revision/digest로 reconciliation한다.
@@ -639,7 +838,25 @@ AC 작성 규칙:
 - heartbeat가 끊긴 lease는 grace period 후 명시적인 takeover 절차로만 회수한다.
 - takeover 시 마지막 checkpoint, Git 상태와 실행 중이던 process를 재검증한다.
 
-### 14.5 완료 게이트
+### 14.5 Acting verification policy
+
+verify는 모든 AC에 동일한 검증 방식을 강제하지 않는다.
+
+| AC 유형 | 필수 검증 |
+| --- | --- |
+| API, CLI, UI, integration 등 실제 동작이 있는 AC | mechanical + acting observation |
+| 문서, 설정, schema, 정적 artifact AC | mechanical 검증 |
+| 자동 실행이 불가능한 사용자 경험·운영 AC | 승인된 manual procedure와 관찰자 |
+
+Acting observation은 실제 명령·API·화면·생성 파일을 관찰하고, malformed input,
+timeout/hung command, stale state와 실제 결과 불일치를 확인한다. 테스트가 통과했다는
+로그만으로 acting PASS를 추정하지 않는다.
+
+각 acting evidence에는 command 또는 procedure, target/workspace, 관찰 시각, 결과
+artifact와 verifier identity를 연결한다. 실행이 불가능하면 PASS가 아니라 INDETERMINATE
+또는 NOT_RUN으로 기록하고 resume/BLOCKED/user attention route를 선택한다.
+
+### 14.6 완료 게이트
 
 - 모든 필수 AC가 통과했다.
 - 각 AC에 검증 evidence가 연결됐다.
@@ -647,9 +864,68 @@ AC 작성 규칙:
 - 프로젝트 문서와 실제 코드 상태가 일치한다.
 - 열린 blocker가 없다.
 - 독립 검증자가 완료 판정을 재확인했다.
-- `run.md`에 최종 상태와 evidence 요약이 기록됐다.
+- `run.md`와 `verification.md`에 최종 상태·verdict·evidence 요약이 기록됐다.
 - final `run.md`가 reconcile된 뒤 한 runtime completion transaction에서 terminal
   checkpoint가 기록되고 writer lease가 해제됐다.
+
+### 14.7 핵심 진행 상태 표시
+
+기본 사용자 화면은 각 도구 호출과 subagent의 전체 진행을 출력하지 않는다. 다음
+event에서만 요약을 갱신한다.
+
+- stage가 바뀔 때
+- AC 또는 phase 완료 수가 증가할 때
+- 사용자 attention이 필요할 때
+- blocker, retry 또는 resume이 발생할 때
+- verify verdict 또는 done 결과가 확정될 때
+
+표시 형식은 다음 정보만 포함한다.
+
+~~~text
+Stage: impl
+Progress: AC 3/7
+Status: running | attention | blocked | completed
+Next: verify | resume | user decision
+~~~
+
+stage가 마무리될 때는 다음 compact report envelope을 사용자에게 보여준다.
+
+~~~text
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📊 Geness Feature Usage
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✅ Used: <이번 stage에서 사용한 skill/agent/tool>
+⏭️ Not used: <이번 stage에서 사용하지 않은 선택 기능>
+💡 Recommended: <다음 stage 또는 필요한 조치>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Summary:
+  - <핵심 결과 또는 판정>
+  - <coverage/match/evidence 요약>
+  - Report saved: <portable artifact path>
+
+<STAGE> 완료 현황:
+  항목                         상태
+  <deliverable/AC/check>      ✅
+  <deliverable/AC/check>      ⚠️
+
+다음 단계:
+  <next stage> — <한 줄 설명>
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+~~~
+
+stage별 규칙:
+
+- brief/contract/plan은 핵심 결정, 승인 상태, 남은 질문과 다음 stage를 표시한다.
+- impl은 AC/task 완료 수, 현재 phase와 blocker만 표시한다.
+- verify는 AC별 PASS/FAIL/INDETERMINATE/NOT_RUN과 최종 verdict를 표시한다.
+- done은 최종 summary, evidence path와 완료 상태를 표시하며 다음 stage는 없다.
+- resume은 실패 원인, checkpoint, 자동 재시도 여부와 다음 verify/사용자 attention을
+  표시한다.
+- Used/Not used/Recommended는 실제 호출 기록으로 계산하며 추측하지 않는다.
+
+상세 transcript, raw command, heartbeat와 evidence는 저장하되 기본 relay에서는 숨긴다.
+gee status verbose 같은 명시적 상세 조회가 있을 때만 관련 범위를 보여준다.
 
 ## 15. 실패 교훈 lifecycle
 
@@ -769,6 +1045,140 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 
 ## 18. Codex·Claude Code 호환 전략
 
+### 18.1 Stage별 host ownership
+
+Geness의 기본 운영 profile은 Claude가 사람과 계약을 담당하고 Codex가 구현을 담당하는
+cross-model RPI profile이다.
+
+| stage | 기본 host | 책임 |
+| --- | --- | --- |
+| brief | Claude | 사용자 Interview, code fact 확인, answer refine, closure |
+| contract | Codex | spec candidate 생성과 구조적 contract QA |
+| plan | Claude | preflight 결과를 승인 계약에 매핑하고 implementation plan 생성 |
+| impl | Codex | 승인된 plan과 allowed scope에 따른 코드 변경·phase checkpoint |
+| verify | Claude | 독립 mechanical/acting/semantic 검증과 AC verdict |
+| done | Controller + Claude projection | verify APPROVED 후 자동 terminal completion |
+| resume | Controller + Codex/Claude | checkpoint에 맞는 owner를 선택해 자동 재개 |
+
+Codex가 contract candidate와 구조적 QA를 만들지만, contract의 User Adoption과 최종
+approval authority는 Claude 세션과 사용자에게 남긴다. 승인 전에는 Codex impl을
+시작하지 않는다. Codex가 구현 중 contract, scope, AC, 권한 또는 안전 경계의 변경을
+발견하면 구현을 임의로 계속하지 않고 Controller에 attention을 보내 brief 또는
+contract stage로 되돌린다.
+
+정상적인 구현 실패, 테스트 실패와 수정 가능한 verify REVISE는 사용자에게 매번 묻지
+않고 Codex resume loop로 처리한다. 다음 상황에서는 자동 진행을 중단한다.
+
+- 사용자 판단이 필요한 contract 변경
+- allowed scope 확대 또는 외부 write
+- destructive action이나 보안 경계 변경
+- 동일 failure fingerprint의 retry budget 초과
+- evidence가 부족하거나 상태를 신뢰할 수 없는 경우
+
+### 18.2 Description-based gee router
+
+host별 slash command를 제품 API로 노출하지 않는다. 공통 entrypoint gee가 description
+registry를 읽고 다음 intent를 선택한다.
+
+- brief: vague request를 질문으로 정리하고 closure까지 진행
+- contract: 승인 가능한 execution contract를 Codex가 만들고 Claude·사용자가 채택한다
+- plan: approved contract에서 traceable plan을 만든다
+- impl: approved plan을 Codex implementation worker로 실행한다
+- verify: 실제 evidence로 결과를 검증한다
+- done: approved verify 결과를 완료 transaction으로 닫는다
+- resume: checkpoint 또는 recoverable failure에서 재개한다
+
+registry는 host-specific transport와 분리한다. 같은 description과 input/output contract를
+Codex와 Claude에서 사용할 수 있어야 하며, 자연어 매칭 결과와 사용자 선택을 audit
+기록에 남긴다.
+
+### 18.2.1 Configurable host profile
+
+host routing은 전역 고정값이 아니라 target project와 task contract에 기록되는 profile로
+관리한다.
+
+기본 profile 후보:
+
+| profile | brief | contract | plan | impl | verify |
+| --- | --- | --- | --- | --- | --- |
+| auto | Claude | Codex 우선, 없으면 Claude | Claude | Codex 우선, 없으면 Claude | Claude 독립 verifier |
+| cross-model | Claude | Codex | Claude | Codex | Claude |
+| claude-only | Claude | Claude | Claude | Claude | Claude 독립 verifier |
+
+claude-only profile에서도 같은 Claude 대화의 자기 보고만으로 verify하지 않는다.
+별도 verifier context, 독립 subagent 또는 별도 검증 process를 사용해 구현과 검증의
+관심사를 분리한다.
+
+auto profile은 cross-model을 우선 선택한다. Codex가 준비되지 않았을 때만 새 task의
+contract/impl을 Claude로 fallback하며, 다음 조건을 지킨다.
+
+- setup 시 선택된 profile과 실제 capability를 명시한다.
+- auto가 cross-model을 선택했는지 claude-only로 fallback했는지 기록한다.
+- 새 task에만 자동 fallback을 적용한다.
+- 진행 중인 task의 profile을 조용히 변경하지 않는다.
+- active task에서 host를 바꾸려면 REOPENED/RESUME과 새 contract digest 승인이 필요하다.
+- fallback 이유와 profile 변경을 audit event로 기록한다.
+
+사용자 명령은 gee config를 canonical surface로 한다. gee:config는 host가 전달하는
+입력 호환 alias로만 허용할 수 있다.
+
+gee config가 제공하는 최소 동작:
+
+- 현재 profile과 host capability 조회
+- auto, cross-model, claude-only profile 선택
+- Codex capability 재검사
+- 새 task의 기본 profile 설정
+- active task의 profile 변경 요청과 영향 설명
+- profile 변경 시 필요한 contract invalidation/reapproval 안내
+
+target project 설정은 .geness/config.yaml 후보에 저장하고, 실제 task contract에는
+선택된 profile, capability snapshot과 profile revision을 포함한다. profile은 contract
+digest에 포함되므로 실행 중 silent switch를 차단한다.
+
+### 18.3 Claude plugin to Codex bridge
+
+Claude plugin과 Codex 사이에는 Geness Controller를 단일 중계점으로 둔다.
+
+~~~text
+Claude plugin
+  → plugin-provided stdio MCP
+  → Geness Controller
+  → codex exec --json child process
+  → runtime state/evidence
+  → Claude verify
+~~~
+
+Claude plugin은 plugin root의 MCP configuration으로 Controller를 시작한다. Controller는
+Codex에 전체 대화 transcript를 전달하지 않고 다음 handoff envelope만 전달한다.
+
+- task_id와 run_id
+- target worktree와 resolved working directory
+- current spec/plan revision과 digest
+- allowed scope와 변경 금지 경계
+- AC와 expected evidence
+- checkpoint와 retry budget
+- progress protocol version
+
+Codex는 Controller의 runtime DB나 project document를 직접 수정하지 않는다. Codex는
+allowed worktree에서 구현하고 JSONL event/result를 stdout 또는 지정된 output artifact로
+반환한다. Controller만 state, checkpoint, evidence reference와 done/resume 전이를
+기록한다.
+
+Codex 실행 기본값은 workspace-write sandbox와 명시적인 approval policy를 사용한다.
+danger-full-access 또는 approval 우회는 기본값이 아니며, Phase 0의 보안 결정 없이는
+자동화 profile에 허용하지 않는다.
+
+Codex event는 다음만 기본 화면에 relay한다.
+
+- phase/task/AC 진행률 변화
+- attention 또는 blocker
+- retry/resume 전환
+- final result
+
+raw JSONL, tool transcript와 대용량 output은 runtime evidence에 저장한다. 장기적으로
+원격 Codex나 Codex MCP server가 필요해져도 동일 handoff envelope와 Controller contract를
+사용하는 별도 adapter로 추가하며, Claude stage와 portable project document를 바꾸지 않는다.
+
 - `.codex-plugin/plugin.json`과 `.claude-plugin/plugin.json`을 모두 제공한다.
 - 공통 Skill은 Agent Skills의 공통 frontmatter subset만 사용한다.
 - Codex/Claude 전용 frontmatter, hook 또는 환경변수는 adapter에 격리한다.
@@ -780,6 +1190,121 @@ Background daemon은 첫 버전의 전제 조건이 아니다. stdio MCP와 짧�
 - 설치 제거 시 `~/.geness/`를 자동 삭제하지 않는다. 별도 prune 명령과 사용자 확인을 제공한다.
 
 현재 공식 문서 기준으로 Codex와 Claude Code 모두 plugin에 Skills, hooks와 MCP 서버를 묶을 수 있다. 각 호스트의 manifest와 설치 동작이 바뀔 수 있으므로 compatibility test matrix를 release gate로 유지한다.
+
+### 18.4 타겟 프로젝트 setup lifecycle
+
+플러그인 개발·설치와 실제 target repository 초기화는 별도 concern이다. 사용자는
+플러그인을 설치한 뒤 target repository에서 gee setup을 한 번 실행하고, setup이
+SETUP_READY가 된 뒤에만 gee brief를 시작한다.
+
+~~~text
+Plugin install/enable
+  → gee setup
+  → target root resolve
+  → project identity initialize
+  → .geness documents/bootstrap check
+  → Claude MCP Controller handshake
+  → Codex exec capability handshake
+  → shared contract/progress protocol check
+  → SETUP_READY
+  → gee brief
+~~~
+
+setup은 공개 stage lifecycle과 분리된 idempotent bootstrap command다.
+setup 시작 시 gee config 또는 사용자 선택으로 host profile을 먼저 결정한다. 기본 auto는
+Codex capability를 먼저 검사해 cross-model을 선택하고, Codex가 없을 때만 claude-only로
+fallback한다. 명시적인 cross-model profile은 Codex가 READY가 아니면 SETUP_ATTENTION으로
+멈추며, 명시적인 claude-only profile은 Claude Controller만 필수로 한다. auto가 fallback된
+경우 SETUP_READY summary에 degraded profile을 명시한다.
+
+### 18.4.1 Plugin installation check
+
+- Claude plugin manifest와 plugin root component path를 검사한다.
+- 개발 중에는 local plugin directory loading을 검사한다.
+- 배포 시에는 marketplace install/enable 결과를 검사한다.
+- plugin validation이 실패하면 target 초기화를 시작하지 않는다.
+- plugin-provided MCP server가 시작되고 Controller tools가 보이는지 확인한다.
+- plugin cache에는 mutable project state를 쓰지 않는다.
+
+### 18.4.2 Target initialization
+
+setup은 현재 사용자가 준비한 branch/worktree를 입력으로 사용한다. Geness가 git checkout,
+worktree create/remove, branch switch 또는 cleanup을 수행하지 않는다. 다른 작업공간으로
+이동해야 하면 사용자가 먼저 이동한 뒤 gee setup 또는 gee resume을 다시 호출한다.
+
+gee setup은 다음 순서로 수행한다.
+
+1. 사용자가 지정한 root 또는 Git root를 resolve한다.
+2. symlink escape와 plugin cache 오인을 차단한다.
+3. 기존 project.json이 있으면 project_id와 schema를 검증한다.
+4. 없으면 사용자 확인 후 project.json과 target task root를 생성한다.
+5. 기존 project_id가 다른 경우 덮어쓰지 않고 SETUP_ATTENTION으로 멈춘다.
+6. GENESS_HOME과 runtime/memory 권한을 확인한다.
+7. setup receipt와 capability snapshot을 runtime에 저장한다.
+
+setup은 기존 파일·기존 task·기존 project ID를 삭제하거나 자동 병합하지 않는다.
+schema migration이 필요하면 backup, migration plan과 사용자 승인 후 수행한다.
+
+### 18.4.3 Host capability handshake
+
+Claude 측:
+
+- plugin enabled 상태
+- gee description registry discovery
+- Controller stdio MCP 연결
+- target root 전달
+- progress envelope 수신
+
+Codex 측은 cross-model profile에서 필수이고 claude-only profile에서는 optional이다.
+
+Codex 측:
+
+- codex executable과 version
+- codex exec 비대화형 실행 가능 여부
+- target worktree와 working directory
+- workspace-write/read-only sandbox capability
+- JSONL event와 output schema 수신
+- 인증·approval 정책과 retry/attention 처리
+
+setup check는 코드 변경을 수행하지 않는 read-only probe를 기본으로 한다. Codex의
+실제 impl capability는 approved contract와 plan 이후에만 workspace-write profile로
+실행한다.
+
+### 18.4.4 Setup states와 output
+
+~~~text
+SETUP_REQUIRED
+  → SETUP_CHECKING
+  → SETUP_READY
+
+SETUP_ATTENTION
+SETUP_BLOCKED
+~~~
+
+기본 출력은 다음처럼 핵심 상태만 보여준다.
+
+~~~text
+Setup: ready
+Target: <resolved project root>
+Project: <project id>
+Claude MCP: ready
+Codex exec: ready
+Next: gee brief
+~~~
+
+setup 실패는 원인 category와 사용자가 취할 다음 action을 표시한다. plugin/MCP
+문제는 plugin setup으로, target root/identity 문제는 사용자 선택으로, Codex capability
+문제는 host setup 또는 resume으로 route한다.
+
+### 18.4.5 Re-run과 update
+
+- 같은 project_id와 schema가 이미 준비됐으면 setup은 no-op에 가깝게 완료한다.
+- plugin update 후에는 Controller schema와 target project schema compatibility를 다시
+  확인하지만 portable task와 runtime/memory를 삭제하지 않는다.
+- setup receipt가 stale이면 read-only check를 다시 수행한다.
+- target이 다른 repository로 바뀌면 기존 workspace를 재사용하지 않고 새 workspace_id를
+  만든다.
+- setup이 READY가 아니면 brief, contract, plan, impl을 시작하지 않는다.
 
 ## 19. 보안과 데이터 보호
 
@@ -873,6 +1398,21 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - [ ] Claude Code manifest 생성
 - [ ] 공통 Skill 골격 생성
 - [ ] Controller/CLI/MCP entrypoint 생성
+- [ ] gee description registry와 intent router 생성
+- [ ] brief/contract/plan/impl/verify/done/resume stage description registry 생성
+- [ ] 자연어 routing 충돌·사용자 선택·audit 기록 구현
+- [ ] gee setup description과 setup state 구현
+- [ ] gee config와 gee:config compatibility alias 구현
+- [ ] cross-model/claude-only host profile schema 구현
+- [ ] profile별 setup readiness와 Codex optional/required capability check 구현
+- [ ] active task profile 변경 시 reopen/digest invalidation 구현
+- [ ] plugin validate, local load와 marketplace enable check 구현
+- [ ] plugin-provided stdio MCP Controller startup check 구현
+- [ ] target root/project identity/task root idempotent initializer 구현
+- [ ] GENESS_HOME/runtime/memory permission과 schema capability check 구현
+- [ ] Claude MCP와 Codex exec read-only capability handshake 구현
+- [ ] setup receipt와 SETUP_READY/ATTENTION/BLOCKED projection 구현
+- [ ] SETUP_READY 이전 stage 시작 차단 구현
 - [ ] 두 manifest의 name/version 일치 검증
 - [ ] target Git root 탐색 구현
 - [ ] `.geness/project.json` schema와 initializer 구현
@@ -885,8 +1425,15 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - 두 호스트에서 동일 저장소를 동일 project ID로 초기화할 수 있다.
 - 생성된 문서는 플러그인 설치 경로가 아니라 target repository에만 존재한다.
 - 동일 이름 저장소와 worktree가 충돌하지 않는다.
+- plugin install/enable, Controller MCP와 Codex read-only handshake가 기록된다.
+- setup을 반복해도 기존 project_id와 task 문서를 덮어쓰지 않는다.
+- SETUP_READY 이전에는 brief와 이후 stage가 시작되지 않는다.
 
-### Phase 2 — 인터뷰와 명세 생성
+### Phase 2 — brief·contract
+
+brief는 Claude가 담당한다. 사용자 질문, 답변 refine와 closure는 Claude 세션이
+소유한다. contract candidate 생성과 구조적 QA는 Codex worker가 담당하지만, Claude
+세션이 사용자에게 결과를 설명하고 User Adoption과 최종 approval를 진행한다.
 
 - [ ] repository pre-exploration 구현
 - [ ] 질문 routing과 highest-impact gap 선택 구현
@@ -904,10 +1451,13 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 
 - 암묵지가 남아 있는 동안 인터뷰가 계속된다.
 - 코드 사실과 사용자 결정이 provenance로 구분된다.
-- 종료 gate 충족 전에는 `SPEC_APPROVED`가 될 수 없다.
+- 종료 gate 충족 전에는 CONTRACT_APPROVED가 될 수 없다.
 - 승인된 spec을 동일 입력에서 결정론적으로 검증하고 hash할 수 있다.
 
-### Phase 3 — 실행 전 점검, AC와 계획
+### Phase 3 — plan
+
+기본 host는 Claude다. Claude가 approved contract에서 preflight와 traceable plan을
+생성하고 plan Gate를 통과시킨다. Codex impl은 이 Gate 이후에만 시작할 수 있다.
 
 이 단계의 memory 조회는 Phase 0에서 확정한 bootstrap/capability contract에 의존한다.
 Phase 5가 아직 구현되지 않았다는 이유로 암묵적인 lesson을 만들거나 성공으로 가장하지
@@ -934,7 +1484,10 @@ Phase 5가 아직 구현되지 않았다는 이유로 암묵적인 lesson을 만
   반환하며 Phase 5 구현을 숨은 entry condition으로 요구하지 않는다.
 - 잘못된 가정은 실행 전에 spec/interview 단계로 되돌아간다.
 
-### Phase 4 — 실행·검증·재개
+### Phase 4 — impl·verify·done/resume
+
+impl은 Codex가 담당하고 verify는 Claude가 독립적으로 담당한다. Controller는 둘 사이의
+checkpoint, lease, evidence lineage와 자동 done/resume 전이를 관리한다.
 
 이 단계는 Phase 0에서 채택한 host-neutral canonical command API와 CLI/MCP 경계의 contract
 harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재개하는 검증은 Phase 6의
@@ -946,6 +1499,13 @@ harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재�
 - [ ] observer 및 safe takeover 구현
 - [ ] AC/dependency 단위 checkpoint 구현
 - [ ] subagent 작업 결과 수집 계약 구현
+- [ ] Codex impl worker의 phase self-validation과 checkpoint 구현
+- [ ] 구현 완료 후 verify 자동 전환 구현
+- [ ] Claude mechanical verifier 구현
+- [ ] Claude acting observation verifier와 timeout 구현
+- [ ] Claude semantic AC evaluator 구현
+- [ ] repairable verify failure의 automatic resume loop 구현
+- [ ] contract/scope/권한 변경 시 Claude contract attention route 구현
 - [ ] reviewer/verifier provenance, 독립성 및 결과 합성 계약 구현
 - [ ] command/result redaction 및 evidence hash 구현
 - [ ] Phase 0에서 채택한 protocol 기반 DB/document projection crash reconciliation 구현
@@ -999,6 +1559,10 @@ harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재�
 - [ ] Codex adapter의 MCP와 hook 연결 구현
 - [ ] Claude adapter의 MCP와 hook 연결 구현
 - [ ] 공통 Skill의 host-neutral tool routing 검증
+- [ ] Claude brief·contract·plan route 검증
+- [ ] Codex impl route 검증
+- [ ] Claude verify route 검증
+- [ ] Controller done/resume route와 host 재개 검증
 - [ ] Codex에서 시작해 Claude에서 재개하는 installed-host E2E 구현
 - [ ] Claude에서 시작해 Codex에서 재개하는 installed-host E2E 구현
 - [ ] session start preflight 보조 hook 검토
@@ -1034,6 +1598,21 @@ harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재�
 - plugin 제거가 사용자 확인 없이 프로젝트 문서나 `~/.geness`를 삭제하지 않는다.
 - 두 호스트의 핵심 E2E가 release gate를 통과한다.
 
+## 20.1 Stage/host 자동화 완료 조건
+
+- [ ] 사용자가 준비한 current branch/worktree를 setup이 검사하지만 변경하지 않는다.
+- [ ] setup이 plugin install, Controller MCP, target identity와 Codex capability를 검증한다.
+- [ ] SETUP_READY 전에는 brief가 시작되지 않는다.
+- [ ] Claude가 brief와 plan을 소유하고, Codex가 contract candidate/QA를 수행한다.
+- [ ] Claude 세션과 사용자가 Codex contract 결과의 User Adoption/approval를 소유한다.
+- [ ] Codex는 approved plan과 allowed scope가 있을 때만 impl을 시작한다.
+- [ ] impl 정상 종료가 자동으로 Claude verify로 이어진다.
+- [ ] verify APPROVED가 자동으로 done transaction으로 이어진다.
+- [ ] repairable failure가 자동 resume → impl/verify loop로 이어진다.
+- [ ] contract, scope, 권한, 안전 경계 변경은 사용자 attention으로 멈춘다.
+- [ ] 기본 relay가 핵심 상태만 보여주고 raw transcript는 숨긴다.
+- [ ] 상세 조회가 필요할 때만 stage 범위의 evidence를 보여준다.
+
 ## 21. 테스트 전략
 
 구현 언어가 결정되기 전이므로 구체적인 명령은 Phase 0에서 추가한다.
@@ -1064,6 +1643,13 @@ harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재�
 
 ### 21.3 Integration tests
 
+- plugin validate와 local/marketplace enable check
+- target root resolve와 setup idempotency
+- existing project_id mismatch 보호
+- Claude MCP Controller startup handshake
+- Codex read-only capability handshake
+- SETUP_READY 이전 brief 차단
+- setup receipt stale/migration/re-run
 - 임시 target repository 초기화
 - 별도 임시 `GENESS_HOME`
 - 인터뷰 state resume
@@ -1134,10 +1720,29 @@ harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재�
 - [ ] clone, folder rename, 동일 이름 저장소와 Git worktree 사례가 테스트된다.
 - [ ] 설치·업데이트·제거·복구 절차가 문서화됐다.
 
+### 22.1 Stage와 host Definition of Done
+
+- [ ] setup은 사용자가 준비한 branch/worktree를 검증하지만 생성·삭제·전환하지 않는다.
+- [ ] plugin install, Controller MCP와 Codex exec capability handshake evidence가 있다.
+- [ ] SETUP_READY가 아닌 target에서 brief가 차단된다.
+- [ ] brief, contract와 plan은 Claude가 소유한다.
+- [ ] impl은 Codex가 소유하며 approved plan 없이 시작하지 않는다.
+- [ ] verify는 Claude가 Codex 구현 worker와 독립적으로 수행한다.
+- [ ] verify APPROVED 후 done이 자동으로 실행된다.
+- [ ] repairable failure는 resume loop로 자동 처리된다.
+- [ ] contract 또는 scope 변경은 사용자 attention으로 멈춘다.
+- [ ] 기본 relay는 핵심 상태만 보여주고 상세 log는 보존만 한다.
+- [ ] gee 자연어/description routing과 명시 stage 호출이 같은 contract를 사용한다.
+
 ## 23. 구현 전 미결정 사항
 
 | 항목 | 현재 권장 방향 | 결정 시점 |
 | --- | --- | --- |
+| stage host routing | Claude: brief/plan/verify, Codex: contract candidate/QA와 impl, Controller: done/resume | Phase 0 |
+| host profile fallback | cross-model과 claude-only, Codex optional capability, active task profile change/reapproval | Phase 0/1 |
+| target setup contract | plugin install/enable, gee setup, target identity, MCP/Codex handshake, idempotent rerun | Phase 0/1 |
+| impl 자동 진행 policy | plan approval 이후 기본 5회 bounded successor impl/verify loop; contract·scope·권한 변경, oscillation과 budget 초과는 사용자 Gate/BLOCKED | Phase 0/4 |
+| progress relay verbosity | stage change, AC count, attention, blocker, verdict만 기본 표시; raw log는 상세 조회 | Phase 0/4 |
 | Controller 언어 | 배포 크기·SQLite FTS5·stdio MCP 호환성을 spike 후 선택 | Phase 0 |
 | CLI/MCP 경계 | 공통 library + CLI/MCP thin transport | Phase 0 |
 | Background daemon | 첫 버전에서는 제외, lease heartbeat 필요성 측정 후 결정 | Phase 0/4 |
@@ -1210,6 +1815,21 @@ harness를 검증한다. Codex·Claude plugin을 실제로 설치해 서로 재�
 
 | 날짜 | 변경 |
 | --- | --- |
+| 2026-08-20 | public stage를 brief → contract → plan → impl → verify → done/resume으로 재정의하고, gee description router와 핵심 상태 relay를 추가. |
+| 2026-08-20 | Claude brief/plan/verify, Codex contract candidate/QA/impl, Controller done/resume host profile과 Claude plugin–Controller–Codex exec bridge를 추가. |
+| 2026-08-20 | target plugin setup lifecycle, Codex/Claude capability handshake와 사용자 소유 branch/worktree 경계를 추가. |
+| 2026-08-20 | Plan Gate 유지, impl 이후 자동 verify→done/resume, 핵심 진행 상태 relay와 stage completion compact report envelope을 추가. |
+| 2026-08-20 | 사용자 승인: public stage는 기존 canonical internal state의 alias로 사용하고, done/resume은 Controller transition/action으로 정의. |
+| 2026-08-20 | 사용자 승인: brief restate approval과 contract QA adoption을 분리하되, QA PASS 후에는 compact digest confirmation만 사용하고 중복 장문 승인을 생략. |
+| 2026-08-20 | 사용자 승인: verification.md를 별도 최종 검증 projection으로 유지하고, verdict/evidence 정본은 runtime DB가 소유. |
+| 2026-08-20 | 사용자 요구 반영: Codex 부재 시 claude-only profile로 동작하고 gee config/gee:config alias로 profile을 변경할 수 있도록 host routing을 task contract에 저장. |
+| 2026-08-20 | 사용자 결정: auto profile은 cross-model을 우선 선택하고 Codex 미준비 시 새 task에 한해 claude-only로 fallback. |
+| 2026-08-20 | 사용자 결정: impl 이후 자동 resume은 Ouroboros식 bounded successor/evaluate loop로 운영하고, contract 완화 없이 PASS·BLOCKED·user attention으로 종료. |
+| 2026-08-20 | 사용자 결정: automatic successor loop 기본 상한을 task당 5회로 설정하고, 이후 BLOCKED/사용자 attention으로 종료. |
+| 2026-08-20 | 사용자 결정: behavior-bearing AC는 mechanical + acting observation, 정적 AC는 mechanical, 자동화 불가 AC는 승인된 manual 검증으로 분리. |
+| 2026-08-20 | 사용자 결정: v1 cross-host resume은 같은 machine·같은 사용자 데이터 루트·사용자 준비 worktree로 제한하고, machine 간 동기화는 후속 export/import로 연기. |
+| 2026-08-20 | 사용자 결정: v1 task당 active writer 하나만 허용하고, 두 번째 host/process는 observer, stale writer만 제한적으로 takeover. |
+| 2026-08-20 | 사용자 결정: 기존 Stage Guide schema를 재사용하지 않고 brief/profile/verifier/retry/source lineage를 포함한 Geness v1 contract schema를 새로 정의. |
 | 2026-08-10 | 초기 계획 작성. 인터뷰, dual-host plugin, target `.geness/`, local memory/runtime 및 실패 교훈 lifecycle 합의 반영. |
 | 2026-08-10 | docs-first 구조, Ouroboros·MCX 출처와 차용 경계, plan approval actor 및 completion lease 순서 정렬. |
 | 2026-08-10 | 전체 문서 감사 결과를 반영해 Phase 0 OQ/evidence matrix, 교차 concern Gate, trace lineage, memory bootstrap과 transport/installed-host E2E 단계 경계를 보강. |

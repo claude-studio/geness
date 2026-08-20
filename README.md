@@ -29,6 +29,26 @@ Geness가 실제 작업 대상 저장소에 만드는 portable artifact는 그 �
 `.geness/project.json`과 `.geness/tasks/**`에 위치한다. 실행 DB, lease, raw evidence와
 검증된 memory index는 기본적으로 사용자 홈의 `~/.geness/`에 분리한다.
 
+## v1 사용 흐름
+
+대상 저장소에서 사용자가 branch/worktree를 먼저 준비한 뒤 다음 description 기반
+router를 사용한다.
+
+```text
+gee setup
+gee brief <요청>
+→ gee contract
+→ gee plan
+→ gee impl
+→ gee verify
+→ done 또는 bounded resume
+```
+
+기본 `auto` profile은 Codex가 준비되면 Claude(brief/plan/verify)와 Codex(contract/impl)를
+교차 사용하고, Codex가 없으면 새 task에 한해 Claude 단일 profile로 fallback한다.
+Geness는 Git branch/worktree를 자동으로 만들거나 전환하지 않는다. 현재 구현은 아직
+시작 전이며, 위 명칭과 흐름은 계획된 v1 contract다.
+
 ## 설계 영감과 출처
 
 Geness의 interview → specification → execution 흐름은

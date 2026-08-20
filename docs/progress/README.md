@@ -1,6 +1,6 @@
 # Geness Progress
 
-> 마지막 검증: 2026-08-10
+> 마지막 검증: 2026-08-20
 > Documentation foundation: CLEAR
 > Implementation: HOLD
 
@@ -18,6 +18,9 @@ Constitution, architecture/lifecycle/storage/host 문서, stage guides, PLAN, AD
 Progress와 root agent instruction이 존재한다. 로컬 link·anchor, Markdown integrity와
 `CLAUDE.md → AGENTS.md` symlink 검사를 통과했다. 자세한 evidence는
 [Documentation Foundation](./0000_DOCUMENTATION_FOUNDATION.md)에 있다.
+
+이번 검증에서는 public stage alias, Geness v1 contract schema, `verification.md` final
+projection, target setup과 Claude–Codex Controller bridge까지 canonical 문서에 정렬했다.
 
 ### Implementation — HOLD
 

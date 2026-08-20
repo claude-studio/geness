@@ -29,10 +29,14 @@ templates/  대상 저장소 artifact template
         ├── interview.md
         ├── spec.md
         ├── plan.md
-        └── run.md
+        ├── run.md
+        └── verification.md
 ```
 
 이 영역은 사람이 읽고 Git으로 공유할 portable contract와 summary다.
+`spec.md`는 승인된 contract projection, `plan.md`는 plan projection, `run.md`는 impl
+summary, `verification.md`는 final verify projection이다. mutable state와 verdict의
+정본은 사용자 로컬 runtime DB다.
 
 ### 사용자 로컬 데이터
 
@@ -87,6 +91,9 @@ templates/  대상 저장소 artifact template
 - raw log, credential과 대용량 evidence를 포함하지 않는다.
 - `run.md`는 runtime DB의 projection이며 직접 임의 수정된 경우 reconciliation이
   필요하다.
+- `verification.md`는 runtime의 AC verdict와 evidence freshness를 사람이 읽도록
+  투영한 문서다. 직접 수정되거나 stale하면 Controller가 runtime 정본과 reconciliation
+  해야 하며, 문서만으로 `COMPLETED`를 선언할 수 없다.
 - canonical target root 밖 path와 symlink escape를 거부한다.
 
 ## 6. Runtime SQLite 역할
@@ -102,6 +109,7 @@ templates/  대상 저장소 artifact template
 - leases와 heartbeats
 - host/workspace session references
 - evidence metadata와 content hash
+- verifier identity/type, evidence freshness와 final verdict
 - failure events와 lesson candidates
 - transition/audit events
 - schema migrations

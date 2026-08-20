@@ -5,7 +5,8 @@
 ## 1. 목적
 
 승인된 AC와 실제 artifact를 독립적으로 검증하고, evidence가 있는 경우에만 task를
-완료한다.
+완료한다. public stage 이름은 `verify`이며, `PASS` 후 `done`은 Controller의 completion
+transaction으로 닫힌다.
 
 ## 2. Entry contract
 
@@ -13,6 +14,7 @@
 - 각 실행 attempt와 changed path를 식별할 수 있다.
 - verification command 또는 manual evidence procedure가 확정돼 있다.
 - 검증 주체가 구현 worker의 완료 주장만 재사용하지 않는다.
+- current contract digest, profile과 verifier provenance가 일치한다.
 
 ## 3. 검증 층
 
@@ -29,6 +31,19 @@
 - 구현이 non-goal과 constraint를 위반하지 않는지
 - evidence가 AC를 직접 지지하는지
 - 관찰되지 않은 가정을 pass로 처리하지 않았는지
+
+### Acting
+
+API·CLI·UI·integration처럼 실제 동작을 주장하는 AC는 mechanical evidence만으로
+충분하지 않다. 검증자는 승인된 procedure에 따라 실제 동작을 관찰하고 다음을 기록한다.
+
+- 실행 command 또는 procedure
+- target/workspace와 관찰 시각
+- 입력·관찰 결과와 expected outcome 비교
+- verifier identity/type
+
+acting 관찰을 수행할 수 없으면 `INDETERMINATE` 또는 `NOT_RUN`으로 남긴다. 로그나 worker
+서술만으로 acting `PASS`를 추정하지 않는다.
 
 ### Conditional manual
 
@@ -63,6 +78,7 @@ reason
 - `INDETERMINATE`를 PASS로 축약하지 않는다.
 - command 실행 실패와 criterion failure를 구분한다.
 - stale digest의 evidence를 current revision에 재사용하지 않는다.
+- behavior-bearing AC는 required acting observation이 없으면 `PASS`가 될 수 없다.
 
 ## 6. Completion Gate
 
@@ -75,13 +91,15 @@ reason
 - project docs와 runtime state reconciliation 성공
 - independent completion audit 통과
 - final `run.md` projection 완료
+- final `verification.md` projection 완료
 - completion transaction에서 terminal checkpoint와 lease release가 함께 성공
 
 하나라도 충족하지 못하면 `HOLD`이며 failure category에 따라 execution, specification,
 user decision 또는 system recovery로 route한다.
 
-Verification은 먼저 `READY_TO_COMPLETE`를 선언한다. final `run.md` projection과
-reconciliation 뒤 Controller가 한 runtime transaction에서 terminal checkpoint를
+Verification은 먼저 `READY_TO_COMPLETE`를 선언한다. final `run.md`와
+`verification.md` projection, reconciliation 뒤 Controller가 한 runtime transaction에서
+terminal checkpoint를
 기록하고 lease를 해제한다. active lease가 남아 있으면 `COMPLETED`를 노출하지 않는다.
 정확한 순서는 [Lifecycle](./02_TASK_LIFECYCLE.md#9-completion)이 소유한다.
 
@@ -104,3 +122,5 @@ reconciliation 뒤 Controller가 한 runtime transaction에서 terminal checkpoi
 - worker self-verification only
 - completion audit disagreement
 - final projection/lease release failure
+- acting evidence 누락을 mechanical PASS로 축약하지 않음
+- `verification.md` projection/reconciliation과 stale manual edit 처리
