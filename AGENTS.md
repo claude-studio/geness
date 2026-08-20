@@ -42,6 +42,24 @@ Ouroboros에서 관찰한 인터뷰 원칙을 참고해 독립 설계하지만 O
 - 어느 artifact가 해당 concern의 canonical owner인가?
 - 무엇을 실제 evidence로 확인해야 완료인가?
 
+## GitHub task handoff
+
+GitHub task issue는 대화 없이 작업을 시작·재개하기 위한 portable handoff entrypoint다.
+정확한 issue body, checkpoint comment와 시작·종료 checklist는
+[`docs/PLAN.md#251-github-task-handoff-contract`](./docs/PLAN.md#251-github-task-handoff-contract)을
+따른다.
+
+- 시작할 때 issue와 parent/dependency의 state·label·최근 checkpoint를 확인하고,
+  `AGENTS.md`, `docs/README.md`, 관련 canonical 문서와 현재 Git worktree를 함께 읽는다.
+- issue의 initial status를 현재 상태로 간주하지 않는다. 마지막 checkpoint, dependency
+  evidence와 현재 issue state/label을 대조해 `READY`, `IN_PROGRESS`, `BLOCKED` 또는
+  `DONE`을 다시 판정한다.
+- 종료하거나 중단할 때 정확한 `Checkpoint`, `Changed paths`, `Commands/results`,
+  `Evidence`, `Blockers`, `Next task` 항목을 기록한다. 실행하지 않은 명령은 통과한
+  것으로 쓰지 않으며, 다음 task는 하나의 검증 가능한 목표로 남긴다.
+- issue comment·label·state 변경은 external write이므로 사용자 권한이 없는 상태에서
+  추론해 수행하지 않는다. 완료는 모든 DoD와 evidence를 확인한 뒤에만 주장한다.
+
 ## 현재 HOLD
 
 `docs/progress/README.md`가 바뀌기 전까지 **제품 구현은 HOLD**다. 문서 foundation,
@@ -161,4 +179,6 @@ template 또는 문서 문구를 복사·번안하면 같은 변경에서 원본
 2. 변경한 계약과 구현이 관련 문서·ADR과 일치하는지 검사한다.
 3. `progress/README.md`에는 계획이 아니라 검증된 사실과 실제 command만 갱신한다.
 4. 열린 HOLD, blocker, 미실행 검증과 사용자의 남은 결정을 명시한다.
-5. 다음 하나의 검증 가능한 목표를 남긴다.
+5. [task handoff contract](./docs/PLAN.md#251-github-task-handoff-contract)의 종료
+   checklist와 checkpoint 형식으로 다음 세션이 읽을 수 있는 상태를 남긴다.
+6. 다음 하나의 검증 가능한 목표를 남긴다.

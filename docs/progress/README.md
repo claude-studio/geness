@@ -21,6 +21,8 @@ Progress와 root agent instruction이 존재한다. 로컬 link·anchor, Markdow
 
 이번 검증에서는 public stage alias, Geness v1 contract schema, `verification.md` final
 projection, target setup과 Claude–Codex Controller bridge까지 canonical 문서에 정렬했다.
+또한 DOC-01의 GitHub task handoff contract를 `AGENTS.md`와 `PLAN.md`에 정렬해 issue body,
+checkpoint, session start/end checklist의 portable 기록 형식을 추가했다.
 
 ### Implementation — HOLD
 
@@ -46,6 +48,8 @@ HOLD 중 허용되는 작업은 문서 정렬, 공식 계약 조사, 읽기 전�
 - 실제 target repository initializer, Controller, SQLite schema, Skill, manifest와 tests는
   아직 존재하지 않는다.
 - 실행할 제품 test command는 아직 정의되지 않았다.
+- GitHub task handoff contract는 `AGENTS.md`와 `docs/PLAN.md`에 존재하며, 제품 runtime
+  state·Gate·completion authority를 대체하지 않는다.
 
 ## 4. 문서 상태
 
@@ -79,6 +83,14 @@ HOLD 중 허용되는 작업은 문서 정렬, 공식 계약 조사, 읽기 전�
 [OQ-001](../research/OPEN_QUESTIONS.md)의 Controller 언어·패키징 후보를 배포 크기,
 SQLite FTS5, stdio MCP와 dual-host 설치 기준으로 비교하는 Phase 0 decision packet을
 만든다. 이 목표는 구현 scaffold를 생성하지 않는다.
+
+이번 DOC-01 문서 변경 뒤 다음을 검증했다.
+
+- `git diff --check` → exit `0`
+- read-only Node Markdown integrity 검사 → tracked Markdown 30개, local link/anchor,
+  fenced code block과 trailing whitespace 검사 `errors=0`
+- `AGENTS.md`와 `docs/PLAN.md`의 handoff contract, checkpoint heading과 session
+  start/end checklist가 서로 정렬돼 있음을 diff로 확인
 
 ## 7. 갱신 규칙
 
