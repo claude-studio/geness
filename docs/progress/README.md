@@ -37,6 +37,27 @@ HOLD 중 허용되는 작업은 문서 정렬, 공식 계약 조사, 읽기 전�
 사용자가 명시적으로 지시한 foundation 작업이다. 구현 언어를 임의로 선택해 scaffold를
 생성하거나 `CLEAR`로 간주하지 않는다.
 
+### Phase 0 OQ-001 disposable spike — VERIFIED OBSERVATION
+
+2026-08-20에 [OQ-001 decision packet](../research/phase-0/OQ-001-controller-runtime.md)과
+폐기 가능한 최소 runtime spike를 작성했다. macOS arm64에서 TypeScript/Node, Python,
+Go, Rust 후보 모두 FTS5 table/query와 `initialize → tools/list → tools/call` stdio
+round-trip을 exit `0`으로 통과했고, 두 개의 독립 working directory에서 같은 entrypoint를
+재실행했다. 관찰된 release artifact는 Go 7,643,186 B, Rust 5,168,560 B이며 Node와
+Python은 각각 dependency tree/site-packages disk usage를 측정했다.
+
+실행한 주요 검증은 다음과 같다.
+
+- `npm install @modelcontextprotocol/server@2.0.0 zod@4.4.3` → exit `0`
+- `uv pip install --python py314env/bin/python 'mcp==2.0.0'` → exit `0`
+- `go build -tags sqlite_fts5 ...` → exit `0`; stdio probe 두 working directory exit `0`
+- `cargo build --release` → exit `0`; stdio probe 두 working directory exit `0`
+- Go `sqlite_fts5` tag를 생략한 runtime probe → server exit `1`, `no such module: fts5`
+- `git diff --check` → exit `0`; Markdown 31개·local link 108개 integrity 검사 `errors=[]`
+
+이 결과는 후보 비교 evidence이지 구현 `CLEAR`, host 설치 E2E 또는 사용자 결정이 아니다.
+OQ-001은 사용자 후보 선택 전까지 `OPEN`으로 유지한다.
+
 ## 3. 검증된 repository 사실
 
 - Git repository root는 이 프로젝트 디렉터리다.
@@ -80,9 +101,9 @@ HOLD 중 허용되는 작업은 문서 정렬, 공식 계약 조사, 읽기 전�
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-[OQ-001](../research/OPEN_QUESTIONS.md)의 Controller 언어·패키징 후보를 배포 크기,
-SQLite FTS5, stdio MCP와 dual-host 설치 기준으로 비교하는 Phase 0 decision packet을
-만든다. 이 목표는 구현 scaffold를 생성하지 않는다.
+[OQ-001](../research/OPEN_QUESTIONS.md)의 후보 비교 evidence를 읽고 사용자가 Go+CGO,
+Rust+bundled SQLite, TypeScript/Node 또는 Python 중 하나를 선택한다. 선택 전에는
+Architecture ADR과 제품 scaffold를 만들지 않는다.
 
 이번 DOC-01 문서 변경 뒤 다음을 검증했다.
 
