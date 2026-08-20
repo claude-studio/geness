@@ -78,6 +78,34 @@ unknown MCP method는 typed transport error로 분리됐고, valid domain `HOLD`
 선택 또는 Implementation `CLEAR`가 아니다. OQ-001 사용자 결정과 OQ-002 사용자 decision
 receipt는 모두 pending/open으로 유지한다.
 
+### Phase 0 P0-04 #16 lifecycle·lease·completion research — VERIFIED OBSERVATION
+
+On 2026-08-20, the disposable fixture and four observed research packets for OQ-003,
+OQ-004, OQ-008 and OQ-009 were added under docs/research/phase-0/. The packets are
+not Resolved decisions and all user decision receipts remain pending.
+
+The exact fixture runner command was run twice:
+
+    PYTHONDONTWRITEBYTECODE=1 python3 docs/research/phase-0/fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/runner.py
+
+Both runs exited 0, reported 7 assertions with all_assertions_pass=true, and their
+parsed JSON outputs compared equal. The source check also exited 0:
+
+    python3 -m py_compile docs/research/phase-0/fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/runner.py
+
+The recorded SHA-256 values are:
+
+- runner.py: bbdcb46779c33c463e088764a817e55e1c4d32cb237113f1ced7586b970014e5
+- input/fixture.json: c1402c463a01ec3c1f4b292664263d267093d0238587254fdf54fdb5f1cc090e
+
+Observed facts are limited to ALLOWED INITIALIZING → INTERVIEWING, DENIED stale-digest
+PLAN_APPROVED → RUNNING, DENIED invalid INTERVIEWING → RUNNING, a sequential first-writer
+ALLOWED/second-writer DENIED probe, and equality-equivalent terminal replay with
+completed=true and lease_active=false. Heartbeat/grace/takeover, complete lifecycle and
+CANCELLED semantics, Plan Gate actor policy, crash-point matrix and production transaction
+atomicity remain unobserved. No language, package, runtime, schema, daemon, lease policy,
+approval actor or completion transaction was selected; no ADR was created.
+
 ## 3. 검증된 repository 사실
 
 - Git repository root는 이 프로젝트 디렉터리다.

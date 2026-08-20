@@ -1,0 +1,46 @@
+{
+  "fixture_schema": "fixture.lifecycle-lease-completion.input.v1",
+  "deterministic": true,
+  "state_cases": [
+    {
+      "id": "allowed-initializing-interviewing",
+      "from": "INITIALIZING",
+      "to": "INTERVIEWING",
+      "expected": "ALLOWED"
+    },
+    {
+      "id": "denied-stale-plan-digest",
+      "from": "PLAN_APPROVED",
+      "to": "RUNNING",
+      "digest_current": false,
+      "expected": "DENIED",
+      "reason": "stale_digest"
+    },
+    {
+      "id": "denied-interviewing-running",
+      "from": "INTERVIEWING",
+      "to": "RUNNING",
+      "expected": "DENIED"
+    }
+  ],
+  "lease_cases": [
+    {
+      "id": "two-writer-exclusive-claim",
+      "expected_first_writer": "ALLOWED",
+      "expected_second_writer": "DENIED"
+    }
+  ],
+  "completion_cases": [
+    {
+      "id": "terminal-replay-releases-lease",
+      "terminal_checkpoint": true,
+      "lease_active": true,
+      "completed": false,
+      "expected_after_replay": {
+        "terminal_checkpoint": true,
+        "lease_active": false,
+        "completed": true
+      }
+    }
+  ]
+}

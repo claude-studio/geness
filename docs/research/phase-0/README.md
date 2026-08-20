@@ -55,6 +55,24 @@ Phase 0의 Open Question 조사를 서로 비교할 수 있는 evidence로 남�
 | [`OQ-000-example-packet.md`](./OQ-000-example-packet.md) | 모든 필드와 실행 evidence를 채운 비규범 예시 |
 | [`fixtures/FX-PACKET-SELF-CHECK-001/README.md`](./fixtures/FX-PACKET-SELF-CHECK-001/README.md) | 표준 문서 자체를 검사하는 최소 disposable fixture |
 
+## Issue #16 research index
+
+The following are observed Phase 0 research packets for lifecycle, lease and completion.
+They are not Resolved decisions and contain no user decision receipts:
+
+| OQ | packet | fixture | RUN evidence | status |
+| --- | --- | --- | --- | --- |
+| OQ-003 | [OQ-003-daemon-lease-liveness.md](./OQ-003-daemon-lease-liveness.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ003-001/RUN.md) | blocked / user decision pending |
+| OQ-004 | [OQ-004-task-lifecycle.md](./OQ-004-task-lifecycle.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ004-001/RUN.md](./evidence/OQ-004/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ004-001/RUN.md) | blocked / user decision pending |
+| OQ-008 | [OQ-008-plan-approval-policy.md](./OQ-008-plan-approval-policy.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ008-001/RUN.md](./evidence/OQ-008/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ008-001/RUN.md) | blocked / user decision pending |
+| OQ-009 | [OQ-009-completion-lease-atomicity.md](./OQ-009-completion-lease-atomicity.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ009-001/RUN.md](./evidence/OQ-009/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ009-001/RUN.md) | blocked / user decision pending |
+
+The shared fixture is an evidence-only Python runner. It does not select product language,
+package manager, runtime, schema, daemon, lease policy, approval actor, or completion
+transaction. Its observed two-run result is 7 assertions per run with equality-equivalent
+JSON output. Heartbeat/grace/takeover, complete lifecycle and CANCELLED semantics, Plan Gate
+actor policy, crash-point matrix and production atomicity remain unobserved.
+
 ## Packet 작성 순서
 
 1. 해당 OQ의 질문, 결정 권한, allowed scope와 non-goal을 먼저 적는다.
