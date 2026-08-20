@@ -460,19 +460,22 @@ stale projection이 발견되면 Controller가 자동으로 덮어쓰지 않고 
 
 ## 10. task 상태 머신
 
-권장 상태는 다음과 같다.
+Controller가 저장하는 canonical 상태는 다음과 같다.
 
 ```text
 INITIALIZING
-→ BRIEFING
-→ CONTRACTING
-→ PLANNING
-→ IMPLEMENTING
+→ INTERVIEWING
+→ SPEC_READY
+→ SPEC_APPROVED
+→ PREFLIGHT
+→ PLAN_READY
+→ PLAN_APPROVED
+→ RUNNING
 → VERIFYING
-→ DONE
+→ COMPLETED
 ```
 
-Happy path 밖의 상태 후보:
+Happy path 밖의 상태:
 
 PUBLIC_STAGE:
 brief | contract | plan | impl | verify | done | resume
@@ -507,7 +510,7 @@ CANCELLED
 - 실행 중 기대 동작, 범위 또는 AC를 바꿔야 하면 사용자 재승인을 요구한다.
 - 구현 방법만 바뀌고 계약에 영향이 없으면 plan 이력과 runtime checkpoint만 갱신한다.
 - 두 호스트가 동일 task의 writer가 될 수 없다.
-- 모든 필수 AC와 evidence가 충족돼야 `DONE`으로 전환한다.
+- 모든 필수 AC와 evidence가 충족돼야 `COMPLETED`를 외부에 노출한다.
 - 반복 실패, 권한 부족, 외부 의존성 등의 중단은 typed `BLOCKED` reason으로 기록한다.
 - plan stage의 Gate 통과를 뜻하는 내부 상태는 PLAN_APPROVED로 기록한다. actor는
   user 또는 policy로 기록하며,
@@ -529,8 +532,10 @@ canonical internal state를 저장한다.
 | resume | PAUSED, BLOCKED 또는 REOPENED에서 재개하는 action |
 | setup | task 이전 project/workspace readiness |
 
-done과 resume은 별도의 새로운 terminal state가 아니다. 내부 state의 의미와
-completion authority는 Constitution, Lifecycle과 Controller가 소유한다.
+done과 resume은 별도의 새로운 terminal state가 아니다. `gee done`은 verify PASS 뒤
+Controller completion transaction을 idempotently 재확인하는 명령으로만 사용할 수 있고,
+일반 흐름에서는 사용자에게 다시 묻지 않고 자동 호출한다. 내부 state의 의미와 completion
+authority는 Constitution, Lifecycle과 Controller가 소유한다.
 
 ## 11. brief stage 설계
 
@@ -859,7 +864,7 @@ artifact와 verifier identity를 연결한다. 실행이 불가능하면 PASS가
 - 프로젝트 문서와 실제 코드 상태가 일치한다.
 - 열린 blocker가 없다.
 - 독립 검증자가 완료 판정을 재확인했다.
-- `run.md`에 최종 상태와 evidence 요약이 기록됐다.
+- `run.md`와 `verification.md`에 최종 상태·verdict·evidence 요약이 기록됐다.
 - final `run.md`가 reconcile된 뒤 한 runtime completion transaction에서 terminal
   checkpoint가 기록되고 writer lease가 해제됐다.
 
