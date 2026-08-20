@@ -1807,6 +1807,144 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 - 코드가 계획과 다를 경우 실제 동작을 확인한 뒤 문서 또는 코드를 명시적으로 정렬한다.
 - release마다 지원 host version과 compatibility test 결과를 기록한다.
 
+### 25.1 GitHub task handoff contract
+
+문서·계획·구현 task는 대화 transcript 없이 GitHub issue와 이 문서, `AGENTS.md` 및
+관련 canonical 문서만 읽어도 시작·재개할 수 있어야 한다. Issue는 작업 운영을 위한
+portable entrypoint이며, Geness 제품의 runtime state·Gate·completion authority를
+대체하지 않는다.
+
+#### Issue body format
+
+모든 task issue는 아래 의미를 고정한다. 표제와 설명 언어는 달라도 되지만 필드는
+누락하지 않는다.
+
+```markdown
+<!-- geness-task-id: DOC-XX -->
+# DOC-XX — <title>
+
+- Phase: <phase>
+- Parent: <parent issue>
+- Public stage/concern: <stage or concern>
+- Owner: <owner>
+- Initial status: READY | BLOCKED
+
+## 목적
+<one-sentence goal>
+
+## 작업 범위
+- <allowed scope>
+
+## 선행 태스크
+- <dependency issue or 없음>
+
+## 산출물
+- <expected artifact>
+
+## 완료 조건
+- [ ] <observable DoD>
+
+## 검증
+- <command or approved manual procedure>
+
+## 다른 세션에서 재개하는 방법
+<start checklist and checkpoint format reference>
+
+## 운영 규칙
+- <non-goal, authority or safety boundary>
+```
+
+`Initial status`는 issue를 만든 당시의 dependency 판단일 뿐 현재 상태가 아니다. 현재
+상태는 GitHub issue의 open/closed state와 status label, 마지막 checkpoint와 dependency
+evidence를 함께 읽어 다시 판정한다. 부모 issue의 하위 task는 동시에 하나만
+`status:in-progress`로 둔다. `status:blocked`는 transport 오류가 아니라 dependency,
+authority, evidence 또는 결정이 없어 다음 action을 수행할 수 없는 typed blocker다.
+
+상태와 label이 어긋나면 label 하나를 정답으로 고르지 않고 handoff inconsistency로
+기록한다.
+
+| Task status | Expected GitHub projection | 의미 |
+| --- | --- | --- |
+| `READY` | open + `status:ready` | dependency와 entry condition을 확인했지만 아직 active writer가 아님 |
+| `IN_PROGRESS` | open + `status:in-progress` | 현재 작업 중인 유일한 하위 task |
+| `BLOCKED` | open + `status:blocked` | typed blocker와 다음 해소 action이 기록됨 |
+| `DONE` | closed + `status:done` | 모든 DoD/current evidence와 완료 handoff가 기록됨 |
+
+이 표는 GitHub projection의 운영 규칙이다. label 추가·삭제, issue close와 comment 작성은
+별도 external write 권한이 필요한 mutation이며, 권한이 없으면 불일치를 보고하고
+추측으로 고치지 않는다.
+
+#### Checkpoint comment format
+
+작업을 중단·완료·다음 세션에 넘길 때 issue에 아래 heading을 그대로 사용한다. 댓글을
+작성할 권한이 없으면 같은 내용을 최종 handoff에 남기되, 댓글이 기록됐다고 주장하지
+않는다.
+
+```markdown
+## Checkpoint
+- Task: <task-id> / #<issue-number>
+- Issue state: OPEN | CLOSED
+- Task status: READY | IN_PROGRESS | BLOCKED | DONE
+- Public stage/concern: <stage or concern>
+- Recorded at: <RFC3339>
+- Commit: <sha or not committed>
+- Summary: <last completed boundary and current state>
+
+## Changed paths
+- `<path>` — <added|modified|deleted> — <short reason>
+- none
+
+## Commands/results
+- `<exact command>` → exit `<code>` — <result summary>
+- not run: <command and reason>
+
+## Evidence
+- `<artifact path or URL>` — <claim supported by this evidence>
+
+## Blockers
+- <category> / owner / required action / last evidence
+- none
+
+## Next task
+- <one verifiable next goal, or none>
+```
+
+`Changed paths`는 실제 diff와 일치해야 하며, `Commands/results`에는 실제 실행한 명령과
+exit status만 쓴다. `Evidence`는 DoD 항목을 직접 지지하는 artifact·검사 결과·관찰을
+가리킨다. Blocker가 있으면 category, owner, required action과 마지막 evidence를 함께
+기록하고, `Next task`는 blocker 해소 또는 남은 작업 중 하나의 검증 가능한 목표로
+제한한다. chat memory, agent confidence, PLAN checkbox와 완료 문구는 evidence가 아니다.
+
+#### Session checklists
+
+시작 세션은 다음 순서로 확인한다.
+
+1. issue와 parent/dependency issue의 state·label·최근 checkpoint를 읽는다.
+2. `AGENTS.md`, `docs/README.md`, 현재 Phase/Gate와 관련 canonical 문서를 읽는다.
+3. 사용자가 준비한 current branch/worktree, resolved target root와 `git status`를 확인한다.
+   Geness 작업은 checkout, branch/worktree 생성·삭제·전환을 하지 않는다.
+4. issue에서 Phase/stage, goal, non-goal, authority, allowed scope와 verification 방법을
+   다시 표현하고, 빠진 필드는 추측하지 않고 HOLD 또는 사용자 질문으로 남긴다.
+5. 마지막 checkpoint의 changed paths, evidence, blocker와 next task를 현재 상태와
+   대조한 뒤에만 작업을 시작한다.
+
+종료 세션은 다음을 남긴다.
+
+1. 실제 diff에서 changed paths를 확정하고 관련 파일만 검토한다.
+2. issue에 정의된 검증 명령·수동 절차를 실행하고 각 결과와 exit status를 기록한다.
+3. canonical 문서와 `progress/README.md`를 실제 evidence에 맞춰 갱신하고 link·fence·
+   용어 drift를 검사한다.
+4. 위 checkpoint comment 형식으로 현재 상태, evidence, 열린 blocker와 다음 task를
+   기록한다.
+5. 모든 DoD와 current evidence가 충족되고 blocker가 없을 때만 `DONE`을 주장한다.
+   `status:done` label 추가와 issue close는 별도 GitHub external write 권한이 있을 때만
+   수행한다.
+
+이 handoff contract는 task 운영 기록의 최소 형식이며, 제품 task의 state transition,
+approval, digest, lease와 completion 규칙은 [Lifecycle](./02_TASK_LIFECYCLE.md),
+[Execution](./07_EXECUTION.md), [Verification](./08_VERIFICATION.md)과 runtime이
+소유한다.
+
 ## 26. 참고 자료
 
 - [Geness Ouroboros reference findings](./research/OUROBOROS_REFERENCE_FINDINGS.md)
@@ -1842,6 +1980,7 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 | 2026-08-20 | 사용자 결정: v1 task당 active writer 하나만 허용하고, 두 번째 host/process는 observer, stale writer만 제한적으로 takeover. |
 | 2026-08-20 | 사용자 결정: 기존 Stage Guide schema를 재사용하지 않고 brief/profile/verifier/retry/source lineage를 포함한 Geness v1 contract schema를 새로 정의. |
 | 2026-08-20 | Phase 4 checklist와 완료 조건을 ADR-0007 및 Verification Stage Guide에 맞춰 runtime final verdict, run/verification projection과 completion transaction으로 정렬. |
+| 2026-08-20 | DOC-01 handoff contract를 추가하고 Issue body, checkpoint, session start/end checklist를 `AGENTS.md`와 정렬. |
 | 2026-08-10 | 초기 계획 작성. 인터뷰, dual-host plugin, target `.geness/`, local memory/runtime 및 실패 교훈 lifecycle 합의 반영. |
 | 2026-08-10 | docs-first 구조, Ouroboros·MCX 출처와 차용 경계, plan approval actor 및 completion lease 순서 정렬. |
 | 2026-08-10 | 전체 문서 감사 결과를 반영해 Phase 0 OQ/evidence matrix, 교차 concern Gate, trace lineage, memory bootstrap과 transport/installed-host E2E 단계 경계를 보강. |
