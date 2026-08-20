@@ -18,6 +18,8 @@
 - [Open Questions](./OPEN_QUESTIONS.md) — 구현 전에 닫아야 할 미결정과 결정 권한
 - [Reference and Reuse Policy](./REFERENCE_POLICY.md) — 외부 자료의 인용, 차용,
   라이선스 기록 규칙
+- [Phase 0 packet and fixture convention](./phase-0/README.md) — 결정 packet의 공통
+  필드와 disposable fixture 실행·보존 규칙
 
 ## 증거 수준
 
