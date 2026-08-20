@@ -53,6 +53,15 @@
 - 독립 subagent 재감사 → P0 문제 없음; 지적된 Progress stale 상태, FAILED 표현과
   Ouroboros 영향 원장 표현을 수정한 뒤 위 검사를 재실행했다.
 
+2026-08-20에 v1 workflow 문서 정렬 후 다음을 추가 확인했다.
+
+- `git diff --check origin/main...HEAD` → exit `0`
+- read-only Node Markdown integrity 검사 → tracked Markdown 30개, local link/anchor
+  해석 성공, fenced code block 짝 검사 성공
+- `test -L CLAUDE.md`, `readlink`, `cmp` → 모두 exit `0`; target은 `AGENTS.md`
+- conflict marker 검사 → 발견 없음
+- 제품 manifest/package/test harness → 아직 없음; Implementation HOLD 유지
+
 ## 남은 blocker
 
 Documentation Foundation 자체 blocker는 없다. 제품 구현은 별도 Gate이며,
