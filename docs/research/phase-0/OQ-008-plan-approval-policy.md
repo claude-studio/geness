@@ -7,7 +7,7 @@ status: "blocked"
 owner: "Codex / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-20T00:00:00Z"
-updated_at: "2026-08-20T00:00:00Z"
+updated_at: "2026-08-21T07:18:40Z"
 ---
 
 # OQ-008 — plan approval policy
@@ -29,7 +29,7 @@ updated_at: "2026-08-20T00:00:00Z"
 | C-02 | 일반 low-risk plan은 policy, 고위험/범위·외부 write는 user | unverified |
 | C-03 | user가 scope/side effect만 승인하고 나머지는 policy | unverified |
 
-No candidate is selected.
+No general `PLAN_APPROVED` candidate is selected.
 
 ## 3. Observed guard versus unresolved policy
 
@@ -40,6 +40,11 @@ The fixture observed:
 
 이것은 stale revision을 실행하지 않는 fixture guard 관찰이다. 누가 PLAN_APPROVED를
 승인할 수 있는지, 즉 user actor와 policy actor의 권한 문제를 결정하지 않는다.
+
+The OQ-015 user receipt establishes the minimum security floor: scope expansion,
+external write, destructive action, security-boundary change and permission escalation
+require a current-digest-bound user receipt. It does not decide whether an ordinary
+low-risk `PLAN_APPROVED` may use a policy actor.
 
 ## 4. Commands and evidence
 
@@ -60,5 +65,7 @@ User must decide the approval actor, risk threshold, scope-expansion threshold,
 external-write and destructive-action threshold, security boundary treatment, and
 the required approval-receipt identity, timestamp, digest and storage format.
 
-OQ-008 remains pending user decision. No policy or Lifecycle/Specification ADR is
-created; product Implementation remains HOLD and no Implementation CLEAR is claimed.
+OQ-008 remains pending for the general `PLAN_APPROVED` actor, risk tiers and receipt
+schema. The sensitive-action floor is accepted through [OQ-015](./OQ-015-threat-model-permission-policy.md)
+and [ADR-0009](../../adr/0009-threat-model-permission-boundaries.md). No product
+Implementation CLEAR is claimed.

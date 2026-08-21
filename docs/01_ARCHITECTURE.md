@@ -194,9 +194,10 @@ tests/               unit, contract, integration, E2E
 
 ## 11. Threat model and permission boundary
 
-현재 Phase 0의 cross-concern 제안은 [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)와
-[OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)가 소유한다. user decision
-receipt 전까지는 Proposed baseline이며 구현 권한이 아니다.
+현재 Phase 0의 cross-concern baseline은 Accepted [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)와
+[OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)가 소유한다. C-01의
+fail-closed permission boundary는 채택됐지만 일반 plan approval actor/risk tier와 production
+enforcement는 OQ-008 및 후속 구현 evidence가 필요하다.
 
 - Controller는 target-root containment, project/task identity, revision/digest, writer lease,
   allowed/forbidden scope와 completion Gate를 공통으로 판정한다.

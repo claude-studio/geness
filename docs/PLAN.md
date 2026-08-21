@@ -1360,7 +1360,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | OQ-012 | `docs/research/phase-0/OQ-012-host-os-compatibility.md` | 지원 후보 OS·host version의 manifest, Skill, hook와 stdio MCP capability matrix | Host ADR | OPEN |
 | OQ-013 | `docs/research/phase-0/OQ-013-config-machine-contract.md` | frontmatter-only와 별도 config/JSON 후보의 round-trip, validation과 threat fixture | Storage/Schema ADR | OPEN |
 | OQ-014 | `docs/research/phase-0/OQ-014-command-surface.md` | workflow, status와 resume 후보 command의 user-flow 및 CLI/MCP parity fixture | Host/CLI ADR | OPEN |
-| OQ-015 | `docs/research/phase-0/OQ-015-threat-model-permission-policy.md` | asset/trust-boundary, permission class, control-owner matrix와 fail-closed threat fixture | Proposed ADR-0009 + Architecture/Lifecycle/Storage/Host | OPEN |
+| OQ-015 | `docs/research/phase-0/OQ-015-threat-model-permission-policy.md` | asset/trust-boundary, permission class, control-owner matrix와 fail-closed threat fixture + user receipt | Accepted ADR-0009 + Architecture/Lifecycle/Storage/Host | RESOLVED |
 
 Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시적으로 포함하거나 새 OQ로
 등록한다. 어느 packet이 소유하는지 정해지지 않은 상태에서는 Phase 0를 `CLEAR`로 만들 수
@@ -1380,7 +1380,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 
 - [ ] OQ-001부터 OQ-014까지 각 decision packet과 필요한 spike/fixture evidence 작성
 - [ ] 교차 concern을 기존 OQ에 귀속하거나 결정 권한이 있는 새 OQ로 등록
-- [ ] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 권한 정책 작성
+- [x] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 C-01 권한 정책·user receipt 작성
 - [ ] 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
 - [ ] Open Questions의 `Resolved` 표와 위 Status를 근거 링크로 동기화
 
@@ -1770,7 +1770,7 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 | task별 machine JSON | Markdown frontmatter로 충분한지 먼저 검증 | Phase 0/2 |
 | project ID clone/fork 의미 | clone은 공유, fork는 명시적 detach/rekey 후보 | Phase 0 |
 | 진행 중 문서 Git 정책 | 기본 tracked, 민감·대용량 데이터는 홈에만 저장 | Phase 0 |
-| plan 별도 승인 | 고위험·범위 확장은 필수, 일반 작업의 정책은 결정 필요 | Phase 0/3 |
+| plan 별도 승인 | scope 확대·external/destructive/security-boundary 변경은 current-digest user receipt 필수, 일반 plan actor/risk policy는 OQ-008 결정 필요 | Phase 0/3 |
 | trace/evidence envelope | stable ID, revision, spec/plan digest, freshness와 verifier provenance를 versioned contract로 비교 | Phase 0/3/4 |
 | verifier independence | 동일 worker 결과의 제한, 독립 actor 자격과 불일치 결과 합성 policy 결정 | Phase 0/4 |
 | memory bootstrap | 미생성·empty·unavailable memory의 typed result와 Phase 3 진행 Gate 결정 | Phase 0/3/5 |

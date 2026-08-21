@@ -197,9 +197,9 @@ schema와 transaction 구현은 Phase 0에서 확정한다.
 
 ## 12. Permission-gated transitions
 
-세부 threat model과 user-owned policy 후보는 [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)와
+세부 threat model과 user-owned policy는 Accepted [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)와
 [OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)가 소유한다. 다음은
-user receipt 전의 fail-closed 정렬 방향이다.
+채택된 C-01 fail-closed baseline이며, 일반 plan approval actor/risk tier는 OQ-008에 남아 있다.
 
 | lifecycle operation | required precondition | missing/stale condition |
 | --- | --- | --- |

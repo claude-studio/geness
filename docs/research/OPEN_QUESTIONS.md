@@ -26,7 +26,7 @@
 | OQ-012 | Codex·Claude 최소 버전과 macOS/Linux/Windows 지원 범위는 무엇인가? | 공식 host contract prototype 후 확정 | 사용자 | Host ADR |
 | OQ-013 | `.geness/config.yaml`과 task별 machine JSON이 필요한가? | Markdown frontmatter로 충분한지 먼저 검증 | 사용자 | Storage/Schema ADR |
 | OQ-014 | 사용자-facing command set은 무엇인가? | 주 workflow + status/resume 최소 표면 | 사용자 | Host/CLI ADR |
-| OQ-015 | Phase 0 threat model과 권한·scope·external write·secret 정책은 무엇인가? | Controller 중심 layered fail-closed boundary 후보와 control fixture 비교 | 사용자 | Proposed ADR-0009 + Architecture/Lifecycle/Storage/Host |
+| OQ-015 | Phase 0 threat model과 권한·scope·external write·secret 정책은 무엇인가? | C-01 Controller 중심 layered fail-closed boundary 채택; exact risk tier와 detector는 후속 결정 | 사용자 | Accepted ADR-0009 + Architecture/Lifecycle/Storage/Host |
 
 ## Non-blocking research queue
 
@@ -44,7 +44,9 @@
 | RQ-002 | Codex·Claude가 공통 Controller를 사용한다. | [ADR-0001](../adr/0001-dual-host-shared-core.md) |
 | RQ-003 | target `.geness/`와 home `~/.geness/`를 분리한다. | [ADR-0002](../adr/0002-project-and-local-state-boundary.md) |
 | RQ-004 | failure candidate는 자동으로 장기 memory가 되지 않는다. | [ADR-0003](../adr/0003-failure-candidate-is-not-memory.md) |
+| RQ-005 | C-01 fail-closed Controller permission boundary, 민감 action의 current-digest user receipt와 secret redaction fail-closed 원칙을 채택한다. | [ADR-0009](../adr/0009-threat-model-permission-boundaries.md), [OQ-015 receipt](./phase-0/evidence/OQ-015/USER-DECISION-RECEIPT-001.md) |
 
-OQ-015는 앞선 packet의 cross-concern synthesis owner다. OQ-003/OQ-004/OQ-008/OQ-009 및
-OQ-005/OQ-006/OQ-007/OQ-010/OQ-011/OQ-012/OQ-013/OQ-014의 user decision을 대체하지
-않으며, 이 결정 receipt가 생기기 전에는 `Resolved` 표에 추가하지 않는다.
+OQ-015는 앞선 packet의 cross-concern synthesis owner이며 RQ-005 receipt로 C-01 boundary를
+Resolved로 기록했다. OQ-003/OQ-004/OQ-008/OQ-009 및 OQ-005/OQ-006/OQ-007/OQ-010/OQ-011/
+OQ-012/OQ-013/OQ-014의 user decision을 대체하지 않는다. 특히 일반 `PLAN_APPROVED` actor와
+risk tier는 OQ-008에 남아 있다.

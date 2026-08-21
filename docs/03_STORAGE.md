@@ -164,10 +164,10 @@ memory SQLite는 빠른 검색 index다. lesson event의 append-only 감사 원�
 
 ### 10.1 Threat model alignment
 
-[ADR-0009](./adr/0009-threat-model-permission-boundaries.md)의 Proposed baseline과
+[ADR-0009](./adr/0009-threat-model-permission-boundaries.md)의 Accepted C-01 baseline과
 [OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)에 따라 다음 경계를
-유지한다. 이는 user decision 전의 정렬 방향이며 secret detector의 완전성이나 production
-enforcement를 의미하지 않는다.
+유지한다. exact secret detector의 완전성이나 production enforcement는 후속 evidence가
+필요하다.
 
 - target 문서에는 contract/projection과 필요한 hash·lineage만 두고 raw command output,
   credential, environment secret과 대용량 evidence를 넣지 않는다.
