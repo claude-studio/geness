@@ -162,6 +162,23 @@ memory SQLite는 빠른 검색 index다. lesson event의 append-only 감사 원�
 - evidence를 모델 context에 넣기 전에 별도의 출력 redaction을 적용한다.
 - backup과 migration artifact에도 같은 권한·redaction 정책을 적용한다.
 
+### 10.1 Threat model alignment
+
+[ADR-0009](./adr/0009-threat-model-permission-boundaries.md)의 Proposed baseline과
+[OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)에 따라 다음 경계를
+유지한다. 이는 user decision 전의 정렬 방향이며 secret detector의 완전성이나 production
+enforcement를 의미하지 않는다.
+
+- target 문서에는 contract/projection과 필요한 hash·lineage만 두고 raw command output,
+  credential, environment secret과 대용량 evidence를 넣지 않는다.
+- 모든 project-local write는 canonical root containment와 symlink escape 검사를 통과해야
+  하며, runtime/memory/plugin cache를 target root로 추론하지 않는다.
+- redaction을 확인할 수 없는 output은 project document나 memory로 승격하지 않고
+  `HOLD` 또는 local-only로 보존한다. candidate lesson과 corrupt memory를 empty/verified로
+  축약하지 않는다.
+- active/blocked/high-risk runtime evidence와 memory event는 자동 삭제 경계를 서로 공유하지
+  않는다. retention/prune decision은 disposition과 audit lineage를 남긴다.
+
 ## 11. Migration
 
 - project document, runtime DB, memory DB와 evaluator rule version을 각각 기록한다.

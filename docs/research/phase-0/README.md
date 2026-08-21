@@ -127,6 +127,21 @@ state/risk/size retention candidates. Its bootstrap result distinguishes `UNINIT
 an empty query. The fixture does not choose production thresholds, retention classes, a
 bootstrap Gate, event/SQLite schema or any product implementation.
 
+## Issue #20 research index
+
+The following packet synthesizes the cross-concern threat model and permission policy. It is a
+decision-ready recommendation, not a Resolved decision, and contains no user decision receipt:
+
+| OQ | packet | fixture | RUN evidence | status |
+| --- | --- | --- | --- | --- |
+| OQ-015 | [OQ-015-threat-model-permission-policy.md](./OQ-015-threat-model-permission-policy.md) | [FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/README.md](./fixtures/FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/README.md) | [RUN-OQ015-003/result.json](./evidence/OQ-015/FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/RUN-OQ015-003/result.json) | decision-ready / user decision pending |
+
+The fixture uses a temporary synthetic target and no network, credentials, plugin install,
+daemon, target `.geness/` or real `GENESS_HOME`. It passed 17/17 assertions twice with
+byte-identical output. The packet links each control to its canonical owner and upstream OQ;
+the fixture is not a production Controller, host sandbox, redaction corpus, multi-process lease
+test or user decision.
+
 ## Packet 작성 순서
 
 1. 해당 OQ의 질문, 결정 권한, allowed scope와 non-goal을 먼저 적는다.
