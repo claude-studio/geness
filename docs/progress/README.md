@@ -215,13 +215,16 @@ exit `0`이었다. read-only Markdown 검사는
 research evidence이지 production threshold, retention worker, bootstrap command, event/SQLite
 schema, Learning/Storage ADR 또는 Implementation `CLEAR`가 아니다.
 
-### Phase 0 P0-08 #20 threat model·권한 정책 — VERIFIED OBSERVATION
+### Phase 0 P0-08 #20 threat model·권한 정책 — VERIFIED DECISION
 
 2026-08-21에 [OQ-015 threat model packet](../research/phase-0/OQ-015-threat-model-permission-policy.md),
-Proposed [ADR-0009](../adr/0009-threat-model-permission-boundaries.md)와 disposable
+Accepted [ADR-0009](../adr/0009-threat-model-permission-boundaries.md)와 durable user decision receipt
+([USER-DECISION-OQ015-001](../research/phase-0/evidence/OQ-015/USER-DECISION-RECEIPT-001.md))와 disposable
 `FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001`을 추가했다. OQ-015는 앞선 packet의
-cross-concern owner/authority와 control-to-fixture 연결을 기록하며, 사용자 decision
-receipt 전에는 `Resolved`/Accepted 또는 Implementation `CLEAR`가 아니다.
+cross-concern owner/authority와 control-to-fixture 연결을 기록하며, 사용자 결정으로 C-01
+fail-closed boundary, sensitive-action receipt와 secret fail-closed handling을 채택했다.
+일반 `PLAN_APPROVED` actor/risk tier와 production enforcement는 OQ-008 및 후속 단계에 남아
+있고 Implementation `HOLD`를 유지한다.
 
 정확한 fixture command를 최종 runner source hash 기준으로 두 번 실행했다.
 
@@ -250,6 +253,12 @@ secret corpus, exact risk/receipt schema와 user decision은 여전히 open이�
 exit `0`, `markdown_files=67`, `local_links=223`, `local_anchor_links=25`,
 `fence_delimiters=154`, `trailing_whitespace=0`, `errors=[]`를 반환했다.
 
+사용자 decision receipt와 정본 sync 이후 current worktree에서도 같은 fixture를 두 번 재실행했다.
+두 실행 모두 exit `0`, 17/17 assertions와 `all_assertions_pass=true`였고 raw output은
+byte-identical이었다. `node /tmp/geness-p0-06-markdown-check.mjs`는 exit `0`,
+`markdown_files=69`, `local_links=240`, `local_anchor_links=25`, `fence_delimiters=154`,
+`trailing_whitespace=0`, `errors=[]`를 반환했으며 `git diff --check --`도 exit `0`이었다.
+
 ## 3. 검증된 repository 사실
 
 - Git repository root는 이 프로젝트 디렉터리다.
@@ -275,7 +284,7 @@ exit `0`, `markdown_files=67`, `local_links=223`, `local_anchor_links=25`,
 | Dual-host boundary | Accepted, manifest prototype TBD | [ADR-0001](../adr/0001-dual-host-shared-core.md) |
 | Interview principles | Accepted, implementation TBD | [ADR-0004](../adr/0004-ouroboros-interview-principles.md) |
 | Failure learning | Accepted principle, thresholds TBD | [ADR-0003](../adr/0003-failure-candidate-is-not-memory.md) |
-| Threat model / permission boundary | Proposed, user decision pending | [ADR-0009](../adr/0009-threat-model-permission-boundaries.md) |
+| Threat model / permission boundary | Accepted baseline, exact risk/detector/production enforcement TBD | [ADR-0009](../adr/0009-threat-model-permission-boundaries.md) |
 | Implementation plan | Draft | [PLAN](../PLAN.md) |
 
 ## 5. Phase roadmap
@@ -294,11 +303,11 @@ exit `0`, `markdown_files=67`, `local_links=223`, `local_anchor_links=25`,
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-사용자가 Phase 0 blocking packet의 후보를 검토하고 decision receipt를 기록한다. 특히
+사용자가 남은 Phase 0 blocking packet의 후보를 검토하고 decision receipt를 기록한다. 특히
 [OQ-001](../research/OPEN_QUESTIONS.md)의 runtime 후보, P0-05의 OQ-005/006/007/013
 identity·schema·digest·config recommendation, P0-06의 OQ-012/014 host·command
-recommendation, P0-07의 OQ-010/011 memory·retention·bootstrap recommendation과
-P0-08의 OQ-015 threat model·permission recommendation을
+recommendation, P0-07의 OQ-010/011 memory·retention·bootstrap recommendation과 OQ-008의
+일반 plan approval policy를
 선택하기 전에는 Architecture/Storage/Host/Specification/Learning ADR을 Accepted로
 바꾸거나 제품 scaffold를 만들지 않는다.
 

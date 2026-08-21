@@ -34,8 +34,8 @@ verify가 독립적으로 결과를 판정한다.
 ### 3.1 Capability and permission precondition
 
 실행 envelope에는 `allowed_scope`, `forbidden_scope`, capability snapshot, approval receipt
-reference와 current spec/plan digest를 함께 묶는다. [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)의
-Proposed baseline에 따라 다음 요청은 Controller에서 fail-closed로 라우팅한다.
+reference와 current spec/plan digest를 함께 묶는다. Accepted [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)의
+C-01 baseline에 따라 다음 요청은 Controller에서 fail-closed로 라우팅한다.
 
 - target root 밖 path, parent traversal 또는 symlink escape
 - current digest와 일치하지 않는 plan/approval, active writer lease 없는 mutation

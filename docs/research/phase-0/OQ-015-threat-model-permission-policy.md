@@ -3,11 +3,11 @@ packet_schema_version: 1
 packet_id: "OQ-015"
 question_id: "OQ-015"
 title: "threat model과 권한·scope·external write·secret 정책"
-status: "decision-ready"
+status: "resolved"
 owner: "Codex research / Phase 0 cross-concern synthesis"
 decision_authority: "user"
 opened_at: "2026-08-21T06:32:24Z"
-updated_at: "2026-08-21T06:32:24Z"
+updated_at: "2026-08-21T07:18:40Z"
 ---
 
 # OQ-015 — threat model과 권한 정책
@@ -28,10 +28,11 @@ updated_at: "2026-08-21T06:32:24Z"
   memory·retention·host·config·command 결정
 - **Research owner:** Codex research; user는 policy 선택과 residual risk 수용 권한을 가진다.
 
-이 packet은 기존 OQ의 결정을 대신하지 않는다. 특히 OQ-008의 approval actor/risk threshold,
-OQ-003의 liveness, OQ-009의 production atomicity와 secret redaction의 exact implementation은
-사용자 결정 또는 후속 구현 evidence가 필요하다. 이 packet과 Proposed ADR-0009는 사용자 receipt
-전까지 `Resolved` 또는 Accepted 규범이 아니다.
+이 packet은 기존 OQ의 결정을 대신하지 않는다. 특히 OQ-008의 일반 `PLAN_APPROVED` actor와
+risk threshold, OQ-003의 liveness, OQ-009의 production atomicity와 secret redaction의 exact
+implementation은 후속 사용자 결정 또는 구현 evidence가 필요하다. 사용자는 C-01의
+fail-closed boundary와 `user_sensitive`/`secret_handling` permission class를 선택했으며,
+그 receipt와 Accepted ADR-0009가 이 packet의 결정 상태를 소유한다.
 
 ## 2. Candidates
 
@@ -122,11 +123,12 @@ v1의 threat model은 같은 컴퓨터·같은 사용자 데이터 루트·사�
 
 ## 4. Control matrix and ownership
 
-`current direction`은 이미 상위 문서에 있는 baseline이고, `proposed policy`는 이 packet과
-ADR-0009가 user receipt 전 제안하는 합성 결론이다. `Resolved`로 읽으면 안 된다.
+`current direction`은 이미 상위 문서에 있는 baseline이고, `accepted policy`는 이 packet의
+user receipt와 ADR-0009가 확정한 C-01 합성 결론이다. OQ-008의 일반 plan approval actor와
+정확한 risk tier는 별도 미결정으로 남는다.
 표의 `FX-...-001`은 `FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001` fixture의 축약 표기다.
 
-| control_id | threat | proposed control | canonical owner | blocking OQ / authority | fixture/evidence |
+| control_id | threat | accepted control | canonical owner | blocking OQ / authority | fixture/evidence |
 | --- | --- | --- | --- | --- | --- |
 | C-01 | T-root | resolved target root containment, parent traversal·symlink escape 거부, branch/worktree lifecycle은 user-owned | Storage / Controller boundary | OQ-005/OQ-006/OQ-013 · user | `FX-...-001` `path.*` |
 | C-02 | T-authority | `from-user`/`from-code`/`from-research` provenance 분리; untrusted text·worker result는 approval이 아님 | Interview + Specification | OQ-008/OQ-015 · user | `FX-...-001` `authority.untrusted_instruction` |
@@ -234,11 +236,17 @@ Additional validation records:
 | `git diff --check --` | `0` | no whitespace errors in tracked diff |
 | `node /tmp/geness-p0-06-markdown-check.mjs` | `0` | `markdown_files=67`, `local_links=223`, `local_anchor_links=25`, `fence_delimiters=154`, `trailing_whitespace=0`, `errors=[]` |
 
+Receipt-sync revalidation in the current worktree repeated the fixture twice with exit `0`,
+17/17 assertions and byte-identical raw output. The Markdown checker then returned exit `0`
+with `markdown_files=69`, `local_links=240`, `local_anchor_links=25`,
+`fence_delimiters=154`, `trailing_whitespace=0`, `errors=[]`; `git diff --check --` also
+returned exit `0`.
+
 ## 8. Risks and limitations
 
 | risk_id | risk/limitation | impact | evidence gap | mitigation/next check | owner | status |
 | --- | --- | --- | --- | --- | --- | --- |
-| R-001 | C-01 is a proposed policy; user has not selected C-01/C-02/C-03. | `high` | approval actor, risk threshold, external/destructive/security-boundary exact policy remain open in OQ-008. | user decision receipt를 받고 ADR-0009와 OQ-008/OQ-015를 update한다. | user | `open` |
+| R-001 | C-01 is selected, but the general `PLAN_APPROVED` actor and risk threshold remain open. | `high` | OQ-008 still owns ordinary plan approval and exact risk classification. | OQ-008 decision packet and Lifecycle/Specification ADR follow-up. | user | `open` |
 | R-002 | fixture is a pure Python synthetic model, not a production Controller or host sandbox. | `high` | official transport, sandbox enforcement, multi-process race와 crash recovery는 미검증이다. | selected runtime/host 이후 Phase 1/4/6 fixture와 E2E를 실행한다. | user / Phase 1/4/6 | `open` |
 | R-003 | redaction probe covers only synthetic patterns. | `high` | binary output, Unicode, nested JSON, tool transcripts, unknown secret formats와 detector false negative가 미확인이다. | redaction schema/version, fail-closed behavior와 corpus를 user decision 후 별도 security test로 확장한다. | user / Phase 1/4 | `open` |
 | R-004 | lease/approval/transaction observations are not production atomicity. | `high` | heartbeat grace/takeover, cross-workspace arbitration, crash-point matrix와 receipt storage가 미확인이다. | OQ-003/OQ-009의 다중 process/replay fixture와 selected runtime ADR를 완료한다. | user | `open` |
@@ -247,8 +255,8 @@ Additional validation records:
 
 ## 9. Decision
 
-- **Packet decision status:** `needs-user-decision`
-- **Recommendation:** C-01 — host-neutral Controller가 fail-closed permission boundary를 소유하고,
+- **Packet decision status:** `resolved`
+- **Decision:** C-01 — host-neutral Controller가 fail-closed permission boundary를 소유하고,
   read-only를 기본 capability로 두며, approved in-scope local write만 current spec/plan digest와
   active writer lease 아래 허용한다. scope 확대, external write, destructive action, security
   boundary 변경과 permission escalation은 current digest에 묶인 explicit user receipt 없이는
@@ -264,25 +272,23 @@ Additional validation records:
   만든다.
 - **Rejected/deferred candidates:** C-02는 host-specific approval/trust drift 때문에 deferred;
   C-03은 risk classification과 policy auto-approval evidence가 없어 deferred. C-01의 exact
-  risk tiers, secret detector, receipt schema, retention/backup과 production enforcement도 user
-  decision 및 후속 implementation evidence 전에는 확정하지 않는다.
-- **Unresolved impact:** 이 receipt가 없으면 OQ-008/OQ-015를 `Resolved`로 옮길 수 없고,
-  `danger-full-access`/external write 자동화, secret 저장, Phase 1 scaffold의 실제 permission
-  implementation을 시작할 수 없다. Phase 0 전체 `CLEAR`도 주장하지 않는다.
+  risk tiers, secret detector, receipt schema, retention/backup과 production enforcement는
+  OQ-008 및 후속 implementation evidence로 남긴다.
+- **Unresolved impact:** OQ-008의 일반 plan approval actor/risk tier와 다른 Phase 0 결정이
+  열려 있으므로 Phase 0 전체 `CLEAR`나 Phase 1 scaffold를 주장하지 않는다.
 
 ### User/authority decision receipt
 
-- **Decision:** `pending`
-- **Actor:** `pending`
-- **Recorded at:** `pending`
-- **Reference:** `pending`
+- **Decision:** C-01 fail-closed boundary와 `user_sensitive`/`secret_handling` permission class 선택
+- **Actor:** `user`
+- **Recorded at:** `2026-08-21T07:18:40Z`
+- **Reference:** [USER-DECISION-OQ015-001](./evidence/OQ-015/USER-DECISION-RECEIPT-001.md)
 - **Supersedes:** `none`
 
 ## 10. Next verifiable goal
 
-사용자가 C-01의 fail-closed Controller policy와 permission class를 선택하고, OQ-008의 risk/
-approval threshold 및 secret/redaction receipt를 결정한 뒤 Proposed ADR-0009를 Accepted로
-승격할 수 있는 user decision receipt를 남긴다.
+OQ-008의 일반 `PLAN_APPROVED` actor/risk threshold와 나머지 Phase 0 blocking decision을
+사용자 receipt로 닫고, Phase 0 Gate에 필요한 전체 evidence를 감사한다.
 
 ## 11. Completeness checklist
 

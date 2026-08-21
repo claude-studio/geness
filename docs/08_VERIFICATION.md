@@ -99,7 +99,7 @@ user decision 또는 system recovery로 route한다.
 
 ### 6.1 Security and authority completion checks
 
-[ADR-0009](./adr/0009-threat-model-permission-boundaries.md)의 Proposed baseline에 맞춰
+[ADR-0009](./adr/0009-threat-model-permission-boundaries.md)의 Accepted C-01 baseline에 맞춰
 verifier는 다음을 completion evidence에 포함한다.
 
 - changed path가 canonical target root와 approved allowed scope 안에 있는지

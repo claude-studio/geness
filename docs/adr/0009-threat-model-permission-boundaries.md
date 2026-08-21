@@ -1,6 +1,6 @@
 # ADR-0009: Threat model and permission boundaries
 
-> 상태: Proposed
+> 상태: Accepted
 > 날짜: 2026-08-21
 > Supersedes: none
 
@@ -14,12 +14,13 @@ lease·approval·scope·external write·secret·evidence 문제를 관찰했지�
 
 위협 모델과 decision-ready evidence는
 [`OQ-015`](../research/phase-0/OQ-015-threat-model-permission-policy.md)에 보존한다.
-이 ADR은 그 packet의 권고를 기록하지만 user decision receipt 전에는 제품 권한이나
-Implementation `CLEAR`가 아니다.
+이 ADR은 [user decision receipt](../research/phase-0/evidence/OQ-015/USER-DECISION-RECEIPT-001.md)에
+따라 C-01 boundary를 현재 v1 보안 baseline으로 채택한다. 이 ADR은 제품 Implementation
+`CLEAR`나 OQ-008의 미결정 risk tier를 의미하지 않는다.
 
-## 제안 결정
+## 결정
 
-사용자 승인 전의 v1 보안 baseline으로 다음 layered fail-closed 경계를 채택 검토한다.
+다음 layered fail-closed 경계를 v1 보안 baseline으로 채택한다.
 
 1. Controller가 project/task identity, target-root containment, revision/digest, writer
    lease, allowed/forbidden scope와 completion Gate의 공통 권위자가 된다. host adapter,
@@ -39,8 +40,9 @@ Implementation `CLEAR`가 아니다.
    evidence, 독립 verifier를 요구한다. candidate memory는 일반 query에 노출하지 않으며,
    corrupt/unavailable memory는 empty로 축약하지 않고 typed `HOLD`로 반환한다.
 
-이 제안은 exact risk tier, secret detector pattern/version, approval receipt schema, retention
-threshold, lease heartbeat/takeover와 production transaction을 확정하지 않는다. 해당 결정은
+이 결정은 exact risk tier, 일반 `PLAN_APPROVED` policy actor, secret detector pattern/version,
+approval receipt schema, retention threshold, lease heartbeat/takeover와 production transaction을
+확정하지 않는다. 해당 결정은
 OQ-003/OQ-004/OQ-008/OQ-009/OQ-010/OQ-011 및 관련 ADR/fixture의 user receipt가 소유한다.
 
 ## 대안 검토
@@ -73,7 +75,8 @@ routine workflow는 빨라질 수 있지만 classifier false negative가 user ap
 - 보수적인 `HOLD`가 routine automation을 중단할 수 있고, 사용자의 attention 비용이 생긴다.
 - redaction detector 완전성, host sandbox 실제 enforcement, multi-process lease/crash recovery,
   remote/cloud threat와 조직 IAM은 이 ADR로 해결되지 않는다.
-- user receipt 전에는 이 문서를 Accepted로 올리거나 보안 baseline을 구현할 수 없다.
+- 이 ADR은 보안 baseline을 채택하지만 exact detector, host sandbox enforcement, production
+  atomicity와 남은 Phase 0 decision이 닫혔다는 의미는 아니다.
 
 ## 검증 방법
 
@@ -82,14 +85,20 @@ routine workflow는 빨라질 수 있지만 classifier false negative가 user ap
 - path traversal/symlink escape, untrusted authority, stale digest/approval, two-writer,
   forbidden capability, redaction, self-verification, acting evidence와 memory poisoning
   control이 각각 OQ-015 matrix와 result manifest에 연결되는지 확인한다.
-- user receipt 후 selected runtime의 multi-process lease/crash, schema/digest migration,
+- selected runtime의 multi-process lease/crash, schema/digest migration,
   installed-host sandbox/MCP, secret corpus와 dual-host E2E를 실행한다.
-- Accepted 승격 전 `OPEN_QUESTIONS.md`, Architecture/Lifecycle/Storage/Host Integration,
+- Accepted 승격과 함께 `OPEN_QUESTIONS.md`, Architecture/Lifecycle/Storage/Host Integration,
   PLAN과 Progress의 상태·링크가 동일 결론을 가리키는지 read-only drift 검사를 수행한다.
+
+## 후속 미결정
+
+- 일반 `PLAN_APPROVED`의 policy actor와 risk tier는 OQ-008에 남아 있다.
+- exact secret detector/version, receipt storage schema, retention/backup, lease liveness와
+  production transaction은 해당 OQ와 후속 implementation evidence가 필요하다.
 
 ## Decision receipt
 
-- **Decision:** `pending`
-- **Actor:** `pending`
-- **Recorded at:** `pending`
-- **Reference:** `pending`
+- **Decision:** C-01 fail-closed boundary와 `user_sensitive`/`secret_handling` permission class 채택
+- **Actor:** `user`
+- **Recorded at:** `2026-08-21T07:18:40Z`
+- **Reference:** [USER-DECISION-OQ015-001](../research/phase-0/evidence/OQ-015/USER-DECISION-RECEIPT-001.md)

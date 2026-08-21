@@ -161,7 +161,7 @@ plan을 policy가 승인할 수 있는지는 Phase 0에서 확정한다. 결정 
 
 ### 8.1 Permission classification alignment
 
-[OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)의 Proposed matrix와
+[OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)의 Accepted C-01 matrix와
 [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)에 따라 contract/plan은 다음
 capability와 approval point를 명시해야 한다. exact risk tier와 policy approval은 OQ-008의
 사용자 결정 전까지 `TBD`다.

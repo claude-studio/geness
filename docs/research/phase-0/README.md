@@ -129,12 +129,15 @@ bootstrap Gate, event/SQLite schema or any product implementation.
 
 ## Issue #20 research index
 
-The following packet synthesizes the cross-concern threat model and permission policy. It is a
-decision-ready recommendation, not a Resolved decision, and contains no user decision receipt:
+The following packet synthesizes the cross-concern threat model and permission policy. C-01 is
+now an accepted decision with a durable user receipt; the general `PLAN_APPROVED` actor/risk
+policy remains open in OQ-008:
 
 | OQ | packet | fixture | RUN evidence | status |
 | --- | --- | --- | --- | --- |
-| OQ-015 | [OQ-015-threat-model-permission-policy.md](./OQ-015-threat-model-permission-policy.md) | [FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/README.md](./fixtures/FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/README.md) | [RUN-OQ015-003/result.json](./evidence/OQ-015/FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/RUN-OQ015-003/result.json) | decision-ready / user decision pending |
+| OQ-015 | [OQ-015-threat-model-permission-policy.md](./OQ-015-threat-model-permission-policy.md) | [FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/README.md](./fixtures/FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/README.md) | [RUN-OQ015-003/result.json](./evidence/OQ-015/FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/RUN-OQ015-003/result.json) | resolved / [ADR-0009](../../adr/0009-threat-model-permission-boundaries.md) Accepted |
+
+The durable user receipt is [USER-DECISION-OQ015-001](./evidence/OQ-015/USER-DECISION-RECEIPT-001.md).
 
 The fixture uses a temporary synthetic target and no network, credentials, plugin install,
 daemon, target `.geness/` or real `GENESS_HOME`. It passed 17/17 assertions twice with
