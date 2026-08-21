@@ -1,0 +1,75 @@
+{
+  "fixture_id": "FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001",
+  "fixture_schema": "fixture.identity-schema-digest-config.input.v1",
+  "network": "disabled",
+  "external_writes": false,
+  "assertions_passed": 30,
+  "assertions_total": 30,
+  "all_assertions_pass": true,
+  "observations": {
+    "identity": {
+      "clone": {
+        "project_relation": "SHARED",
+        "workspace_relation": "DISTINCT"
+      },
+      "fork": {
+        "project_relation": "DETACHED",
+        "workspace_relation": "DISTINCT",
+        "explicit_detach": true
+      },
+      "folder_rename": {
+        "project_relation": "SHARED",
+        "workspace_relation": "SHARED"
+      },
+      "worktree": {
+        "project_relation": "SHARED",
+        "workspace_relation": "DISTINCT"
+      },
+      "same_name_repository": {
+        "project_relation": "DETACHED",
+        "workspace_relation": "DISTINCT",
+        "explicit_detach": true
+      },
+      "local_git_probe": {
+        "commands_passed": true,
+        "clone_and_renamed_head_equal": true,
+        "worktree_head_equal": true,
+        "worktree_shares_git_common_dir": true,
+        "fork_remote_is_distinct": true
+      }
+    },
+    "frontmatter_db_round_trip": {
+      "semantic_fields_equal": true,
+      "body_equal": true,
+      "projection_rows": 1,
+      "task_id": "task-p005-001",
+      "contract_revision": 3
+    },
+    "stale_write": {
+      "accepted_revision": 2,
+      "stale_decision": "DENIED",
+      "stale_reason": "stale_revision",
+      "state_unchanged_after_stale_write": true,
+      "current_digest": "sha256:fixture-contract-v2"
+    },
+    "digest": {
+      "algorithm": "fixture.canonical-json-v1",
+      "contract_base": "sha256:e33553ac8e334a18186c49a081e9abddd26b77409ded3949cad3072b5a541128",
+      "contract_reordered": "sha256:e33553ac8e334a18186c49a081e9abddd26b77409ded3949cad3072b5a541128",
+      "contract_semantic_changed": "sha256:7d308ef3c880e5b8602aafa7d64f95f34d19869c219c76765b9542c3a445a269",
+      "plan_base": "sha256:e729ee145de2d0df63d1b28f7c6a53b8b4da43538684198ff41f70111b9fcd4a",
+      "plan_reordered": "sha256:e729ee145de2d0df63d1b28f7c6a53b8b4da43538684198ff41f70111b9fcd4a",
+      "plan_semantic_changed": "sha256:c568f7bcd04147c2311251477f158cda4a5dcc7a2100426a764ff481d5079dab",
+      "raw_markdown_editorial_variant_changed": true,
+      "editorial_observation": "digest_unchanged_under_semantic_projection",
+      "semantic_observation": "contract_and_downstream_plan_stale"
+    },
+    "config_boundary": {
+      "portable_machine_field_overlap": [],
+      "forbidden_portable_fields_present": [],
+      "separate_project_config": false,
+      "task_machine_json": false,
+      "profile": "frontmatter-plus-runtime-boundary"
+    }
+  }
+}
