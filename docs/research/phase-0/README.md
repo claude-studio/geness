@@ -93,6 +93,22 @@ equality-equivalent JSON on two runs. The fixture does not choose project ID gen
 production SQLite schema, a cross-language serializer, `.geness/config.yaml`, task machine JSON
 or any product implementation.
 
+## Issue #18 research index
+
+The following are decision-ready host and command-surface packets. They are not Resolved
+decisions and contain no user decision receipts:
+
+| OQ | packet | shared fixture | RUN evidence | status |
+| --- | --- | --- | --- | --- |
+| OQ-012 | [OQ-012-host-os-compatibility.md](./OQ-012-host-os-compatibility.md) | [FX-HOST-CAPABILITY-COMMAND-SURFACE-001/README.md](./fixtures/FX-HOST-CAPABILITY-COMMAND-SURFACE-001/README.md) | [RUN-OQ012-001/result.json](./evidence/OQ-012/FX-HOST-CAPABILITY-COMMAND-SURFACE-001/RUN-OQ012-001/result.json) | decision-ready / user decision pending |
+| OQ-014 | [OQ-014-command-surface.md](./OQ-014-command-surface.md) | [FX-HOST-CAPABILITY-COMMAND-SURFACE-001/README.md](./fixtures/FX-HOST-CAPABILITY-COMMAND-SURFACE-001/README.md) | [RUN-OQ014-001/result.json](./evidence/OQ-014/FX-HOST-CAPABILITY-COMMAND-SURFACE-001/RUN-OQ014-001/result.json) | decision-ready / user decision pending |
+
+The shared fixture observed Codex `0.149.0` and Claude Code `2.1.238` on Darwin arm64 using
+read-only version/help/feature probes. Its synthetic surface comparison passed 26 cases and
+83 assertions across library, CLI and MCP-like stdio paths. It does not install plugins,
+start an agent or MCP server, select a production command schema, or establish a release
+minimum for older host versions.
+
 ## Packet 작성 순서
 
 1. 해당 OQ의 질문, 결정 권한, allowed scope와 non-goal을 먼저 적는다.

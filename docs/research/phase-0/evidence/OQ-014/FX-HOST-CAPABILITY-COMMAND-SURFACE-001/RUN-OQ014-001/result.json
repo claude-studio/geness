@@ -1,0 +1,69 @@
+{
+  "manifest_schema": "fixture.oq012-oq014.redacted-result.v1",
+  "fixture_id": "FX-HOST-CAPABILITY-COMMAND-SURFACE-001",
+  "packet_ids": ["OQ-012", "OQ-014"],
+  "input_sha256": "8ffefbcbd76a4e8dcb3830196770e0713bdafcbe739bab5e8805a3f507b4e920",
+  "source_run": "RUN-OQ014-001",
+  "runner_python": "3.9.6",
+  "platform": {
+    "system": "Darwin",
+    "release": "25.4.0",
+    "machine": "arm64"
+  },
+  "network": "disabled",
+  "external_writes": false,
+  "host_probe": {
+    "codex": {
+      "available": true,
+      "observed_version": "codex-cli 0.149.0",
+      "command_count": 7,
+      "all_pass": true,
+      "commands": [
+        "version",
+        "top-level-help",
+        "exec-help",
+        "mcp-help",
+        "plugin-help",
+        "mcp-server-help",
+        "feature-list"
+      ]
+    },
+    "claude": {
+      "available": true,
+      "observed_version": "2.1.238 (Claude Code)",
+      "command_count": 4,
+      "all_pass": true,
+      "commands": [
+        "version",
+        "top-level-help",
+        "plugin-help",
+        "mcp-help"
+      ]
+    }
+  },
+  "surface": {
+    "case_count": 26,
+    "assertion_count": 83,
+    "all_assertions_pass": true,
+    "library_cli_mcp_parity": "pass",
+    "profile_policy": {
+      "auto_codex_ready": "cross-model",
+      "auto_codex_missing_new_task": "claude-only fallback",
+      "cross_model_codex_missing": "SETUP_ATTENTION",
+      "claude_only_codex_missing": "SETUP_READY",
+      "active_task_profile_change": "SETUP_ATTENTION"
+    },
+    "routing": {
+      "explicit_commands": "pass",
+      "host_aliases": "pass",
+      "descriptions": "pass",
+      "ambiguous_description": "HOLD / ROUTE_CHOICE_REQUIRED"
+    },
+    "status_resume": {
+      "setup_gate": "pass",
+      "status_read_only": "pass",
+      "stale_digest_and_active_writer": "HOLD"
+    }
+  },
+  "raw_runner_sha256": "79ea167189cd5216e1528c569d03be9d7849544f76926bd7bd2c6e442beb5064"
+}

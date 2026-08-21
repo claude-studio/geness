@@ -1,0 +1,202 @@
+{
+  "fixture_schema": "fixture.oq012-oq014.input.v1",
+  "host_probes": {
+    "codex": [
+      {
+        "id": "version",
+        "args": ["--version"],
+        "tokens": ["codex-cli"]
+      },
+      {
+        "id": "top-level-help",
+        "args": ["--help"],
+        "tokens": ["exec", "mcp", "plugin", "mcp-server"]
+      },
+      {
+        "id": "exec-help",
+        "args": ["exec", "--help"],
+        "tokens": ["--json", "--output-schema", "--ephemeral"]
+      },
+      {
+        "id": "mcp-help",
+        "args": ["mcp", "--help"],
+        "tokens": ["list", "add", "remove"]
+      },
+      {
+        "id": "plugin-help",
+        "args": ["plugin", "--help"],
+        "tokens": ["add", "list", "marketplace", "remove"]
+      },
+      {
+        "id": "mcp-server-help",
+        "args": ["mcp-server", "--help"],
+        "tokens": ["stdio"]
+      },
+      {
+        "id": "feature-list",
+        "args": ["features", "list"],
+        "tokens": ["plugins", "hooks", "skill_search"]
+      }
+    ],
+    "claude": [
+      {
+        "id": "version",
+        "args": ["--version"],
+        "tokens": ["claude code"]
+      },
+      {
+        "id": "top-level-help",
+        "args": ["--help"],
+        "tokens": ["--print", "--resume", "--plugin-dir", "--mcp-config", "plugin", "mcp"]
+      },
+      {
+        "id": "plugin-help",
+        "args": ["plugin", "--help"],
+        "tokens": ["validate", "install", "list"]
+      },
+      {
+        "id": "mcp-help",
+        "args": ["mcp", "--help"],
+        "tokens": ["add", "list", "serve", "login"]
+      }
+    ]
+  },
+  "route_cases": [
+    {
+      "id": "explicit-setup",
+      "request": {"action": "route", "input": "gee setup"},
+      "expected": {"status": "ROUTED", "intent": "setup", "canonical_command": "gee setup", "source": "explicit"}
+    },
+    {
+      "id": "explicit-status",
+      "request": {"action": "route", "input": "gee status"},
+      "expected": {"status": "ROUTED", "intent": "status", "canonical_command": "gee status", "source": "explicit"}
+    },
+    {
+      "id": "explicit-resume",
+      "request": {"action": "route", "input": "gee resume task-001"},
+      "expected": {"status": "ROUTED", "intent": "resume", "canonical_command": "gee resume", "source": "explicit"}
+    },
+    {
+      "id": "claude-host-status-alias",
+      "request": {"action": "route", "input": "/geness:status"},
+      "expected": {"status": "ROUTED", "intent": "status", "canonical_command": "gee status", "source": "host_alias"}
+    },
+    {
+      "id": "codex-host-status-alias",
+      "request": {"action": "route", "input": "$geness status"},
+      "expected": {"status": "ROUTED", "intent": "status", "canonical_command": "gee status", "source": "host_alias"}
+    },
+    {
+      "id": "description-setup",
+      "request": {"action": "route", "input": "initialize this repository for Geness"},
+      "expected": {"status": "ROUTED", "intent": "setup", "canonical_command": "gee setup", "source": "description"}
+    },
+    {
+      "id": "description-status",
+      "request": {"action": "route", "input": "show the current progress and state"},
+      "expected": {"status": "ROUTED", "intent": "status", "canonical_command": "gee status", "source": "description"}
+    },
+    {
+      "id": "description-resume",
+      "request": {"action": "route", "input": "continue the blocked task from its checkpoint"},
+      "expected": {"status": "ROUTED", "intent": "resume", "canonical_command": "gee resume", "source": "description"}
+    },
+    {
+      "id": "description-brief",
+      "request": {"action": "route", "input": "clarify this vague request with questions"},
+      "expected": {"status": "ROUTED", "intent": "brief", "canonical_command": "gee brief", "source": "description"}
+    },
+    {
+      "id": "description-contract",
+      "request": {"action": "route", "input": "create the execution contract and acceptance criteria"},
+      "expected": {"status": "ROUTED", "intent": "contract", "canonical_command": "gee contract", "source": "description"}
+    },
+    {
+      "id": "description-plan",
+      "request": {"action": "route", "input": "run preflight and create a plan"},
+      "expected": {"status": "ROUTED", "intent": "plan", "canonical_command": "gee plan", "source": "description"}
+    },
+    {
+      "id": "description-impl",
+      "request": {"action": "route", "input": "implement the approved plan"},
+      "expected": {"status": "ROUTED", "intent": "impl", "canonical_command": "gee impl", "source": "description"}
+    },
+    {
+      "id": "description-verify",
+      "request": {"action": "route", "input": "verify the code with evidence"},
+      "expected": {"status": "ROUTED", "intent": "verify", "canonical_command": "gee verify", "source": "description"}
+    },
+    {
+      "id": "description-done",
+      "request": {"action": "route", "input": "finish the task after verification"},
+      "expected": {"status": "ROUTED", "intent": "done", "canonical_command": "gee done", "source": "description"}
+    },
+    {
+      "id": "ambiguous-description",
+      "request": {"action": "route", "input": "check this"},
+      "expected": {"status": "HOLD", "code": "ROUTE_CHOICE_REQUIRED"}
+    }
+  ],
+  "setup_cases": [
+    {
+      "id": "auto-codex-ready",
+      "request": {"action": "setup", "profile": "auto", "codex_ready": true, "claude_ready": true, "active_task": false},
+      "expected": {"status": "SETUP_READY", "selected_profile": "cross-model", "fallback": false}
+    },
+    {
+      "id": "auto-codex-missing-new-task",
+      "request": {"action": "setup", "profile": "auto", "codex_ready": false, "claude_ready": true, "active_task": false},
+      "expected": {"status": "SETUP_READY", "selected_profile": "claude-only", "fallback": true, "fallback_reason": "codex_unavailable_new_task"}
+    },
+    {
+      "id": "cross-model-codex-missing",
+      "request": {"action": "setup", "profile": "cross-model", "codex_ready": false, "claude_ready": true, "active_task": false},
+      "expected": {"status": "SETUP_ATTENTION", "code": "CODEX_REQUIRED"}
+    },
+    {
+      "id": "claude-only-codex-missing",
+      "request": {"action": "setup", "profile": "claude-only", "codex_ready": false, "claude_ready": true, "active_task": false},
+      "expected": {"status": "SETUP_READY", "selected_profile": "claude-only", "fallback": false}
+    },
+    {
+      "id": "auto-active-task-codex-lost",
+      "request": {"action": "setup", "profile": "auto", "codex_ready": false, "claude_ready": true, "active_task": true},
+      "expected": {"status": "SETUP_ATTENTION", "code": "PROFILE_CHANGE_REQUIRES_REOPEN"}
+    },
+    {
+      "id": "claude-capability-missing",
+      "request": {"action": "setup", "profile": "auto", "codex_ready": true, "claude_ready": false, "active_task": false},
+      "expected": {"status": "SETUP_ATTENTION", "code": "CLAUDE_REQUIRED"}
+    }
+  ],
+  "status_cases": [
+    {
+      "id": "status-after-setup",
+      "request": {"action": "status", "setup_state": "SETUP_READY", "task_state": "BLOCKED", "next_action": "gee resume task-001"},
+      "expected": {"status": "STATUS_READY", "task_state": "BLOCKED", "next_action": "gee resume task-001"}
+    },
+    {
+      "id": "status-before-setup",
+      "request": {"action": "status", "setup_state": "SETUP_REQUIRED", "task_state": "INITIALIZING"},
+      "expected": {"status": "HOLD", "code": "SETUP_REQUIRED"}
+    }
+  ],
+  "resume_cases": [
+    {
+      "id": "resume-blocked-checkpoint",
+      "request": {"action": "resume", "task_state": "BLOCKED", "checkpoint": "verify-ac-001", "digest_current": true, "writer_active": false},
+      "expected": {"status": "RESUME_READY", "next_action": "verify-ac-001"}
+    },
+    {
+      "id": "resume-stale-digest",
+      "request": {"action": "resume", "task_state": "BLOCKED", "checkpoint": "impl-step-001", "digest_current": false, "writer_active": false},
+      "expected": {"status": "HOLD", "code": "STALE_DIGEST"}
+    },
+    {
+      "id": "resume-active-writer",
+      "request": {"action": "resume", "task_state": "PAUSED", "checkpoint": "impl-step-001", "digest_current": true, "writer_active": true},
+      "expected": {"status": "HOLD", "code": "WRITER_ACTIVE"}
+    }
+  ]
+}
