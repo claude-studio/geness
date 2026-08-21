@@ -1,0 +1,69 @@
+{
+  "manifest_schema": "fixture.oq010-oq011.redacted-result.v1",
+  "fixture_id": "FX-MEMORY-RETENTION-BOOTSTRAP-001",
+  "packet_ids": ["OQ-010", "OQ-011"],
+  "input_sha256": "a8f292a84d629b342b7ec3d2e1cf21520788a7c81cef6cf4e46ad12e013ae4cb",
+  "runner_sha256": "9706fbe1615baab6c184c84ff8b826f282b8cf17bc624ced8d6846eea5552c86",
+  "network": "disabled",
+  "external_writes": false,
+  "assertions": {
+    "passed": 43,
+    "total": 43,
+    "all_pass": true
+  },
+  "replay": {
+    "evaluator_version": "fixture.deterministic-evaluator-v1",
+    "events_replayed": 13,
+    "replay_equal": true,
+    "projection_sha256": "0e3e7e4ef2ae40c0b6e68673774afe7cc2d8b74a122fb38438d7ddf8371b2b07",
+    "first_failure_visible_in_memory": false,
+    "repeat_lesson": {
+      "status": "verified",
+      "independent_failure_runs": 2
+    },
+    "oneoff_lesson": {
+      "status": "expired",
+      "eligible_exposures": 4,
+      "unassisted_successes": 3,
+      "ignored_ineligible_exposure": true
+    },
+    "guard_lesson_status": "verified",
+    "final_visible_lesson_ids": ["LESSON-GUARD", "LESSON-REPEAT"]
+  },
+  "retention": {
+    "policy_version": "fixture.retention-tiered-v1",
+    "active_runtime": "KEEP",
+    "blocked_runtime": "KEEP",
+    "completed_low_risk_ttl": "PRUNE",
+    "completed_size_limit": "PRUNE",
+    "completed_high_risk_without_disposition": "KEEP",
+    "memory_store_item": "KEEP_SEPARATE_FROM_RUNTIME_PRUNE"
+  },
+  "bootstrap": {
+    "result_contract": "fixture.memory-capability-result-v1",
+    "missing": {
+      "status": "UNINITIALIZED",
+      "gate": "CLEAR",
+      "can_continue": true,
+      "required_action": "bootstrap_on_first_write"
+    },
+    "empty": {
+      "status": "EMPTY",
+      "gate": "CLEAR",
+      "can_continue": true,
+      "required_action": "none"
+    },
+    "ready": {
+      "status": "AVAILABLE",
+      "gate": "CLEAR",
+      "can_continue": true,
+      "required_action": "none"
+    },
+    "corrupt": {
+      "status": "UNAVAILABLE",
+      "gate": "HOLD",
+      "can_continue": false,
+      "required_action": "rebuild_or_repair"
+    }
+  }
+}

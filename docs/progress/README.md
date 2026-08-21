@@ -169,6 +169,52 @@ input `8ffefbcbd76b4e8dcb3830196770e0713bdafcbe739bab5e8805a3f507b4e920`이다.
 E2E, historical-version support floor, 제품 command schema, plugin scaffold 또는
 Implementation `CLEAR`가 아니다. OQ-012/OQ-014와 ADR-0008의 user decision은 pending이다.
 
+### Phase 0 P0-07 #19 memory·retention·bootstrap research — VERIFIED OBSERVATION
+
+2026-08-21에 [OQ-010 lesson evaluator](../research/phase-0/OQ-010-lesson-evaluator.md),
+[OQ-011 runtime retention](../research/phase-0/OQ-011-runtime-retention.md) packet과
+폐기 가능한 `FX-MEMORY-RETENTION-BOOTSTRAP-001`을 추가했다. 두 packet은
+decision-ready recommendation이지만 user decision receipt가 없으므로 `Resolved` 또는
+ADR로 승격하지 않았고 Implementation `HOLD`를 유지한다.
+
+정확한 fixture command를 두 번 실행했다.
+
+    PYTHONDONTWRITEBYTECODE=1 python3 runner.py
+
+두 실행 모두 exit `0`, 43/43 assertions와 `all_assertions_pass=true`를 보고했고 parsed
+JSON output이 equality-equivalent였다. 관찰된 projection hash는
+`sha256:0e3e7e4ef2ae40c0b6e68673774afe7cc2d8b74a122fb38438d7ddf8371b2b07`다.
+
+관찰된 사실은 다음과 같다.
+
+- 첫 failure는 `candidate`로 남고 retrieval에 노출되지 않았다. 동일 run의 중복은 독립
+  recurrence로 세지 않았고, 독립 run 2회 또는 재현 가능한 guard evidence가 있는
+  candidate만 fixture-local profile에서 `verified`가 됐다.
+- `LESSON-ONEOFF`는 ineligible success를 제외하고 injected success를 unassisted로 세지
+  않았으며, eligible unassisted success 3회와 최소 관찰 기간 뒤 `expired`가 됐다.
+- 오래된 active/blocked runtime은 `KEEP`, completed low-risk는 TTL/size candidate에서
+  `PRUNE`, high-risk no-disposition와 memory store item은 `KEEP`로 관찰됐다.
+- bootstrap result contract는 `UNINITIALIZED`/`EMPTY`/`AVAILABLE`/`UNAVAILABLE`을
+  구분하며, fixture-local recommendation에서 missing/empty/available은 explicit
+  `CLEAR`/continue, corrupt는 `HOLD`/`rebuild_or_repair`였다.
+
+보존한 artifact hash는 다음과 같다.
+
+- fixture runner: `9706fbe1615baab6c184c84ff8b826f282b8cf17bc624ced8d6846eea5552c86`
+- fixture input: `a8f292a84d629b342b7ec3d2e1cf21520788a7c81cef6cf4e46ad12e013ae4cb`
+- OQ-010/OQ-011 redacted result manifest: `7f67e265b5f813b566c8f04c53d75b7b48fd33d54622662b74f4b4b81779a267`
+
+추가 검증은 `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile .../runner.py`, 세 JSON
+artifact에 대한 `python3 -m json.tool ... >/dev/null`, `git diff --check --`가 모두
+exit `0`이었다. read-only Markdown 검사는
+`node /tmp/geness-p0-06-markdown-check.mjs` → exit `0`,
+`markdown_files=64`, `local_links=185`, `local_anchor_links=15`, `fence_delimiters=152`,
+`trailing_whitespace=0`, `errors=[]`를 반환했다.
+
+현재 관찰은 deterministic evaluator, runtime retention과 memory capability result 후보의
+research evidence이지 production threshold, retention worker, bootstrap command, event/SQLite
+schema, Learning/Storage ADR 또는 Implementation `CLEAR`가 아니다.
+
 ## 3. 검증된 repository 사실
 
 - Git repository root는 이 프로젝트 디렉터리다.
@@ -214,9 +260,10 @@ Implementation `CLEAR`가 아니다. OQ-012/OQ-014와 ADR-0008의 user decision�
 
 사용자가 Phase 0 blocking packet의 후보를 검토하고 decision receipt를 기록한다. 특히
 [OQ-001](../research/OPEN_QUESTIONS.md)의 runtime 후보, P0-05의 OQ-005/006/007/013
-identity·schema·digest·config recommendation과 P0-06의 OQ-012/014 host·command
-recommendation을 선택하기 전에는 Architecture/Storage/Host/Specification ADR을
-Accepted로 바꾸거나 제품 scaffold를 만들지 않는다.
+identity·schema·digest·config recommendation, P0-06의 OQ-012/014 host·command
+recommendation과 P0-07의 OQ-010/011 memory·retention·bootstrap recommendation을
+선택하기 전에는 Architecture/Storage/Host/Specification/Learning ADR을 Accepted로
+바꾸거나 제품 scaffold를 만들지 않는다.
 
 이번 DOC-01 문서 변경 뒤 다음을 검증했다.
 
