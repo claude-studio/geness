@@ -145,6 +145,13 @@ byte-identical output. The packet links each control to its canonical owner and 
 the fixture is not a production Controller, host sandbox, redaction corpus, multi-process lease
 test or user decision.
 
+## Issue #21 Phase 0 Gate audit
+
+[PHASE-0-GATE-AUDIT-001](./PHASE-0-GATE-AUDIT-001.md) records the current Gate result as
+`HOLD`. The disposable OQ fixtures pass, but OQ-001~014 user decision receipts and the
+missing OQ-003/OQ-004/OQ-008/OQ-009 evidence remain blockers. No product implementation
+or Phase 0 `CLEAR` is claimed.
+
 ## Packet 작성 순서
 
 1. 해당 OQ의 질문, 결정 권한, allowed scope와 non-goal을 먼저 적는다.
