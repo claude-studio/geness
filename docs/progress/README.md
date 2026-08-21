@@ -137,6 +137,38 @@ golden vector와 portable/local config boundary도 통과했다.
 이 결과는 identity/schema/digest/config 후보의 조사 evidence이지 production schema,
 serializer, config policy, ADR 또는 Implementation `CLEAR`가 아니다.
 
+### Phase 0 P0-06 #18 host·command surface research — VERIFIED OBSERVATION
+
+2026-08-21에 [OQ-012 host compatibility packet](../research/phase-0/OQ-012-host-os-compatibility.md),
+[OQ-014 command surface packet](../research/phase-0/OQ-014-command-surface.md), Proposed
+[ADR-0008](../adr/0008-host-command-surface.md)와 폐기 가능한
+`FX-HOST-CAPABILITY-COMMAND-SURFACE-001`을 추가했다. 두 packet은 decision-ready
+recommendation이지만 사용자 decision receipt가 없으므로 `Resolved` 또는 Accepted ADR로
+승격하지 않았다.
+
+fixture의 read-only host probe는 Darwin 25.4.0 arm64에서 Codex `codex-cli 0.149.0`과
+Claude Code `2.1.238`의 version/help/plugin/MCP/feature surface를 확인했다. 네트워크,
+로그인, plugin install, agent 실행과 MCP server startup은 수행하지 않았다. 동일한
+synthetic input을 fixture-local library, CLI thin transport와 MCP-like stdio transport로
+보내 setup/profile, explicit/alias/description routing, status, resume와 transport error
+경계를 비교했다.
+
+실행한 주요 검증은 다음과 같다.
+
+- `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` → `RUN-OQ012-001`, exit `0`, 83/83 assertions, 26 cases, `all_assertions_pass=true`
+- `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` → `RUN-OQ014-001`, exit `0`, 동일한 83/83 assertions와 byte-identical raw result
+- `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile surface_service.py cli_transport.py mcp_transport.py runner.py` → exit `0`
+- `python3 -m json.tool input/fixture.json >/dev/null` → exit `0`
+- `git diff --check --` → exit `0`
+- `node /tmp/geness-p0-06-markdown-check.mjs` → exit `0`, `markdown_files=61`, `local_links=159`, `local_anchor_links=8`, `fence_delimiters=152`, `trailing_whitespace=0`, `errors=[]`
+
+보존한 artifact hash는 OQ-012 result `25ff01711cc2a9aaf063fd117822f39d76f3b801fdec4dd8ea5dea49170d0511`,
+OQ-014 result `ef1a6be9c0c302a0907403c4b1cab73185803abe28147cbe631fdabc62e41271`, fixture
+input `8ffefbcbd76b4e8dcb3830196770e0713bdafcbe739bab5e8805a3f507b4e920`이다.
+현재 관찰은 host capability와 command/profile 후보의 조사 evidence이지 installed-host
+E2E, historical-version support floor, 제품 command schema, plugin scaffold 또는
+Implementation `CLEAR`가 아니다. OQ-012/OQ-014와 ADR-0008의 user decision은 pending이다.
+
 ## 3. 검증된 repository 사실
 
 - Git repository root는 이 프로젝트 디렉터리다.
@@ -180,10 +212,11 @@ serializer, config policy, ADR 또는 Implementation `CLEAR`가 아니다.
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-사용자가 Phase 0 blocking packet의 후보를 검토하고 첫 decision receipt를 기록한다. 특히
-[OQ-001](../research/OPEN_QUESTIONS.md)의 runtime 후보와 P0-05의 OQ-005/006/007/013
-identity·schema·digest·config recommendation을 선택하기 전에는 Architecture/Storage/
-Specification ADR과 제품 scaffold를 만들지 않는다.
+사용자가 Phase 0 blocking packet의 후보를 검토하고 decision receipt를 기록한다. 특히
+[OQ-001](../research/OPEN_QUESTIONS.md)의 runtime 후보, P0-05의 OQ-005/006/007/013
+identity·schema·digest·config recommendation과 P0-06의 OQ-012/014 host·command
+recommendation을 선택하기 전에는 Architecture/Storage/Host/Specification ADR을
+Accepted로 바꾸거나 제품 scaffold를 만들지 않는다.
 
 이번 DOC-01 문서 변경 뒤 다음을 검증했다.
 
