@@ -259,6 +259,18 @@ byte-identical이었다. `node /tmp/geness-p0-06-markdown-check.mjs`는 exit `0`
 `markdown_files=69`, `local_links=240`, `local_anchor_links=25`, `fence_delimiters=154`,
 `trailing_whitespace=0`, `errors=[]`를 반환했으며 `git diff --check --`도 exit `0`이었다.
 
+### Phase 0 P0-GATE #21 — HOLD audit
+
+2026-08-21에 [Phase 0 Gate audit](../research/phase-0/PHASE-0-GATE-AUDIT-001.md)을
+merged main `23a6e75` 기준으로 수행했다. OQ-002 command API 14 assertions, lifecycle/lease
+7, identity/schema/digest/config 30, memory/retention/bootstrap 43, host/command surface 83,
+OQ-015 threat model 17 assertions를 각각 재실행해 모두 exit `0`과
+`all_assertions_pass=true`를 확인했다.
+
+현재 Gate 판정은 `HOLD`다. OQ-001~014의 user decision receipt가 없고, OQ-003/OQ-004/OQ-008/
+OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제할 근거가 없다.
+다음 하나의 검증 목표는 OQ-001 사용자 결정 receipt 기록이다.
+
 ## 3. 검증된 repository 사실
 
 - Git repository root는 이 프로젝트 디렉터리다.
