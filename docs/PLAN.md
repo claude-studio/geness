@@ -1372,7 +1372,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - reviewer/verifier 독립성, 동일 worker 결과의 최종 검증 제한과 불일치 결과 합성:
   OQ-004, OQ-008과 함께 검토
 - Phase 3에서 Phase 5 이전의 uninitialized/empty memory를 처리하는 bootstrap contract:
-  OQ-006, OQ-010과 함께 검토
+  OQ-006, OQ-010, OQ-011과 함께 검토
 
 - [ ] OQ-001부터 OQ-014까지 각 decision packet과 필요한 spike/fixture evidence 작성
 - [ ] 교차 concern을 기존 OQ에 귀속하거나 결정 권한이 있는 새 OQ로 등록

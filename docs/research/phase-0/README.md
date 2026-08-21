@@ -109,6 +109,24 @@ read-only version/help/feature probes. Its synthetic surface comparison passed 2
 start an agent or MCP server, select a production command schema, or establish a release
 minimum for older host versions.
 
+## Issue #19 research index
+
+The following are decision-ready memory, retention and bootstrap packets. They are not Resolved
+decisions and contain no user decision receipts:
+
+| OQ | packet | shared fixture | RUN evidence | status |
+| --- | --- | --- | --- | --- |
+| OQ-010 | [OQ-010-lesson-evaluator.md](./OQ-010-lesson-evaluator.md) | [FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md](./fixtures/FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md) | [RUN-OQ010-001/result.json](./evidence/OQ-010/FX-MEMORY-RETENTION-BOOTSTRAP-001/RUN-OQ010-001/result.json) | decision-ready / user decision pending |
+| OQ-011 | [OQ-011-runtime-retention.md](./OQ-011-runtime-retention.md) | [FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md](./fixtures/FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md) | [RUN-OQ011-001/result.json](./evidence/OQ-011/FX-MEMORY-RETENTION-BOOTSTRAP-001/RUN-OQ011-001/result.json) | decision-ready / user decision pending |
+
+The shared fixture replayed 13 synthetic events twice with 43/43 assertions on each run and
+equality-equivalent projections. It observed first-failure candidate isolation, independent
+recurrence and reproducible guard promotion, eligible-only unassisted-success expiry, and
+state/risk/size retention candidates. Its bootstrap result distinguishes `UNINITIALIZED`,
+`EMPTY`, `AVAILABLE` and `UNAVAILABLE` rather than collapsing missing or corrupt memory into
+an empty query. The fixture does not choose production thresholds, retention classes, a
+bootstrap Gate, event/SQLite schema or any product implementation.
+
 ## Packet 작성 순서
 
 1. 해당 OQ의 질문, 결정 권한, allowed scope와 non-goal을 먼저 적는다.

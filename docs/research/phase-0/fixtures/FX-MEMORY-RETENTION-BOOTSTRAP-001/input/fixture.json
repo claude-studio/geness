@@ -1,0 +1,261 @@
+{
+  "fixture_schema": "fixture.memory-retention-bootstrap.input.v1",
+  "deterministic": true,
+  "evaluator_policy": {
+    "version": "fixture.deterministic-evaluator-v1",
+    "independent_failure_runs_required": 2,
+    "unassisted_successes_to_expire": 3,
+    "minimum_observation_age_days": 7,
+    "eligible_exposures_only": true,
+    "injected_success_counts_as_unassisted": false,
+    "verified_auto_expiry": false
+  },
+  "events": [
+    {
+      "event_id": "FAIL-REPEAT-001",
+      "type": "failure_observed",
+      "lesson_id": "LESSON-REPEAT",
+      "fingerprint": "project-a|plan|payment|wrong-aggregate-key",
+      "run_id": "RUN-001",
+      "occurred_at": "2026-01-01",
+      "evidence_refs": ["EVIDENCE-REPEAT-001"],
+      "actual_rule": "PaymentAttempt is grouped by order id",
+      "checkpoint": "after-first-failure"
+    },
+    {
+      "event_id": "FAIL-REPEAT-002",
+      "type": "failure_observed",
+      "lesson_id": "LESSON-REPEAT",
+      "fingerprint": "project-a|plan|payment|wrong-aggregate-key",
+      "run_id": "RUN-001",
+      "occurred_at": "2026-01-02",
+      "evidence_refs": ["EVIDENCE-REPEAT-002"],
+      "actual_rule": "PaymentAttempt is grouped by order id"
+    },
+    {
+      "event_id": "FAIL-REPEAT-003",
+      "type": "failure_observed",
+      "lesson_id": "LESSON-REPEAT",
+      "fingerprint": "project-a|plan|payment|wrong-aggregate-key",
+      "run_id": "RUN-002",
+      "occurred_at": "2026-01-03",
+      "evidence_refs": ["EVIDENCE-REPEAT-003"],
+      "actual_rule": "PaymentAttempt is grouped by order id",
+      "checkpoint": "after-independent-recurrence"
+    },
+    {
+      "event_id": "EXPOSURE-REPEAT-INJECTED",
+      "type": "exposure",
+      "lesson_id": "LESSON-REPEAT",
+      "run_id": "RUN-004",
+      "occurred_at": "2026-01-04",
+      "eligible": true,
+      "outcome": "success",
+      "lesson_injected": true
+    },
+    {
+      "event_id": "FAIL-ONEOFF-001",
+      "type": "failure_observed",
+      "lesson_id": "LESSON-ONEOFF",
+      "fingerprint": "project-a|impl|billing|wrong-timezone",
+      "run_id": "RUN-010",
+      "occurred_at": "2026-01-01",
+      "evidence_refs": ["EVIDENCE-ONEOFF-001"],
+      "actual_rule": "Billing cutoffs use UTC",
+      "checkpoint": "oneoff-candidate"
+    },
+    {
+      "event_id": "EXPOSURE-ONEOFF-INELIGIBLE",
+      "type": "exposure",
+      "lesson_id": "LESSON-ONEOFF",
+      "run_id": "RUN-011",
+      "occurred_at": "2026-01-02",
+      "eligible": false,
+      "outcome": "success",
+      "lesson_injected": false
+    },
+    {
+      "event_id": "EXPOSURE-ONEOFF-INJECTED",
+      "type": "exposure",
+      "lesson_id": "LESSON-ONEOFF",
+      "run_id": "RUN-012",
+      "occurred_at": "2026-01-03",
+      "eligible": true,
+      "outcome": "success",
+      "lesson_injected": true
+    },
+    {
+      "event_id": "EXPOSURE-ONEOFF-UNASSISTED-001",
+      "type": "exposure",
+      "lesson_id": "LESSON-ONEOFF",
+      "run_id": "RUN-013",
+      "occurred_at": "2026-01-08",
+      "eligible": true,
+      "outcome": "success",
+      "lesson_injected": false
+    },
+    {
+      "event_id": "EXPOSURE-ONEOFF-UNASSISTED-002",
+      "type": "exposure",
+      "lesson_id": "LESSON-ONEOFF",
+      "run_id": "RUN-014",
+      "occurred_at": "2026-01-09",
+      "eligible": true,
+      "outcome": "success",
+      "lesson_injected": false
+    },
+    {
+      "event_id": "EXPOSURE-ONEOFF-UNASSISTED-003",
+      "type": "exposure",
+      "lesson_id": "LESSON-ONEOFF",
+      "run_id": "RUN-015",
+      "occurred_at": "2026-01-10",
+      "eligible": true,
+      "outcome": "success",
+      "lesson_injected": false,
+      "checkpoint": "oneoff-expired"
+    },
+    {
+      "event_id": "FAIL-GUARD-001",
+      "type": "failure_observed",
+      "lesson_id": "LESSON-GUARD",
+      "fingerprint": "project-a|verify|api|missing-idempotency-guard",
+      "run_id": "RUN-020",
+      "occurred_at": "2026-01-01",
+      "evidence_refs": ["EVIDENCE-GUARD-BEFORE"],
+      "actual_rule": "The request must carry an idempotency key"
+    },
+    {
+      "event_id": "GUARD-GUARD-001",
+      "type": "guard_evidence",
+      "lesson_id": "LESSON-GUARD",
+      "run_id": "RUN-021",
+      "occurred_at": "2026-01-02",
+      "fail_before": true,
+      "pass_after": true,
+      "reproducible": true,
+      "evidence_refs": ["EVIDENCE-GUARD-BEFORE", "EVIDENCE-GUARD-AFTER"],
+      "checkpoint": "guard-verified"
+    },
+    {
+      "event_id": "EXPOSURE-UNRELATED-SUCCESS",
+      "type": "exposure",
+      "lesson_id": "LESSON-REPEAT",
+      "run_id": "RUN-030",
+      "occurred_at": "2026-01-11",
+      "eligible": false,
+      "outcome": "success",
+      "lesson_injected": false
+    }
+  ],
+  "retention_policy_candidate": {
+    "version": "fixture.retention-tiered-v1",
+    "active_and_blocked": "keep",
+    "completed_low_risk_ttl_days": 30,
+    "completed_item_size_limit_bytes": 100000,
+    "high_risk_requires_explicit_disposition": true,
+    "memory_store_is_separate_from_runtime_prune": true
+  },
+  "retention_cases": [
+    {
+      "case_id": "RUNTIME-ACTIVE-OLD-LARGE",
+      "store": "runtime",
+      "state": "active",
+      "risk": "high",
+      "age_days": 365,
+      "size_bytes": 500000,
+      "explicit_disposition": null,
+      "expected_action": "KEEP",
+      "expected_reason": "active_runtime_protected"
+    },
+    {
+      "case_id": "RUNTIME-BLOCKED-OLD-LARGE",
+      "store": "runtime",
+      "state": "blocked",
+      "risk": "high",
+      "age_days": 365,
+      "size_bytes": 500000,
+      "explicit_disposition": null,
+      "expected_action": "KEEP",
+      "expected_reason": "blocked_runtime_protected"
+    },
+    {
+      "case_id": "RUNTIME-COMPLETED-LOW-TTL",
+      "store": "runtime",
+      "state": "completed",
+      "risk": "low",
+      "age_days": 31,
+      "size_bytes": 100,
+      "explicit_disposition": null,
+      "expected_action": "PRUNE",
+      "expected_reason": "completed_low_risk_ttl"
+    },
+    {
+      "case_id": "RUNTIME-COMPLETED-LOW-SIZE",
+      "store": "runtime",
+      "state": "completed",
+      "risk": "low",
+      "age_days": 1,
+      "size_bytes": 120000,
+      "explicit_disposition": null,
+      "expected_action": "PRUNE",
+      "expected_reason": "completed_size_limit"
+    },
+    {
+      "case_id": "RUNTIME-COMPLETED-HIGH-NO-DISPOSITION",
+      "store": "runtime",
+      "state": "completed",
+      "risk": "high",
+      "age_days": 365,
+      "size_bytes": 100,
+      "explicit_disposition": null,
+      "expected_action": "KEEP",
+      "expected_reason": "high_risk_requires_disposition"
+    },
+    {
+      "case_id": "MEMORY-VERIFIED-LESSON-OLD",
+      "store": "memory",
+      "state": "verified",
+      "risk": "high",
+      "age_days": 365,
+      "size_bytes": 500000,
+      "explicit_disposition": null,
+      "expected_action": "KEEP",
+      "expected_reason": "memory_store_separate"
+    }
+  ],
+  "bootstrap_cases": [
+    {
+      "case_id": "MEMORY-MISSING",
+      "storage_state": "missing",
+      "expected_status": "UNINITIALIZED",
+      "expected_gate": "CLEAR",
+      "expected_can_continue": true,
+      "expected_action": "bootstrap_on_first_write"
+    },
+    {
+      "case_id": "MEMORY-EMPTY",
+      "storage_state": "empty",
+      "expected_status": "EMPTY",
+      "expected_gate": "CLEAR",
+      "expected_can_continue": true,
+      "expected_action": "none"
+    },
+    {
+      "case_id": "MEMORY-READY",
+      "storage_state": "ready",
+      "expected_status": "AVAILABLE",
+      "expected_gate": "CLEAR",
+      "expected_can_continue": true,
+      "expected_action": "none"
+    },
+    {
+      "case_id": "MEMORY-CORRUPT",
+      "storage_state": "corrupt",
+      "expected_status": "UNAVAILABLE",
+      "expected_gate": "HOLD",
+      "expected_can_continue": false,
+      "expected_action": "rebuild_or_repair"
+    }
+  ]
+}
