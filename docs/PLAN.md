@@ -1360,6 +1360,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | OQ-012 | `docs/research/phase-0/OQ-012-host-os-compatibility.md` | 지원 후보 OS·host version의 manifest, Skill, hook와 stdio MCP capability matrix | Host ADR | OPEN |
 | OQ-013 | `docs/research/phase-0/OQ-013-config-machine-contract.md` | frontmatter-only와 별도 config/JSON 후보의 round-trip, validation과 threat fixture | Storage/Schema ADR | OPEN |
 | OQ-014 | `docs/research/phase-0/OQ-014-command-surface.md` | workflow, status와 resume 후보 command의 user-flow 및 CLI/MCP parity fixture | Host/CLI ADR | OPEN |
+| OQ-015 | `docs/research/phase-0/OQ-015-threat-model-permission-policy.md` | asset/trust-boundary, permission class, control-owner matrix와 fail-closed threat fixture | Proposed ADR-0009 + Architecture/Lifecycle/Storage/Host | OPEN |
 
 Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시적으로 포함하거나 새 OQ로
 등록한다. 어느 packet이 소유하는지 정해지지 않은 상태에서는 Phase 0를 `CLEAR`로 만들 수
@@ -1373,10 +1374,13 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
   OQ-004, OQ-008과 함께 검토
 - Phase 3에서 Phase 5 이전의 uninitialized/empty memory를 처리하는 bootstrap contract:
   OQ-006, OQ-010, OQ-011과 함께 검토
+- target-root, authority/provenance, scope·external write·secret·completion의 threat model과
+  fail-closed permission boundary: OQ-008과 새 OQ-015가 소유하고 Architecture/Lifecycle/
+  Storage/Host Integration에 정렬
 
 - [ ] OQ-001부터 OQ-014까지 각 decision packet과 필요한 spike/fixture evidence 작성
 - [ ] 교차 concern을 기존 OQ에 귀속하거나 결정 권한이 있는 새 OQ로 등록
-- [ ] threat model과 권한 정책 작성
+- [ ] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 권한 정책 작성
 - [ ] 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
 - [ ] Open Questions의 `Resolved` 표와 위 Status를 근거 링크로 동기화
 
@@ -1703,6 +1707,8 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 - owner-only local file permissions
 - 악성 project-local config 처리
 - 위험 명령과 외부 write 승인 보존
+- untrusted project instruction과 user approval provenance 분리
+- stale digest/approval, target-root escape, forbidden capability와 worker self-verification 차단
 - SQL injection 및 malformed FTS query
 
 ## 22. 전체 Definition of Done

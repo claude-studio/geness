@@ -31,6 +31,23 @@ verify가 독립적으로 결과를 판정한다.
   allowed scope, AC, checkpoint와 protocol version을 포함한 handoff envelope를 만든다.
   Codex 결과는 Controller로 돌아오며 runtime DB와 project 문서는 Controller만 갱신한다.
 
+### 3.1 Capability and permission precondition
+
+실행 envelope에는 `allowed_scope`, `forbidden_scope`, capability snapshot, approval receipt
+reference와 current spec/plan digest를 함께 묶는다. [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)의
+Proposed baseline에 따라 다음 요청은 Controller에서 fail-closed로 라우팅한다.
+
+- target root 밖 path, parent traversal 또는 symlink escape
+- current digest와 일치하지 않는 plan/approval, active writer lease 없는 mutation
+- scope 확대, external write, destructive action, security-boundary 변경과 permission
+  escalation의 non-user 또는 stale receipt
+- runtime DB 직접 write, approval bypass, 기본 `danger-full-access`
+- redaction이 완료되지 않은 raw output의 project document/memory/context 저장
+
+이 경우 worker가 성공을 주장해도 attempt는 `HOLD`/attention이며 `RUNNING` 또는 `COMPLETED`로
+승격하지 않는다. exact approval actor/risk policy는 OQ-008, takeover/atomicity는 OQ-003/OQ-009의
+user decision과 후속 fixture가 소유한다.
+
 ## 4. Attempt contract
 
 각 attempt는 최소 다음을 기록한다.

@@ -191,3 +191,22 @@ tests/               unit, contract, integration, E2E
 
 구현 언어, CLI/MCP entrypoint, daemon 여부, DB migration 도구와 package 배포 방식은
 [Open Questions](./research/OPEN_QUESTIONS.md)와 [PLAN Phase 0](./PLAN.md#phase-0-핵심-계약과-adr-확정)에서 닫는다.
+
+## 11. Threat model and permission boundary
+
+현재 Phase 0의 cross-concern 제안은 [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)와
+[OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)가 소유한다. user decision
+receipt 전까지는 Proposed baseline이며 구현 권한이 아니다.
+
+- Controller는 target-root containment, project/task identity, revision/digest, writer lease,
+  allowed/forbidden scope와 completion Gate를 공통으로 판정한다.
+- Host adapter, CLI/MCP, Skill, hook과 worker는 domain state·approval·completion·memory
+  promotion의 별도 권위자가 아니다. worker는 runtime DB를 직접 쓰지 않는다.
+- `observe`와 current approved contract/plan 아래의 `approved_local_write`를 구분한다.
+  scope 확대, external write, destructive action, security boundary 변경과 permission
+  escalation은 current digest에 묶인 explicit user receipt 없이는 `HOLD`한다.
+- command output·environment·evidence는 persistence 또는 model context 경계 전에 redaction과
+  minimization을 거친다. candidate와 corrupt memory는 optimistic success로 축약하지 않는다.
+
+위협·control·fixture 연결표와 미해결 owner는 [OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md#4-control-matrix-and-ownership)를
+참조한다.

@@ -159,6 +159,21 @@ plan을 policy가 승인할 수 있는지는 Phase 0에서 확정한다. 결정 
 생략하지 않는다. scope 확대, 파괴적 행동, 외부 쓰기와 high-risk migration은 항상
 별도 사용자 승인 없이는 실행할 수 없다.
 
+### 8.1 Permission classification alignment
+
+[OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)의 Proposed matrix와
+[ADR-0009](./adr/0009-threat-model-permission-boundaries.md)에 따라 contract/plan은 다음
+capability와 approval point를 명시해야 한다. exact risk tier와 policy approval은 OQ-008의
+사용자 결정 전까지 `TBD`다.
+
+| class | contract/plan requirement | default result |
+| --- | --- | --- |
+| `observe` | read-only paths/probes와 evidence reference | capability unavailable이면 `HOLD` |
+| `approved_local_write` | target-relative allowed scope, forbidden scope, current digest와 writer lease | containment/scope/digest/lease mismatch면 `HOLD` |
+| `user_sensitive` | scope expansion, external/destructive/security-boundary action의 user receipt와 target/intent | non-user 또는 stale receipt면 `HOLD` |
+| `forbidden_v1` | runtime DB direct write, approval bypass, default danger-full-access, candidate promotion | 실행하지 않고 typed `HOLD` |
+| `secret_handling` | redaction/minimization procedure와 no-project-storage rule | redaction 불확실성은 `HOLD`/local-only |
+
 ## 9. Exit Gate
 
 - spec schema와 contract digest 유효

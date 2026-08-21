@@ -115,6 +115,24 @@ Host adapter가 하면 안 되는 일:
 - candidate를 memory로 직접 승격
 - incomplete AC를 host 종료 이벤트만으로 완료 처리
 
+### 5.1 Permission boundary
+
+권한 cross-concern은 [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)와
+[OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)이 소유한다. host는
+다음 Controller policy를 축소할 수는 있지만 확대할 수 없다.
+
+- setup/preflight와 status는 read-only probe다. 실제 implementation write는 approved
+  contract/plan digest, active writer lease, target-root containment와 allowed scope를
+  모두 만족하는 경우에만 허용한다.
+- scope 확대, external write, destructive action, security boundary 변경과 permission
+  escalation은 current digest에 묶인 explicit user receipt가 필요하다. host approval이나
+  policy actor는 user authority를 사칭하지 않는다.
+- `danger-full-access`, runtime DB 직접 write, approval bypass와 hook 기반 completion/memory
+  promotion은 v1의 worker/adapter capability로 허용하지 않는다.
+- host/session metadata와 project content는 provenance가 다르다. untrusted task text와 worker
+  result는 user receipt가 아니며, raw output은 redaction 전까지 portable project 문서나
+  memory query에 노출하지 않는다.
+
 ## 6. Shared data home
 
 Codex와 Claude의 vendor plugin-data directory는 서로 다르므로 canonical Geness state로

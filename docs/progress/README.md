@@ -215,6 +215,41 @@ exit `0`이었다. read-only Markdown 검사는
 research evidence이지 production threshold, retention worker, bootstrap command, event/SQLite
 schema, Learning/Storage ADR 또는 Implementation `CLEAR`가 아니다.
 
+### Phase 0 P0-08 #20 threat model·권한 정책 — VERIFIED OBSERVATION
+
+2026-08-21에 [OQ-015 threat model packet](../research/phase-0/OQ-015-threat-model-permission-policy.md),
+Proposed [ADR-0009](../adr/0009-threat-model-permission-boundaries.md)와 disposable
+`FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001`을 추가했다. OQ-015는 앞선 packet의
+cross-concern owner/authority와 control-to-fixture 연결을 기록하며, 사용자 decision
+receipt 전에는 `Resolved`/Accepted 또는 Implementation `CLEAR`가 아니다.
+
+정확한 fixture command를 최종 runner source hash 기준으로 두 번 실행했다.
+
+    PYTHONDONTWRITEBYTECODE=1 python3 docs/research/phase-0/fixtures/FX-THREAT-MODEL-PERMISSION-BOUNDARIES-001/runner.py
+
+RUN-OQ015-003은 2026-08-21T06:41:37Z–06:41:38Z, RUN-OQ015-004는
+2026-08-21T06:41:38Z에 실행했다. 두 실행 모두 exit `0`, 17/17 assertions와
+`all_assertions_pass=true`를 보고했고 raw JSON output은 byte-identical이었다. 관찰된 control은 target-root parent/symlink escape 거부,
+user receipt 없는 authority/scope·external write 및 stale digest/approval 거부, two-writer
+차단과 observer read, forbidden capability 차단, synthetic secret redaction, worker
+self-verification/acting evidence 누락 차단, candidate memory 비노출과 corrupt memory
+`HOLD`다.
+
+보존한 artifact hash는 다음과 같다.
+
+- fixture runner: `b8f926b12e08ce234e608818598e0fbb81efda25725cb633d7a68f0784b1398a`
+- fixture input: `41dfd917257a4ddc34c3d156afed1a6aa5b6a3c1a81c84888cfb218a6cea06fb`
+- OQ-015 redacted result manifest: `e5d7afbd810487fb7847f48a035d329b17e292b2e29695169942e4c4a1a00ce7`
+
+추가 검증은 `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile .../runner.py`와
+`python3 -m json.tool .../input/fixture.json >/dev/null`로 각각 exit `0`이었다. fixture는
+network/external write, credentials, plugin install, daemon, target `.geness/`와 실제
+`GENESS_HOME`을 사용하지 않았다. multi-process lease/crash, installed-host sandbox,
+secret corpus, exact risk/receipt schema와 user decision은 여전히 open이다.
+최종 `git diff --check --`도 exit `0`이었다. `node /tmp/geness-p0-06-markdown-check.mjs`는
+exit `0`, `markdown_files=67`, `local_links=223`, `local_anchor_links=25`,
+`fence_delimiters=154`, `trailing_whitespace=0`, `errors=[]`를 반환했다.
+
 ## 3. 검증된 repository 사실
 
 - Git repository root는 이 프로젝트 디렉터리다.
@@ -240,6 +275,7 @@ schema, Learning/Storage ADR 또는 Implementation `CLEAR`가 아니다.
 | Dual-host boundary | Accepted, manifest prototype TBD | [ADR-0001](../adr/0001-dual-host-shared-core.md) |
 | Interview principles | Accepted, implementation TBD | [ADR-0004](../adr/0004-ouroboros-interview-principles.md) |
 | Failure learning | Accepted principle, thresholds TBD | [ADR-0003](../adr/0003-failure-candidate-is-not-memory.md) |
+| Threat model / permission boundary | Proposed, user decision pending | [ADR-0009](../adr/0009-threat-model-permission-boundaries.md) |
 | Implementation plan | Draft | [PLAN](../PLAN.md) |
 
 ## 5. Phase roadmap
@@ -261,7 +297,8 @@ schema, Learning/Storage ADR 또는 Implementation `CLEAR`가 아니다.
 사용자가 Phase 0 blocking packet의 후보를 검토하고 decision receipt를 기록한다. 특히
 [OQ-001](../research/OPEN_QUESTIONS.md)의 runtime 후보, P0-05의 OQ-005/006/007/013
 identity·schema·digest·config recommendation, P0-06의 OQ-012/014 host·command
-recommendation과 P0-07의 OQ-010/011 memory·retention·bootstrap recommendation을
+recommendation, P0-07의 OQ-010/011 memory·retention·bootstrap recommendation과
+P0-08의 OQ-015 threat model·permission recommendation을
 선택하기 전에는 Architecture/Storage/Host/Specification/Learning ADR을 Accepted로
 바꾸거나 제품 scaffold를 만들지 않는다.
 

@@ -194,3 +194,20 @@ schema와 transaction 구현은 Phase 0에서 확정한다.
 - BLOCKED에서 evidence-only VERIFYING 복귀와 contract-change REOPENED 분기
 - task-level FAILED 후 명시적 reopen
 - cancelled task와 expired lease 구분
+
+## 12. Permission-gated transitions
+
+세부 threat model과 user-owned policy 후보는 [ADR-0009](./adr/0009-threat-model-permission-boundaries.md)와
+[OQ-015](./research/phase-0/OQ-015-threat-model-permission-policy.md)가 소유한다. 다음은
+user receipt 전의 fail-closed 정렬 방향이다.
+
+| lifecycle operation | required precondition | missing/stale condition |
+| --- | --- | --- |
+| setup/preflight observation | resolved target root, identity와 read-only capability | root/identity/capability가 불명확하면 `HOLD` |
+| `PLAN_APPROVED → RUNNING` | current contract/plan digest, allowed scope, active writer lease와 approved capability | stale digest, second writer, scope/capability mismatch면 `HOLD` |
+| scope 확대·external write·destructive/security-boundary action | current digest에 묶인 explicit user receipt와 host guard | worker/host/policy의 implicit approval은 권한이 아니며 `HOLD` |
+| `VERIFYING → COMPLETED` | independent verifier, current evidence와 behavior-bearing AC의 acting evidence | worker self-verification 또는 evidence freshness/acting 누락이면 `HOLD` |
+
+untrusted project text, host session, worker result와 이전 revision은 user approval을 대신하지
+않는다. 정확한 approval actor·risk threshold·receipt schema, lease takeover와 completion
+atomicity는 각각 OQ-008/OQ-003/OQ-009의 user decision과 후속 fixture가 닫는다.

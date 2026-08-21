@@ -97,6 +97,20 @@ reason
 하나라도 충족하지 못하면 `HOLD`이며 failure category에 따라 execution, specification,
 user decision 또는 system recovery로 route한다.
 
+### 6.1 Security and authority completion checks
+
+[ADR-0009](./adr/0009-threat-model-permission-boundaries.md)의 Proposed baseline에 맞춰
+verifier는 다음을 completion evidence에 포함한다.
+
+- changed path가 canonical target root와 approved allowed scope 안에 있는지
+- current spec/plan digest, approval receipt와 evidence freshness가 일치하는지
+- worker/host self-report만으로 PASS를 만들지 않았는지
+- behavior-bearing AC에 independent verifier의 acting observation이 있는지
+- raw secret/credential이 project document, memory와 final projection에 들어가지 않았는지
+
+불확실한 redaction, stale evidence, authority mismatch와 scope violation은 `INDETERMINATE` 또는
+`HOLD`로 남기며 완료로 축약하지 않는다.
+
 Verification은 먼저 `READY_TO_COMPLETE`를 선언한다. final `run.md`와
 `verification.md` projection, reconciliation 뒤 Controller가 한 runtime transaction에서
 terminal checkpoint를
