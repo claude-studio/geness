@@ -1,6 +1,6 @@
 # Geness Progress
 
-> 마지막 검증: 2026-08-20
+> 마지막 검증: 2026-08-21
 > Documentation foundation: CLEAR
 > Implementation: HOLD
 
@@ -106,6 +106,37 @@ CANCELLED semantics, Plan Gate actor policy, crash-point matrix and production t
 atomicity remain unobserved. No language, package, runtime, schema, daemon, lease policy,
 approval actor or completion transaction was selected; no ADR was created.
 
+### Phase 0 P0-05 #17 identity·schema·digest·config research — VERIFIED OBSERVATION
+
+2026-08-21에 [OQ-005](../research/phase-0/OQ-005-project-workspace-identity.md),
+[OQ-006](../research/phase-0/OQ-006-schema-lineage.md),
+[OQ-007](../research/phase-0/OQ-007-digest-canonicalization.md),
+[OQ-013](../research/phase-0/OQ-013-config-machine-contract.md) packet과 공통 disposable
+fixture를 추가했다. 네 packet은 decision-ready recommendation이지만 사용자 decision
+receipt가 없으므로 `Resolved` 또는 ADR로 승격하지 않았다.
+
+정확한 fixture command를 두 번 실행했다.
+
+    PYTHONDONTWRITEBYTECODE=1 python3 docs/research/phase-0/fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/runner.py
+
+두 실행 모두 exit `0`, 30/30 assertions와 `all_assertions_pass=true`를 보고했고 parsed
+JSON output이 equality-equivalent였다. local Git temporary probe에서 clone/rename/worktree
+와 synthetic explicit fork relation을 확인했으며, frontmatter/SQLite semantic·body
+round-trip, accepted revision 2 write와 stale revision DENIED/no mutation, contract/plan
+golden vector와 portable/local config boundary도 통과했다.
+
+보존한 artifact hash는 다음과 같다.
+
+- `runner.py`: `42475a16c6e8136000eb5ee03297bef289a795e50af69855499ce4694c5e2a61`
+- `input/fixture.json`: `06a74865a1852918d61e5cec7138dc521beee6084234bfee9d585b32de98fc4e`
+- redacted result manifest: `c3dbbbf7a77605a2c195f3721178611c55e30bc79ef9c4a15fa262bc940e1c8c`
+
+추가 검증은 `python3 -m py_compile` exit `0`, input/result JSON validation exit `0`,
+`git diff --check --` exit `0`, read-only Markdown 검사 `markdown_files=57`,
+`local_links=147`, `fence_delimiters=122`, `trailing_whitespace=0`, `errors=[]`였다.
+이 결과는 identity/schema/digest/config 후보의 조사 evidence이지 production schema,
+serializer, config policy, ADR 또는 Implementation `CLEAR`가 아니다.
+
 ## 3. 검증된 repository 사실
 
 - Git repository root는 이 프로젝트 디렉터리다.
@@ -149,9 +180,10 @@ approval actor or completion transaction was selected; no ADR was created.
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-[OQ-001](../research/OPEN_QUESTIONS.md)의 후보 비교 evidence를 읽고 사용자가 Go+CGO,
-Rust+bundled SQLite, TypeScript/Node 또는 Python 중 하나를 선택한다. 선택 전에는
-Architecture ADR과 제품 scaffold를 만들지 않는다.
+사용자가 Phase 0 blocking packet의 후보를 검토하고 첫 decision receipt를 기록한다. 특히
+[OQ-001](../research/OPEN_QUESTIONS.md)의 runtime 후보와 P0-05의 OQ-005/006/007/013
+identity·schema·digest·config recommendation을 선택하기 전에는 Architecture/Storage/
+Specification ADR과 제품 scaffold를 만들지 않는다.
 
 이번 DOC-01 문서 변경 뒤 다음을 검증했다.
 

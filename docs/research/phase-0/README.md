@@ -73,6 +73,26 @@ transaction. Its observed two-run result is 7 assertions per run with equality-e
 JSON output. Heartbeat/grace/takeover, complete lifecycle and CANCELLED semantics, Plan Gate
 actor policy, crash-point matrix and production atomicity remain unobserved.
 
+## Issue #17 research index
+
+The following are observed Phase 0 research packets for identity, schema, digest and config.
+They are decision-ready recommendations, not Resolved decisions, and contain no user decision
+receipts:
+
+| OQ | packet | shared fixture | RUN evidence | status |
+| --- | --- | --- | --- | --- |
+| OQ-005 | [OQ-005-project-workspace-identity.md](./OQ-005-project-workspace-identity.md) | [FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md](./fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md) | [RUN-OQ005-001/RUN.md](./evidence/OQ-005/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ005-001/RUN.md) | decision-ready / user decision pending |
+| OQ-006 | [OQ-006-schema-lineage.md](./OQ-006-schema-lineage.md) | [FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md](./fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md) | [RUN-OQ006-001/RUN.md](./evidence/OQ-006/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ006-001/RUN.md) | decision-ready / user decision pending |
+| OQ-007 | [OQ-007-digest-canonicalization.md](./OQ-007-digest-canonicalization.md) | [FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md](./fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md) | [RUN-OQ007-001/RUN.md](./evidence/OQ-007/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ007-001/RUN.md) | decision-ready / user decision pending |
+| OQ-013 | [OQ-013-config-machine-contract.md](./OQ-013-config-machine-contract.md) | [FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md](./fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md) | [RUN-OQ013-001/RUN.md](./evidence/OQ-013/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ013-001/RUN.md) | decision-ready / user decision pending |
+
+The shared fixture executed local Git clone/rename/worktree probes, a synthetic explicit fork
+relation, frontmatter/SQLite round-trip, stale revision rejection, contract/plan golden digest
+vectors and a portable/local config boundary assertion. It reported 30/30 assertions and
+equality-equivalent JSON on two runs. The fixture does not choose project ID generation,
+production SQLite schema, a cross-language serializer, `.geness/config.yaml`, task machine JSON
+or any product implementation.
+
 ## Packet 작성 순서
 
 1. 해당 OQ의 질문, 결정 권한, allowed scope와 non-goal을 먼저 적는다.

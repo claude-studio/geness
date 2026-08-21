@@ -1,0 +1,138 @@
+{
+  "fixture_schema": "fixture.identity-schema-digest-config.input.v1",
+  "deterministic": true,
+  "identity_cases": {
+    "source": {
+      "project_id": "project-source-001",
+      "workspace_id": "workspace-source-001",
+      "display_name": "demo-repo",
+      "path": "/synthetic/demo-repo"
+    },
+    "variants": [
+      {
+        "id": "clone",
+        "project_id": "project-source-001",
+        "workspace_id": "workspace-clone-001",
+        "display_name": "demo-repo",
+        "path": "/synthetic/demo-repo-clone",
+        "expected_project_relation": "SHARED",
+        "expected_workspace_relation": "DISTINCT",
+        "explicit_detach": false
+      },
+      {
+        "id": "fork",
+        "project_id": "project-fork-001",
+        "workspace_id": "workspace-fork-001",
+        "display_name": "demo-repo",
+        "path": "/synthetic/demo-repo-fork",
+        "expected_project_relation": "DETACHED",
+        "expected_workspace_relation": "DISTINCT",
+        "explicit_detach": true
+      },
+      {
+        "id": "folder-rename",
+        "project_id": "project-source-001",
+        "workspace_id": "workspace-source-001",
+        "display_name": "demo-repo-renamed",
+        "path": "/synthetic/demo-repo-renamed",
+        "expected_project_relation": "SHARED",
+        "expected_workspace_relation": "SHARED",
+        "explicit_detach": false
+      },
+      {
+        "id": "worktree",
+        "project_id": "project-source-001",
+        "workspace_id": "workspace-worktree-001",
+        "display_name": "demo-repo",
+        "path": "/synthetic/demo-repo-worktree",
+        "expected_project_relation": "SHARED",
+        "expected_workspace_relation": "DISTINCT",
+        "explicit_detach": false
+      },
+      {
+        "id": "same-name-repository",
+        "project_id": "project-other-001",
+        "workspace_id": "workspace-other-001",
+        "display_name": "demo-repo",
+        "path": "/synthetic/other/demo-repo",
+        "expected_project_relation": "DETACHED",
+        "expected_workspace_relation": "DISTINCT",
+        "explicit_detach": true
+      }
+    ]
+  },
+  "frontmatter_case": {
+    "markdown": "---\nschema_version: 1\ntask_id: task-p005-001\ncontract_revision: 3\nstatus: approved\ncontract_digest: \"sha256:fixture-contract-v1\"\ngoal: \"Preserve semantic task state across a projection round-trip\"\nacceptance_criteria: [{\"id\":\"AC-001\",\"outcome\":\"round-trip preserves semantic fields\",\"required\":true}]\nexecution: {\"allowed_scope\":[\"docs/research/phase-0\"],\"forbidden_scope\":[\".geness/\"],\"test_policy\":\"fixture-only\"}\nupdated_at: \"2026-08-21T00:00:00Z\"\n---\n# Fixture task\n\nThe body is editorial projection text.\n"
+  },
+  "stale_write_case": {
+    "task_id": "task-p005-001",
+    "initial_revision": 1,
+    "initial_digest": "sha256:fixture-contract-v1",
+    "accepted_revision": 2,
+    "accepted_digest": "sha256:fixture-contract-v2",
+    "stale_expected_revision": 1,
+    "stale_expected_digest": "sha256:fixture-contract-v1",
+    "stale_attempt_revision": 3,
+    "stale_attempt_digest": "sha256:fixture-contract-v3"
+  },
+  "digest_cases": {
+    "contract": {
+      "base": {
+        "goal": "Preserve semantic task state",
+        "non_goals": ["Implement the Controller"],
+        "constraints": ["No target repository writes"],
+        "context": {"relevant_paths": ["docs/research/phase-0"]},
+        "acceptance_criteria": [{"id": "AC-001", "outcome": "round-trip is lossless", "required": true}],
+        "execution": {"allowed_scope": ["docs/research/phase-0"], "retry": {"max_successors": 5}}
+      },
+      "reordered": {
+        "execution": {"retry": {"max_successors": 5}, "allowed_scope": ["docs/research/phase-0"]},
+        "acceptance_criteria": [{"required": true, "outcome": "round-trip is lossless", "id": "AC-001"}],
+        "context": {"relevant_paths": ["docs/research/phase-0"]},
+        "constraints": ["No target repository writes"],
+        "non_goals": ["Implement the Controller"],
+        "goal": "Preserve semantic task state"
+      },
+      "semantic_changed": {
+        "goal": "Change the semantic task state",
+        "non_goals": ["Implement the Controller"],
+        "constraints": ["No target repository writes"],
+        "context": {"relevant_paths": ["docs/research/phase-0"]},
+        "acceptance_criteria": [{"id": "AC-001", "outcome": "round-trip is lossless", "required": true}],
+        "execution": {"allowed_scope": ["docs/research/phase-0"], "retry": {"max_successors": 5}}
+      },
+      "editorial_markdown": {
+        "base": "---\ncontract_revision: 3\n---\n# Fixture task\n\nBody.\n",
+        "variant": "---\ncontract_revision: 3\n---\n# Fixture task\n\nBody with an editorial line.\n"
+      },
+      "expected_base_digest": "sha256:e33553ac8e334a18186c49a081e9abddd26b77409ded3949cad3072b5a541128"
+    },
+    "plan": {
+      "base": {
+        "spec_digest": "sha256:fixture-contract-v1",
+        "steps": [{"id": "STEP-001", "ac_refs": ["AC-001"], "path": "docs/research/phase-0"}],
+        "test_policy": "run fixture twice"
+      },
+      "reordered": {
+        "test_policy": "run fixture twice",
+        "steps": [{"path": "docs/research/phase-0", "ac_refs": ["AC-001"], "id": "STEP-001"}],
+        "spec_digest": "sha256:fixture-contract-v1"
+      },
+      "semantic_changed": {
+        "spec_digest": "sha256:fixture-contract-v1",
+        "steps": [{"id": "STEP-001", "ac_refs": ["AC-001"], "path": "docs/research/phase-0"}, {"id": "STEP-002", "ac_refs": ["AC-001"], "path": "docs/research/phase-0/evidence"}],
+        "test_policy": "run fixture twice"
+      },
+      "expected_base_digest": "sha256:e729ee145de2d0df63d1b28f7c6a53b8b4da43538684198ff41f70111b9fcd4a"
+    }
+  },
+  "config_boundary": {
+    "portable_project_fields": ["schema_version", "project_id", "display_name", "created_at"],
+    "portable_task_fields": ["schema_version", "task_id", "contract_revision", "contract_digest", "goal", "acceptance_criteria", "execution"],
+    "machine_state_fields": ["GENESS_HOME", "workspace_id", "host_session_id", "runtime_db_path", "evidence_path"],
+    "forbidden_portable_fields": ["host_session_id", "runtime_db_path", "evidence_path", "secret"],
+    "separate_project_config": false,
+    "task_machine_json": false,
+    "expected_profile": "frontmatter-plus-runtime-boundary"
+  }
+}
