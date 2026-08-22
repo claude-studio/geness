@@ -109,7 +109,7 @@ canonical state를 기록한다. `done`과 `resume`은 새로운 task state가 �
 | Preflight/Plan | 승인된 spec | 실제 repository 점검, 추적 가능한 plan, 필요 승인 |
 | Execution | 승인된 digest와 writer lease | 모든 work item 종료 또는 typed blocker |
 | Verification | 실행 lineage와 evidence | 모든 필수 AC pass 또는 recovery/reopen route |
-| Learning | 실패·성공 event | deterministic lifecycle transition |
+| Learning | 실패·성공 event | deterministic lifecycle transition ([ADR-0018](./adr/0018-deterministic-lesson-evaluator.md)) |
 
 `PLAN_APPROVED`는 항상 Plan Gate가 통과했다는 상태 이름이다. 반드시 사람이 승인했다는
 뜻은 아니다. Gate에는 `approval_actor: user | policy`를 기록한다. scope 확대, 파괴적

@@ -148,7 +148,7 @@ Project/workspace lineage policy is defined by [ADR-0015](./adr/0015-project-wor
 - rules, root causes와 guards
 - occurrence/exposure/success counters
 - evidence references
-- evaluator version과 transition history
+- evaluator/rule version, threshold profile과 transition history
 - FTS5 index와 synchronization trigger
 
 memory SQLite는 빠른 검색 index다. lesson event의 append-only 감사 원본은

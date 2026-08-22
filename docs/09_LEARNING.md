@@ -1,6 +1,6 @@
 # Failure Learning and Memory Guide
 
-> 상태: Accepted principles / evaluator thresholds TBD
+> 상태: Accepted C-01 evaluator thresholds / production implementation TBD
 
 ## 1. 목적
 
@@ -102,23 +102,26 @@ LLM은 상태를 직접 바꾸지 않는다. Controller evaluator가 versioned r
 
 ### Verified 후보
 
-- 같은 fingerprint가 독립 run에서 반복됨
+- 같은 fingerprint가 서로 다른 `run_id`를 가진 독립 run 2회에서 반복됨
 - 또는 재현 가능한 fail-before/pass-after guard evidence가 존재함
 - scope와 actual rule이 서로 모순되지 않음
 - evidence가 current code/project context에 유효함
 
-초기 제안은 독립 run 2회 재발 또는 deterministic guard evidence다. 수치는 ADR로
-확정하기 전까지 규범이 아니다.
+채택된 C-01 기준은 독립 run 2회 재발 또는 deterministic guard evidence다. 같은 run의
+중복 관찰은 독립 recurrence로 세지 않는다. evaluator/rule version과 threshold profile은
+transition event에 함께 기록한다. production evaluator와 fingerprint schema는 여전히
+구현 전 evidence가 필요하다.
 
 ### Expired 후보
 
 - candidate/probationary 상태이며
-- 실제 eligible exposure에서 lesson 주입 없이 여러 번 성공했고
-- 최소 관찰 기간을 충족했으며
+- 실제 eligible exposure에서 lesson 주입 없이 3회 이상 성공했고
+- 최소 관찰 기간 7일을 충족했으며
 - 재발 또는 guard prevention evidence가 없음
 
-초기 제안은 unassisted success 3회 + 최소 TTL이다. 단순 시간 경과만으로는 충분하지
-않다.
+Injected, ineligible 또는 unrelated success는 세지 않는다. 채택된 기준은 eligible
+unassisted success 3회 + 최소 age 7일이며, 단순 시간 경과만으로는 충분하지 않다.
+정확한 event/SQLite persistence와 verified lesson revocation은 후속 범위다.
 
 ### Compiled
 
