@@ -1,6 +1,6 @@
 # Failure Learning and Memory Guide
 
-> 상태: Accepted principles / evaluator thresholds TBD
+> 상태: Accepted C-01 evaluator policy / implementation and calibration TBD
 
 ## 1. 목적
 
@@ -107,8 +107,9 @@ LLM은 상태를 직접 바꾸지 않는다. Controller evaluator가 versioned r
 - scope와 actual rule이 서로 모순되지 않음
 - evidence가 current code/project context에 유효함
 
-초기 제안은 독립 run 2회 재발 또는 deterministic guard evidence다. 수치는 ADR로
-확정하기 전까지 규범이 아니다.
+Accepted [ADR-0018](./adr/0018-deterministic-lesson-evaluator.md)의 초기 policy는 독립
+run 2회 재발 또는 deterministic guard evidence다. evaluator/rule version과 독립 run
+lineage를 함께 기록하며, production evaluator 구현은 이 문서의 범위를 넘는다.
 
 ### Expired 후보
 
@@ -117,8 +118,9 @@ LLM은 상태를 직접 바꾸지 않는다. Controller evaluator가 versioned r
 - 최소 관찰 기간을 충족했으며
 - 재발 또는 guard prevention evidence가 없음
 
-초기 제안은 unassisted success 3회 + 최소 TTL이다. 단순 시간 경과만으로는 충분하지
-않다.
+Accepted [ADR-0018](./adr/0018-deterministic-lesson-evaluator.md)의 초기 policy는 eligible
+unassisted success 3회와 최소 관찰 기간 7일이다. recurrence 또는 guard prevention evidence가
+있으면 expire하지 않으며, 단순 시간 경과만으로는 충분하지 않다.
 
 ### Compiled
 

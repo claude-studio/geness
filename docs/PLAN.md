@@ -1371,7 +1371,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | OQ-007 | `docs/research/phase-0/OQ-007-digest-canonicalization.md` | versioned test vector, editorial/semantic 변경과 spec/plan invalidation fixture + delegated receipt | [ADR-0017](./adr/0017-versioned-semantic-digest.md) | RESOLVED |
 | OQ-008 | `docs/research/phase-0/OQ-008-plan-approval-policy.md` | risk, scope 확대, 외부 write와 일반 plan별 actor/policy decision table | Lifecycle/Specification | OPEN |
 | OQ-009 | `docs/research/phase-0/OQ-009-completion-lease-atomicity.md` | terminal checkpoint, projection과 lease release 각 crash point의 replay fixture + delegated decision receipt | [ADR-0014](./adr/0014-completion-lease-atomicity.md) | RESOLVED |
-| OQ-010 | `docs/research/phase-0/OQ-010-lesson-evaluator.md` | event replay 기반 false-positive/negative, 승격·감쇠·만료 비교 | Learning ADR | OPEN |
+| OQ-010 | `docs/research/phase-0/OQ-010-lesson-evaluator.md` | event replay 기반 false-positive/negative, 승격·감쇠·만료 비교 | [ADR-0018](./adr/0018-deterministic-lesson-evaluator.md) | RESOLVED |
 | OQ-011 | `docs/research/phase-0/OQ-011-runtime-retention.md` | 상태·위험도·용량별 prune simulation과 active/blocked/memory 보존 evidence | Storage ADR | OPEN |
 | OQ-012 | `docs/research/phase-0/OQ-012-host-os-compatibility.md` | 지원 후보 OS·host version의 manifest, Skill, hook와 stdio MCP capability matrix | Host ADR | OPEN |
 | OQ-013 | `docs/research/phase-0/OQ-013-config-machine-contract.md` | frontmatter-only와 별도 config/JSON 후보의 round-trip, validation과 threat fixture | Storage/Schema ADR | OPEN |
@@ -1403,6 +1403,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - [x] OQ-005 identity fixture evidence와 delegated decision receipt를 [ADR-0015](./adr/0015-project-workspace-identity.md)에 반영
 - [x] OQ-006 schema lineage fixture evidence와 delegated decision receipt를 [ADR-0016](./adr/0016-schema-lineage-and-projection-ownership.md)에 반영
 - [x] OQ-007 digest fixture evidence와 delegated decision receipt를 [ADR-0017](./adr/0017-versioned-semantic-digest.md)에 반영
+- [x] OQ-010 lesson evaluator fixture evidence와 delegated decision receipt를 [ADR-0018](./adr/0018-deterministic-lesson-evaluator.md)에 반영
 - [x] OQ-009 completion/lease atomicity crash-point fixture evidence와 delegated decision receipt를 [ADR-0014](./adr/0014-completion-lease-atomicity.md)에 반영
 - [x] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 C-01 권한 정책·user receipt 작성
 - [ ] 남은 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
@@ -1800,8 +1801,8 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 | verifier independence | 동일 worker 결과의 제한, 독립 actor 자격과 불일치 결과 합성 policy 결정 | Phase 0/4 |
 | memory bootstrap | 미생성·empty·unavailable memory의 typed result와 Phase 3 진행 Gate 결정 | Phase 0/3/5 |
 | lesson fingerprint | project + phase + module/symbol + failure class + violated rule | Phase 0/5 |
-| 승격 threshold | 독립 재발 2회 또는 재현 가능한 guard evidence 후보 | Phase 0/5 |
-| 만료 threshold | eligible unassisted success 3회 + 최소 TTL 후보 | Phase 0/5 |
+| 승격 threshold | 독립 재발 2회 또는 재현 가능한 guard evidence | Accepted; [ADR-0018](./adr/0018-deterministic-lesson-evaluator.md) |
+| 만료 threshold | eligible unassisted success 3회 + 최소 관찰 기간 7일 | Accepted initial profile; [ADR-0018](./adr/0018-deterministic-lesson-evaluator.md) |
 | memory 팀 공유 | verified lesson export와 compiled guard 우선 검토 | Phase 5/7 |
 | retrieval top-K | 기본 3개 | Phase 5 |
 | runtime retention | run 상태·위험도·용량에 따른 TTL | Phase 0/7 |
@@ -2017,6 +2018,7 @@ approval, digest, lease와 completion 규칙은 [Lifecycle](./02_TASK_LIFECYCLE.
 | 2026-08-22 | 사용자 결정: OQ-004 C-01 recovery policy를 채택해 explicit user receipt가 있는 `FAILED`만 reopen하고 `CANCELLED`는 terminal로 유지하며, ADR-0013과 OQ-004 receipt에 기록. |
 | 2026-08-22 | delegated AUTOPILOT decision: OQ-005 C-01 project lineage/workspace identity를 채택하고 ADR-0015와 OQ-005 receipt에 기록. |
 | 2026-08-22 | delegated AUTOPILOT decision: OQ-007 C-01 versioned semantic digest projection과 SHA-256 profile을 채택하고 ADR-0017 및 OQ-007 receipt에 기록. |
+| 2026-08-23 | delegated AUTOPILOT decision: OQ-010 C-01 deterministic evidence-gated lesson evaluator와 `2 / 3 / 7일` initial profile을 채택하고 ADR-0018 및 OQ-010 receipt에 기록. |
 | 2026-08-10 | 초기 계획 작성. 인터뷰, dual-host plugin, target `.geness/`, local memory/runtime 및 실패 교훈 lifecycle 합의 반영. |
 | 2026-08-10 | docs-first 구조, Ouroboros·MCX 출처와 차용 경계, plan approval actor 및 completion lease 순서 정렬. |
 | 2026-08-10 | 전체 문서 감사 결과를 반영해 Phase 0 OQ/evidence matrix, 교차 concern Gate, trace lineage, memory bootstrap과 transport/installed-host E2E 단계 경계를 보강. |

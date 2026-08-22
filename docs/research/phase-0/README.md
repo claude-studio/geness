@@ -145,12 +145,12 @@ minimum for older host versions.
 
 ## Issue #19 research index
 
-The following are decision-ready memory, retention and bootstrap packets. They are not Resolved
-decisions and contain no user decision receipts:
+OQ-010 is resolved through its delegated decision receipt and [ADR-0018](../../adr/0018-deterministic-lesson-evaluator.md).
+OQ-011 remains a decision-ready retention/bootstrap packet without a decision receipt:
 
 | OQ | packet | shared fixture | RUN evidence | status |
 | --- | --- | --- | --- | --- |
-| OQ-010 | [OQ-010-lesson-evaluator.md](./OQ-010-lesson-evaluator.md) | [FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md](./fixtures/FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md) | [RUN-OQ010-001/result.json](./evidence/OQ-010/FX-MEMORY-RETENTION-BOOTSTRAP-001/RUN-OQ010-001/result.json) | decision-ready / user decision pending |
+| OQ-010 | [OQ-010-lesson-evaluator.md](./OQ-010-lesson-evaluator.md) | [FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md](./fixtures/FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md) | [RUN-OQ010-001/result.json](./evidence/OQ-010/FX-MEMORY-RETENTION-BOOTSTRAP-001/RUN-OQ010-001/result.json); [USER-DECISION-OQ010-001](./evidence/OQ-010/USER-DECISION-RECEIPT-001.md) | resolved / [ADR-0018](../../adr/0018-deterministic-lesson-evaluator.md) Accepted |
 | OQ-011 | [OQ-011-runtime-retention.md](./OQ-011-runtime-retention.md) | [FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md](./fixtures/FX-MEMORY-RETENTION-BOOTSTRAP-001/README.md) | [RUN-OQ011-001/result.json](./evidence/OQ-011/FX-MEMORY-RETENTION-BOOTSTRAP-001/RUN-OQ011-001/result.json) | decision-ready / user decision pending |
 
 The shared fixture replayed 13 synthetic events twice with 43/43 assertions on each run and
@@ -158,8 +158,9 @@ equality-equivalent projections. It observed first-failure candidate isolation, 
 recurrence and reproducible guard promotion, eligible-only unassisted-success expiry, and
 state/risk/size retention candidates. Its bootstrap result distinguishes `UNINITIALIZED`,
 `EMPTY`, `AVAILABLE` and `UNAVAILABLE` rather than collapsing missing or corrupt memory into
-an empty query. The fixture does not choose production thresholds, retention classes, a
-bootstrap Gate, event/SQLite schema or any product implementation.
+an empty query. The OQ-010 decision adopts the initial `2 / 3 / 7일` evaluator profile but does
+not choose production calibration, retention classes, a bootstrap Gate, event/SQLite schema
+or any product implementation.
 
 ## Issue #20 research index
 
@@ -184,7 +185,7 @@ test or user decision.
 [PHASE-0-GATE-AUDIT-001](./PHASE-0-GATE-AUDIT-001.md) records the Gate result as `HOLD` as
 of its 2026-08-21 audit. OQ-001 and OQ-002 were resolved afterward through their user
 receipts and ADR-0010/ADR-0011; OQ-003 was subsequently resolved through its user receipt and
-ADR-0012. OQ-004/OQ-008 evidence and the remaining OQ-008, OQ-010~OQ-014 decisions remain blockers.
+ADR-0012. OQ-004/OQ-008 evidence and the remaining OQ-008, OQ-011~OQ-014 decisions remain blockers.
 OQ-005 was subsequently resolved through ADR-0015 and its delegated decision receipt, while
 OQ-009 was resolved through its crash-point matrix, delegated decision receipt and ADR-0014.
 No product implementation or Phase 0 `CLEAR` is claimed.

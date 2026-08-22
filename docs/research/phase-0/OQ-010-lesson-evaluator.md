@@ -3,11 +3,11 @@ packet_schema_version: 1
 packet_id: "OQ-010"
 question_id: "OQ-010"
 title: "lesson fingerprint, 승격, 감쇠와 만료 threshold"
-status: "decision-ready"
+status: "resolved"
 owner: "Codex review / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-21T05:41:00Z"
-updated_at: "2026-08-22T15:33:58Z"
+updated_at: "2026-08-22T16:07:07Z"
 ---
 
 # OQ-010 — lesson fingerprint, 승격, 감쇠와 만료 threshold
@@ -21,7 +21,7 @@ updated_at: "2026-08-22T15:33:58Z"
 - **Allowed scope:** deterministic lesson lifecycle candidate 비교, event replay, eligible exposure와
   unassisted success 구분, promotion/decay/expiry 후보 threshold, 일반 retrieval visibility
 - **Non-goals:** production event/SQLite schema, FTS query algorithm, project writer arbitration,
-  team export format, LLM prompt wording, 제품 evaluator 구현과 user decision receipt 확정
+  team export format, LLM prompt wording과 제품 evaluator 구현
 - **Dependencies:** P0-05 #17 `closed/status:done`; [ADR-0003](../../adr/0003-failure-candidate-is-not-memory.md),
   OQ-006 schema owner는 [ADR-0016](../../adr/0016-schema-lineage-and-projection-ownership.md)로
   resolved됐고 OQ-007 digest decision은 [ADR-0017](../../adr/0017-versioned-semantic-digest.md)로 resolved됐다.
@@ -35,9 +35,9 @@ updated_at: "2026-08-22T15:33:58Z"
 
 | candidate_id | candidate | description | assumptions | evidence status |
 | --- | --- | --- | --- | --- |
-| C-01 | deterministic evidence-gated evaluator | 구조화 fingerprint를 병합하고, 독립 run 2회 evidence 또는 재현 가능한 guard evidence에서 `verified`, 실제 eligible unassisted success 3회와 최소 관찰 기간에서 candidate/probationary를 `expired`로 전환한다. 일반 retrieval은 `verified\|enforced`만 노출한다. | fingerprint와 independent run identity가 안정적으로 기록되고 evaluator/rule version을 함께 보존한다. | `observed` fixture profile + `inferred` recommendation |
-| C-02 | weighted confidence / model-assisted evaluator | recurrence, similarity와 모델 confidence를 가중해 확률적으로 승격·감쇠한다. | 모델 version·confidence calibration과 동일 입력 결정성이 별도 보장된다. | `unverified` — fixture 미실행 |
-| C-03 | eager promotion / no expiry | 첫 failure를 곧바로 memory로 주입하고 시간 또는 exposure에 따른 만료를 두지 않는다. | false positive와 context pollution을 허용한다. | `observed` negative control — accepted 원칙과 불일치 |
+| C-01 | deterministic evidence-gated evaluator | 구조화 fingerprint를 병합하고, 독립 run 2회 evidence 또는 재현 가능한 guard evidence에서 `verified`, 실제 eligible unassisted success 3회와 최소 관찰 기간에서 candidate/probationary를 `expired`로 전환한다. 일반 retrieval은 `verified\|enforced`만 노출한다. | fingerprint와 independent run identity가 안정적으로 기록되고 evaluator/rule version을 함께 보존한다. | `adopted` — [ADR-0018](../../adr/0018-deterministic-lesson-evaluator.md) |
+| C-02 | weighted confidence / model-assisted evaluator | recurrence, similarity와 모델 confidence를 가중해 확률적으로 승격·감쇠한다. | 모델 version·confidence calibration과 동일 입력 결정성이 별도 보장된다. | `deferred` — calibration/replay evidence 없음 |
+| C-03 | eager promotion / no expiry | 첫 failure를 곧바로 memory로 주입하고 시간 또는 exposure에 따른 만료를 두지 않는다. | false positive와 context pollution을 허용한다. | `rejected` — ADR-0003 boundary와 불일치 |
 
 ## 3. Trade-off matrix
 
@@ -49,8 +49,9 @@ updated_at: "2026-08-22T15:33:58Z"
 | 결정성·migration | fixture replay 두 결과가 equality-equivalent이고 evaluator version을 기록했다. | model/version/threshold migration이 추가된다. | 규칙은 단순하지만 잘못된 memory가 오래 남는다. | F-001, A-004, S-001 |
 | 운영·검색 경계 | `verified\|enforced`만 query projection에 노출하고 candidate/expired는 숨겼다. | 모델 latency와 설명 가능성 비용이 있다. | memory pollution과 사용자 정리 비용이 높다. | F-001, A-004, S-002 |
 
-수치(2회, 3회, 7일)는 이 fixture가 비교한 C-01 candidate의 입력값이다. 이 표와 결과는
-사용자 승인 전의 recommendation이며 제품 threshold가 아니다.
+수치(2회, 3회, 7일)는 결정 전 fixture가 비교한 C-01 candidate 입력값이며, 아래 receipt와
+ADR-0018에서 초기 policy profile로 채택했다. 실제 운영 calibration과 production evaluator
+구현은 후속 evidence다.
 
 ## 4. Sources
 
@@ -135,42 +136,43 @@ Additional validation records:
 
 | risk_id | risk/limitation | impact | evidence gap | mitigation/next check | owner | status |
 | --- | --- | --- | --- | --- | --- | --- |
-| R-001 | C-01 threshold numbers are synthetic candidate inputs, not calibrated production values. | `high` | real task volume, false-positive/negative rates와 user tolerance가 관찰되지 않았다. | 사용자가 recurrence/guard/expiry policy를 선택하고 Learning ADR 및 production calibration plan을 기록한다. | user | `open` |
-| R-002 | fixture fingerprint is pre-labeled and does not implement merge/split normalization. | `high` | project/module/symbol normalization, conflict resolution과 schema lineage가 미확인이다. | OQ-006/OQ-007 결정 후 fingerprint schema·digest fixture를 별도로 확장한다. | user / Phase 5 | `open` |
+| R-001 | C-01 threshold numbers are synthetic candidate inputs, not calibrated production values. | `high` | real task volume, false-positive/negative rates와 user tolerance가 관찰되지 않았다. | Learning ADR을 기준으로 Phase 5 calibration evidence와 policy migration plan을 추가한다. | user / Phase 5 | `open` |
+| R-002 | fixture fingerprint is pre-labeled and does not implement merge/split normalization. | `high` | project/module/symbol normalization, conflict resolution과 production fingerprint schema가 미확인이다. | ADR-0016/0017 boundary를 전제로 Phase 5 fingerprint schema·digest fixture를 별도로 확장한다. | user / Phase 5 | `open` |
 | R-003 | replay is single-process and does not test append/index crash recovery or concurrent memory writers. | `high` | JSONL→SQLite/FTS projection, writer arbitration과 evaluator migration이 미관찰이다. | OQ-011 및 Phase 5/7의 crash/rebuild/race fixture로 보강한다. | user / Phase 5 | `open` |
 | R-004 | verified lesson의 decay/revocation과 compiled/enforced transition은 이 fixture 범위 밖이다. | `medium` | pin/reject/deprecate/supersede와 guard compilation semantics가 미확인이다. | 별도 Learning lifecycle fixture와 user management decision을 추가한다. | user / Phase 5 | `open` |
 | R-005 | bootstrap result의 `CLEAR`/`HOLD` mapping은 fixture-local candidate다. | `high` | Phase 3 user experience와 corrupt index recovery cost가 미확인이다. | OQ-010/OQ-011 선택 결과를 bootstrap contract와 Phase 3 Gate에 반영한다. | user | `open` |
 
 ## 8. Decision
 
-- **Packet decision status:** `needs-user-decision`
-- **Recommendation:** C-01 — candidate는 일반 retrieval에서 격리하고, 구조화 fingerprint·independent
-  recurrence 또는 reproducible guard evidence를 통해서만 promotion candidate가 되며, eligible
-  unassisted success와 관찰 기간만 decay/expiry 입력으로 사용한다. fixture의 `2 / 3 / 7일`은
-  사용자가 검토할 초기 후보값이다.
+- **Packet decision status:** `resolved`
+- **Adopted decision:** C-01 — candidate는 일반 retrieval에서 격리하고, 구조화 fingerprint·independent
+  recurrence 또는 reproducible guard evidence를 통해서만 `verified` 승격을 허용한다. eligible
+  unassisted success 3회와 최소 관찰 기간 7일을 candidate/probationary expiry의 초기 profile로
+  사용하며, 일반 retrieval에는 `verified|enforced`만 노출한다.
 - **Rationale:** replay는 첫 failure가 노출되지 않고, 같은 run 중복과 unrelated/ineligible success가
   evaluator 입력에서 제외되며, injected success가 unassisted success로 오인되지 않음을 직접
   관찰했다. 또한 replay 결과가 동일해 deterministic evaluator와 versioned event lineage 후보를
   비교할 수 있다. 이는 ADR-0003의 candidate/memory 경계와 일치한다.
 - **Rejected/deferred candidates:** C-03은 첫 failure를 memory로 만드는 accepted principle 위반
-  위험 때문에 deferred/rejected control로 둔다. C-02는 calibration, model/version provenance와
-  deterministic replay evidence가 없어 deferred한다. 사용자 결정 전 어느 후보도 채택하지 않는다.
+  위험 때문에 rejected control로 둔다. C-02는 calibration, model/version provenance와
+  deterministic replay evidence가 없어 deferred한다.
 - **Unresolved impact:** fingerprint schema, merge/split rule, exact thresholds, evaluator migration,
   verified lesson revocation과 project-scoped writer policy가 닫히지 않으면 Phase 5 구현을 시작할
   수 없다.
 
 ### User/authority decision receipt
 
-- **Decision:** `pending`
-- **Actor:** `pending`
-- **Recorded at:** `pending`
-- **Reference:** `pending`
+- **Decision:** `C-01` with initial `2 / 3 / 7일` profile
+- **Actor:** `user-delegated-autonomous-delivery` under explicit AUTOPILOT delegation
+- **Recorded at:** `2026-08-22T16:07:07Z`
+- **Reference:** [USER-DECISION-OQ010-001](./evidence/OQ-010/USER-DECISION-RECEIPT-001.md)
 - **Supersedes:** `none`
 
 ## 9. Next verifiable goal
 
-사용자가 C-01/C-02와 fixture의 recurrence·unassisted-success·minimum-age 후보를 선택하고,
-선택 결과를 Learning ADR 및 OQ-010 `Resolved` receipt로 기록한다.
+OQ-011 C-01 runtime retention·bootstrap decision receipt를 기록하고 Storage ADR 범위를
+동기화한다. OQ-010의 fingerprint normalization, production evaluator와 calibration은
+후속 Phase 5 evidence로 남긴다.
 
 ## 10. Completeness checklist
 
