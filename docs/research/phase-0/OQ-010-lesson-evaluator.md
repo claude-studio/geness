@@ -3,11 +3,11 @@ packet_schema_version: 1
 packet_id: "OQ-010"
 question_id: "OQ-010"
 title: "lesson fingerprint, 승격, 감쇠와 만료 threshold"
-status: "decision-ready"
+status: "resolved"
 owner: "Codex review / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-21T05:41:00Z"
-updated_at: "2026-08-22T15:33:58Z"
+updated_at: "2026-08-22T16:06:44Z"
 ---
 
 # OQ-010 — lesson fingerprint, 승격, 감쇠와 만료 threshold
@@ -28,8 +28,8 @@ updated_at: "2026-08-22T15:33:58Z"
 - **Research owner:** Codex review
 
 이 packet은 [ADR-0003](../../adr/0003-failure-candidate-is-not-memory.md)의 accepted 원칙을
-검증 가능한 후보로 좁히는 research다. fixture의 threshold와 transition은 candidate observation이며,
-사용자 선택 전에는 Learning ADR·canonical evaluator·Implementation `CLEAR`를 만들지 않는다.
+검증 가능한 evaluator policy로 좁히는 research다. fixture의 threshold와 transition은
+decision evidence이며, production evaluator·schema·Implementation `CLEAR`와 구분한다.
 
 ## 2. Candidates
 
@@ -143,34 +143,37 @@ Additional validation records:
 
 ## 8. Decision
 
-- **Packet decision status:** `needs-user-decision`
+- **Packet decision status:** `resolved`
 - **Recommendation:** C-01 — candidate는 일반 retrieval에서 격리하고, 구조화 fingerprint·independent
   recurrence 또는 reproducible guard evidence를 통해서만 promotion candidate가 되며, eligible
   unassisted success와 관찰 기간만 decay/expiry 입력으로 사용한다. fixture의 `2 / 3 / 7일`은
-  사용자가 검토할 초기 후보값이다.
+  v1 초기 threshold다.
 - **Rationale:** replay는 첫 failure가 노출되지 않고, 같은 run 중복과 unrelated/ineligible success가
   evaluator 입력에서 제외되며, injected success가 unassisted success로 오인되지 않음을 직접
   관찰했다. 또한 replay 결과가 동일해 deterministic evaluator와 versioned event lineage 후보를
   비교할 수 있다. 이는 ADR-0003의 candidate/memory 경계와 일치한다.
+- **Decision:** C-01을 채택한다. 독립 run 2회 또는 reproducible guard evidence를 promotion
+  기준으로 하고, eligible unassisted success 3회와 최소 7일을 expiry 기준으로 한다. 일반
+  retrieval에는 `verified|enforced`만 노출한다.
 - **Rejected/deferred candidates:** C-03은 첫 failure를 memory로 만드는 accepted principle 위반
   위험 때문에 deferred/rejected control로 둔다. C-02는 calibration, model/version provenance와
-  deterministic replay evidence가 없어 deferred한다. 사용자 결정 전 어느 후보도 채택하지 않는다.
+  deterministic replay evidence가 없어 deferred한다.
 - **Unresolved impact:** fingerprint schema, merge/split rule, exact thresholds, evaluator migration,
   verified lesson revocation과 project-scoped writer policy가 닫히지 않으면 Phase 5 구현을 시작할
   수 없다.
 
 ### User/authority decision receipt
 
-- **Decision:** `pending`
-- **Actor:** `pending`
-- **Recorded at:** `pending`
-- **Reference:** `pending`
+- **Decision:** `C-01 — deterministic evidence-gated evaluator with 2 / 3 / 7일 initial thresholds`
+- **Actor:** `user`
+- **Recorded at:** `2026-08-22T16:06:44Z`
+- **Reference:** [USER-DECISION-OQ010-001](./evidence/OQ-010/USER-DECISION-RECEIPT-001.md), [ADR-0018](../../adr/0018-learning-evaluator-thresholds.md)
 - **Supersedes:** `none`
 
 ## 9. Next verifiable goal
 
-사용자가 C-01/C-02와 fixture의 recurrence·unassisted-success·minimum-age 후보를 선택하고,
-선택 결과를 Learning ADR 및 OQ-010 `Resolved` receipt로 기록한다.
+OQ-011의 runtime/evidence retention 및 memory bootstrap C-01/C-02/C-03 후보를 선택하고,
+선택 결과를 Storage ADR과 Phase 3 capability Gate에 기록한다.
 
 ## 10. Completeness checklist
 

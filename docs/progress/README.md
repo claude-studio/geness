@@ -403,9 +403,9 @@ Implementation `CLEAR`가 아니다. OQ-012/OQ-014와 ADR-0008의 user decision�
 
 2026-08-21에 [OQ-010 lesson evaluator](../research/phase-0/OQ-010-lesson-evaluator.md),
 [OQ-011 runtime retention](../research/phase-0/OQ-011-runtime-retention.md) packet과
-폐기 가능한 `FX-MEMORY-RETENTION-BOOTSTRAP-001`을 추가했다. 두 packet은
-decision-ready recommendation이지만 user decision receipt가 없으므로 `Resolved` 또는
-ADR로 승격하지 않았고 Implementation `HOLD`를 유지한다.
+폐기 가능한 `FX-MEMORY-RETENTION-BOOTSTRAP-001`을 추가했다. OQ-010은 아래의 C-01
+decision receipt와 ADR-0018로 정렬했고, OQ-011은 여전히 decision-ready recommendation으로
+user decision을 기다린다. Implementation `HOLD`는 유지한다.
 
 정확한 fixture command를 두 번 실행했다.
 
@@ -441,20 +441,33 @@ exit `0`이었다. read-only Markdown 검사는
 `markdown_files=64`, `local_links=185`, `local_anchor_links=15`, `fence_delimiters=152`,
 `trailing_whitespace=0`, `errors=[]`를 반환했다.
 
-현재 관찰은 deterministic evaluator, runtime retention과 memory capability result 후보의
-research evidence이지 production threshold, retention worker, bootstrap command, event/SQLite
-schema, Learning/Storage ADR 또는 Implementation `CLEAR`가 아니다.
+현재 관찰은 deterministic evaluator와 runtime retention/memory capability 후보의 research
+evidence다. OQ-010의 production evaluator, retention worker, bootstrap command, event/SQLite
+schema와 OQ-011의 Storage decision은 여전히 후속 범위이며 Implementation `CLEAR`가 아니다.
 
 2026-08-22T15:33:58Z에 scheduled autopilot revalidation으로 같은 fixture를 current worktree에서
 두 번 다시 실행했다. 두 실행 모두 exit `0`, `43/43` assertions와 `all_assertions_pass=true`였고,
 paired stdout은 `cmp=0`, raw stdout SHA-256은
 `de54f8842b75bd1de711bbf0d309fff83b53010203ecf5b6945033b869565713`였다. projection hash는
 두 실행 모두 `sha256:0e3e7e4ef2ae40c0b6e68673774afe7cc2d8b74a122fb38438d7ddf8371b2b07`로 기존
-evidence와 일치했다. 이 결과는 C-01 recommendation을 재검증했지만, OQ-010의
-`decision_authority: user`와 `needs-user-decision`을 바꾸지 않는다. 사용자 receipt 없이
-Learning ADR, `Resolved` 상태 또는 canonical evaluator threshold를 생성하지 않았으며, 이
-권한 blocker는 [autopilot blocker #88](https://github.com/claude-studio/geness/issues/88)에
-기록했다.
+evidence와 일치했다. 이 결과는 아래 OQ-010 C-01 decision의 evidence로 사용한다. production
+evaluator, event/SQLite schema와 Implementation `CLEAR`는 여전히 후속 범위이며, OQ-011
+retention decision과 OQ-008 등 다른 Phase 0 blocker는 유지한다.
+
+### Phase 0 OQ-010 — VERIFIED DECISION
+
+2026-08-23에 사용자의 현재 대화 지시 `진행해`를 OQ-010 C-01 권고와 초기 threshold를
+채택하라는 명시적 decision으로 기록했다. C-01은 구조화 fingerprint와 versioned
+event/evaluator rule을 사용하고, 독립 run 2회 또는 재현 가능한 guard evidence를
+promotion 기준으로 한다. eligible unassisted success 3회와 최소 7일 관찰 기간을
+candidate/probationary expiry 기준으로 하며, 일반 retrieval에는 `verified|enforced`만
+노출한다.
+
+결정은 [USER-DECISION-OQ010-001](../research/phase-0/evidence/OQ-010/USER-DECISION-RECEIPT-001.md)과
+Accepted [ADR-0018](../adr/0018-learning-evaluator-thresholds.md)에 기록했다. 이 결정은
+fixture의 43/43 deterministic evidence와 paired output equality에 근거하지만 production
+evaluator/schema, merge/split normalization, revocation, calibration, concurrent writer와
+Implementation `CLEAR`를 확정하지 않는다.
 
 ### Phase 0 P0-08 #20 threat model·권한 정책 — VERIFIED DECISION
 
@@ -536,7 +549,7 @@ merged main `23a6e75` 기준으로 수행했다. OQ-002 command API 14 assertion
 OQ-015 threat model 17 assertions를 각각 재실행해 모두 exit `0`과
 `all_assertions_pass=true`를 확인했다.
 
-현재 Gate 판정은 `HOLD`다. OQ-008과 OQ-010~OQ-014 중 남은 user decision receipt가 있고,
+현재 Gate 판정은 `HOLD`다. OQ-008과 OQ-011~OQ-014 중 남은 user decision receipt가 있고,
 OQ-004/OQ-008은 packet-level blocker이며, OQ-007과 OQ-009는 ADR까지 정렬됐지만
 production evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해제할
 근거는 없다.
@@ -569,7 +582,7 @@ production evidence와 다른 Phase 0 결정이 남아 있다. Implementation `H
 | Storage boundary / identity lineage | Accepted C-01, schema and registry TBD | [ADR-0002](../adr/0002-project-and-local-state-boundary.md), [ADR-0015](../adr/0015-project-workspace-identity.md) |
 | Dual-host boundary | Accepted, manifest prototype TBD | [ADR-0001](../adr/0001-dual-host-shared-core.md) |
 | Interview principles | Accepted, implementation TBD | [ADR-0004](../adr/0004-ouroboros-interview-principles.md) |
-| Failure learning | Accepted principle, thresholds TBD | [ADR-0003](../adr/0003-failure-candidate-is-not-memory.md) |
+| Failure learning | Accepted principle and deterministic thresholds; implementation TBD | [ADR-0003](../adr/0003-failure-candidate-is-not-memory.md), [ADR-0018](../adr/0018-learning-evaluator-thresholds.md) |
 | Threat model / permission boundary | Accepted baseline, exact risk/detector/production enforcement TBD | [ADR-0009](../adr/0009-threat-model-permission-boundaries.md) |
 | Implementation plan | Draft | [PLAN](../PLAN.md) |
 
@@ -589,11 +602,11 @@ production evidence와 다른 Phase 0 결정이 남아 있다. Implementation `H
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-010 fixture revalidation이 끝났으므로, 다음 하나의 검증 가능한 목표는 사용자가 C-01/C-02와
-recurrence·unassisted-success·minimum-age threshold를 선택하고 durable decision receipt를
-남기는 것이다. 그 receipt 전까지 OQ-010은 `needs-user-decision`, Learning ADR은 생성하지
-않으며 제품 scaffold와 Implementation `CLEAR`도 시작하지 않는다. OQ-008은 fixture가
-`selected_candidate=null`을 반환한 user-decision blocker로 유지한다.
+OQ-010 decision sync가 끝났으므로, 다음 하나의 검증 가능한 목표는 사용자가 OQ-011의
+C-01/C-02/C-03 retention 및 bootstrap mapping을 선택하고 durable decision receipt를
+남기는 것이다. 그 receipt 전까지 OQ-011은 `needs-user-decision`, Storage ADR과 Phase 3
+memory capability Gate sync는 생성하지 않는다. OQ-008은 fixture가 `selected_candidate=null`을
+반환한 user-decision blocker로 유지한다.
 
 이번 OQ-007 decision sync 뒤 다음을 검증했다.
 

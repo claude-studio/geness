@@ -21,7 +21,7 @@
 | OQ-007 | contract와 plan digest를 어떤 canonicalization으로 계산하는가? | versioned semantic projection + canonical JSON + SHA-256 | delegated user authority | [ADR-0017](../adr/0017-versioned-semantic-digest.md) |
 | OQ-008 | 모든 `PLAN_APPROVED`가 human approval인가? | 위험·scope 변경만 별도 승인하는 policy 검토 | 사용자 | Lifecycle/Specification |
 | OQ-009 | completion commit과 writer lease release의 원자적 순서는 무엇인가? | C-01: projection은 비권위로 준비하고 terminal record·completion·lease release를 한 runtime transaction에 기록 | 사용자 / delegated autonomous delivery | [ADR-0014](../adr/0014-completion-lease-atomicity.md) |
-| OQ-010 | lesson fingerprint, 승격, 감쇠와 만료 threshold는 무엇인가? | replay fixture로 false positive/negative 비교 | 사용자 | Learning ADR |
+| OQ-010 | lesson fingerprint, 승격, 감쇠와 만료 threshold는 무엇인가? | C-01 deterministic evidence-gated evaluator, 독립 재발 2회 또는 guard evidence, unassisted success 3회와 최소 7일 | 사용자 | [ADR-0018](../adr/0018-learning-evaluator-thresholds.md) |
 | OQ-011 | runtime/evidence 보존 기간과 용량 제한은 무엇인가? | 상태·위험도 기반 TTL | 사용자 | Storage ADR |
 | OQ-012 | Codex·Claude 최소 버전과 macOS/Linux/Windows 지원 범위는 무엇인가? | 공식 host contract prototype 후 확정 | 사용자 | Host ADR |
 | OQ-013 | `.geness/config.yaml`과 task별 machine JSON이 필요한가? | Markdown frontmatter로 충분한지 먼저 검증 | 사용자 | Storage/Schema ADR |
@@ -53,15 +53,17 @@
 | RQ-011 | C-01: project lineage와 workspace-scoped runtime identity를 분리하고, fork/detach와 동명 repository는 explicit detach/rekey 뒤 새 project로 취급한다. | [ADR-0015](../adr/0015-project-workspace-identity.md), [OQ-005 receipt](./phase-0/evidence/OQ-005/USER-DECISION-RECEIPT-001.md) |
 | RQ-012 | C-01: portable task Markdown은 contract/projection을 보유하고 runtime SQLite는 mutable state·revision guard·attempt·lease·verdict의 canonical owner가 되며, stale write는 거부하고 projection은 operation ID로 reconcile한다. | [ADR-0016](../adr/0016-schema-lineage-and-projection-ownership.md), [OQ-006 receipt](./phase-0/evidence/OQ-006/USER-DECISION-RECEIPT-001.md) |
 | RQ-013 | C-01: contract/plan digest는 `geness.semantic-json-v1` versioned semantic projection과 SHA-256을 사용하고 editorial-only 변경은 digest를 무효화하지 않는다. | [ADR-0017](../adr/0017-versioned-semantic-digest.md), [OQ-007 receipt](./phase-0/evidence/OQ-007/USER-DECISION-RECEIPT-001.md) |
+| RQ-014 | C-01: deterministic evidence-gated evaluator를 사용하고 독립 재발 2회 또는 reproducible guard evidence로 promotion 후보를 만들며, eligible unassisted success 3회와 최소 7일로 expiry를 평가한다. 일반 retrieval에는 `verified|enforced`만 노출한다. | [ADR-0018](../adr/0018-learning-evaluator-thresholds.md), [OQ-010 receipt](./phase-0/evidence/OQ-010/USER-DECISION-RECEIPT-001.md) |
 
 OQ-001은 RQ-006 receipt와 Accepted ADR-0010으로, OQ-002는 RQ-007 receipt와 Accepted
 ADR-0011으로, OQ-003은 RQ-008 receipt와 Accepted ADR-0012로, OQ-004는 RQ-009 receipt와
 Accepted ADR-0013으로, OQ-005는 RQ-011 delegated receipt와 Accepted ADR-0015로, OQ-006은
 RQ-012 delegated receipt와 Accepted ADR-0016으로, OQ-007은 RQ-013 delegated receipt와
-Accepted ADR-0017으로 Resolved로 기록했다. OQ-015는 앞선
+Accepted ADR-0017으로, OQ-010은 RQ-014 user receipt와 Accepted ADR-0018으로 Resolved로
+기록했다. OQ-015는 앞선
 packet의 cross-concern synthesis owner이며 RQ-005 receipt로 C-01 boundary를 Resolved로
-기록했다. 이 결정들은 OQ-008 및 OQ-010/
-OQ-011/OQ-012/OQ-013/OQ-014의 user decision을 대체하지 않는다. 특히 일반
+기록했다. 이 결정들은 OQ-008 및 OQ-011/
+OQ-012/OQ-013/OQ-014의 user decision을 대체하지 않는다. 특히 일반
 `PLAN_APPROVED` actor와 risk tier는 OQ-008에 남아 있으며, OQ-004의 전체 state graph와
 production receipt validation은 ADR-0013의 제한 범위 밖이다. OQ-009의 production
 SQLite/WAL/multi-process validation은 ADR-0014의 후속 evidence 범위다.
