@@ -7,7 +7,7 @@ status: "decision-ready"
 owner: "Codex review / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-21T05:41:00Z"
-updated_at: "2026-08-21T05:41:00Z"
+updated_at: "2026-08-22T15:33:58Z"
 ---
 
 # OQ-010 — lesson fingerprint, 승격, 감쇠와 만료 threshold
@@ -80,6 +80,8 @@ source의 pinned ref는 조사 기준 commit `45d9829abed62a4213962485bf616bc440
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `RUN-OQ010-001` | `FX-MEMORY-RETENTION-BOOTSTRAP-001` | 2026-08-21T05:40:30Z / 2026-08-21T05:40:37Z | `docs/research/phase-0/fixtures/FX-MEMORY-RETENTION-BOOTSTRAP-001` | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` | `0` | `pass` — 43/43 assertions, replay projection과 bootstrap/retention observations 생성 | A-001, A-002, A-003, A-004 |
 | `RUN-OQ010-002` | `FX-MEMORY-RETENTION-BOOTSTRAP-001` | 2026-08-21T05:40:41Z / 2026-08-21T05:40:48Z | same as above | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` | `0` | `pass` — 43/43 assertions, parsed output equality-equivalent | A-004 |
+| `RUN-OQ010-003` | `FX-MEMORY-RETENTION-BOOTSTRAP-001` | 2026-08-22T15:33:58Z / 2026-08-22T15:33:58Z | `docs/research/phase-0/fixtures/FX-MEMORY-RETENTION-BOOTSTRAP-001` | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` | `0` | `pass` — 43/43 assertions, current-worktree revalidation | A-004, A-005 |
+| `RUN-OQ010-004` | `FX-MEMORY-RETENTION-BOOTSTRAP-001` | 2026-08-22T15:33:58Z / 2026-08-22T15:33:58Z | same as above | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` | `0` | `pass` — 43/43 assertions, paired stdout byte-identical with RUN-OQ010-003 | A-004, A-005 |
 
 추가 실행 환경:
 
@@ -101,6 +103,14 @@ source의 pinned ref는 조사 기준 commit `45d9829abed62a4213962485bf616bc440
 - final retrieval projection에는 `LESSON-GUARD`, `LESSON-REPEAT`만 남았다. 이는 C-01 fixture
   profile의 관찰이지 Learning ADR 채택 결과가 아니다.
 
+2026-08-22T15:33:58Z에 current worktree에서 같은 fixture를 독립 실행으로 두 번 재검증했다.
+두 실행 모두 exit `0`, `43/43` assertions와 `all_assertions_pass=true`였고, paired raw stdout은
+`cmp=0` 및 `sha256:de54f8842b75bd1de711bbf0d309fff83b53010203ecf5b6945033b869565713`였다.
+projection hash는 두 실행 모두
+`sha256:0e3e7e4ef2ae40c0b6e68673774afe7cc2d8b74a122fb38438d7ddf8371b2b07`로 기존 evidence와
+일치했다. 이 재검증은 C-01 recommendation의 evidence를 보강하지만, `decision_authority: user`
+경계를 바꾸지 않으며 Learning ADR이나 `Resolved` receipt를 생성하지 않는다.
+
 ## 6. Artifacts and evidence
 
 | artifact_id | kind | path/URI | produced by | sha256 or reason | retention | supports |
@@ -109,7 +119,7 @@ source의 pinned ref는 조사 기준 commit `45d9829abed62a4213962485bf616bc440
 | A-002 | fixture runner | `docs/research/phase-0/fixtures/FX-MEMORY-RETENTION-BOOTSTRAP-001/runner.py` | fixture definition | `9706fbe1615baab6c184c84ff8b826f282b8cf17bc624ced8d6846eea5552c86` | `tracked` | replay, prune simulation, typed result assertions |
 | A-003 | synthetic input | `docs/research/phase-0/fixtures/FX-MEMORY-RETENTION-BOOTSTRAP-001/input/fixture.json` | fixture definition | `a8f292a84d629b342b7ec3d2e1cf21520788a7c81cef6cf4e46ad12e013ae4cb` | `tracked` | deterministic events, policy candidate and cases |
 | A-004 | redacted result manifest | `docs/research/phase-0/evidence/OQ-010/FX-MEMORY-RETENTION-BOOTSTRAP-001/RUN-OQ010-001/result.json` | `RUN-OQ010-001/002` | `7f67e265b5f813b566c8f04c53d75b7b48fd33d54622662b74f4b4b81779a267` | `packet` | 43 assertions, lifecycle/retention/bootstrap observations |
-| A-005 | raw stdout/temp state | per-run process output | `RUN-OQ010-001/002` | discarded after summary; fixture creates no persistent state | `discarded` | raw execution only |
+| A-005 | raw stdout/temp state | per-run process output | `RUN-OQ010-001/002/003/004` | `sha256:de54f8842b75bd1de711bbf0d309fff83b53010203ecf5b6945033b869565713` for paired revalidation stdout; discarded after summary | `discarded` | raw execution only |
 
 Additional validation records:
 
