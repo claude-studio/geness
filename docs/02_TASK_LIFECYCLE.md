@@ -169,12 +169,13 @@ canonical state를 기록한다. `done`과 `resume`은 새로운 task state가 �
 
 1. verification이 current digest의 `READY_TO_COMPLETE` Gate를 만든다.
 2. Controller가 final `run.md` projection과 reconciliation을 완료한다.
-3. 한 runtime transaction에서 terminal checkpoint를 기록하고 writer lease를 해제한다.
-4. active lease가 없고 terminal checkpoint를 읽을 수 있을 때만 `COMPLETED`를 외부에
-   노출한다.
+3. [ADR-0014](./adr/0014-completion-lease-atomicity.md)에 따라 한 runtime transaction에서
+   terminal checkpoint, completion record와 writer lease release를 함께 커밋한다.
+4. current runtime read가 active lease 없음과 terminal checkpoint를 확인할 때만
+   `COMPLETED`를 외부에 노출한다. 준비된 project projection은 이 확인 전까지 권위자가 아니다.
 
-3번 전후 crash는 operation ID로 idempotent하게 reconciliation한다. 정확한 SQLite
-schema와 transaction 구현은 Phase 0에서 확정한다.
+transaction 전후 crash는 operation ID로 idempotent하게 reconciliation한다. 정확한 SQLite
+schema, fsync/WAL과 multi-process transaction 구현은 후속 evidence로 검증한다.
 
 ## 10. 금지된 전이
 
@@ -215,6 +216,6 @@ schema와 transaction 구현은 Phase 0에서 확정한다.
 untrusted project text, host session, worker result와 이전 revision은 user approval을 대신하지
 않는다. 정확한 approval actor·risk threshold·receipt schema는 OQ-008이, v1 no-daemon
 liveness policy는 [ADR-0012](./adr/0012-no-background-daemon-v1.md)가, completion
-atomicity는 OQ-009가 user decision과 후속 fixture로 닫는다. OQ-004의 recovery policy는
+atomicity는 [ADR-0014](./adr/0014-completion-lease-atomicity.md)와 OQ-009 fixture로 닫혔다. OQ-004의 recovery policy는
 [ADR-0013](./adr/0013-task-lifecycle-recovery.md)에서 C-01로 닫혔지만, production
 receipt validation과 전체 state graph evidence는 남아 있다.

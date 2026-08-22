@@ -112,9 +112,10 @@ verifier는 다음을 completion evidence에 포함한다.
 `HOLD`로 남기며 완료로 축약하지 않는다.
 
 Verification은 먼저 `READY_TO_COMPLETE`를 선언한다. final `run.md`와
-`verification.md` projection, reconciliation 뒤 Controller가 한 runtime transaction에서
-terminal checkpoint를
-기록하고 lease를 해제한다. active lease가 남아 있으면 `COMPLETED`를 노출하지 않는다.
+`verification.md` projection, reconciliation을 준비한 뒤 [ADR-0014](./adr/0014-completion-lease-atomicity.md)에
+따라 Controller가 한 runtime transaction에서 terminal checkpoint, completion record와
+lease release를 함께 기록한다. current runtime read가 active lease 없음과 terminal
+checkpoint를 확인하기 전에는 `COMPLETED`를 노출하지 않는다.
 정확한 순서는 [Lifecycle](./02_TASK_LIFECYCLE.md#9-completion)이 소유한다.
 
 ## 7. Verification 후 lesson event

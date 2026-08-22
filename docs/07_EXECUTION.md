@@ -46,8 +46,9 @@ C-01 baseline에 따라 다음 요청은 Controller에서 fail-closed로 라우�
 
 이 경우 worker가 성공을 주장해도 attempt는 `HOLD`/attention이며 `RUNNING` 또는 `COMPLETED`로
 승격하지 않는다. exact approval actor/risk policy는 OQ-008, v1 no-daemon takeover guard는
-[ADR-0012](./adr/0012-no-background-daemon-v1.md), completion atomicity는 OQ-009의 user
-decision과 후속 fixture가 소유한다.
+[ADR-0012](./adr/0012-no-background-daemon-v1.md), completion atomicity는 [ADR-0014](./adr/0014-completion-lease-atomicity.md)가
+소유한다. final projection은 runtime commit 전 준비될 수 있지만 completion authority가
+아니며, operation-id reconciliation으로 runtime과 맞춘다.
 
 ## 4. Attempt contract
 

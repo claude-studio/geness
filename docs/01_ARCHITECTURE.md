@@ -159,8 +159,11 @@ adapter는 DB를 직접 쓰지 않는다. Geness는 사용자의 current branch/
 - lesson state transition과 evaluator event 기록
 - terminal completion checkpoint와 writer lease release
 
-프로젝트 Markdown write와 DB transaction을 완전히 원자화할 수 없으므로 operation ID,
-revision과 idempotent projection으로 crash recovery한다.
+프로젝트 Markdown write와 DB transaction을 완전히 원자화할 수 없으므로 final projection은
+operation ID로 준비·reconcile하되 completion authority로 사용하지 않는다. [ADR-0014](./adr/0014-completion-lease-atomicity.md)에
+따라 runtime transaction이 terminal checkpoint, writer lease release와 completion record를
+함께 커밋한 뒤 current runtime read가 확인되면 완료를 노출한다. crash recovery는 operation
+ID와 idempotent projection으로 수행한다.
 
 ## 8. 최소 package 방향
 

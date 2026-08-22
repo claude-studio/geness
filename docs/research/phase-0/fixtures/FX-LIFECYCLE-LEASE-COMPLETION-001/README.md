@@ -11,12 +11,13 @@ OQ-003, OQ-004, OQ-008, OQ-009
 ## purpose
 
 이 disposable fixture는 lifecycle transition 허용·거부, stale digest 차단,
-두 writer exclusive claim과 completion replay의 최소 관찰을 제공한다.
+두 writer exclusive claim과 completion replay를 유지하면서, 세 transaction-order
+candidate의 crash-point 중간 상태와 operation-id replay를 비교한다.
 결과는 Phase 0 research evidence일 뿐 제품 Controller 구현이나 규범 채택이 아니다.
 
 ## scope and non-goals
 
-- 포함: 합성 state transition, lease claim, terminal replay 관찰
+- 포함: 합성 state transition, lease claim, terminal replay와 crash-point matrix 관찰
 - 입력: input/fixture.json의 결정론적 합성 사례
 - 비목표: 제품 언어, package manager, runtime, production schema, daemon,
   plugin scaffold 또는 사용자 decision receipt 선택
@@ -40,6 +41,12 @@ Disposable Phase 0 lifecycle/runtime evidence fixture.
 - exclusive claim을 시도한 두 writer 중 첫 번째만 ALLOWED이고 두 번째는 DENIED다.
 - terminal checkpoint replay는 lease를 해제하고 COMPLETED를 만든 뒤 재실행해도
   같은 결과를 유지한다.
+- C-01은 projection을 준비한 뒤 terminal checkpoint와 lease release를 함께 commit하며,
+  네 crash point 모두에서 completion을 선노출하거나 terminal 전 lease를 해제하지 않는다.
+- C-02는 `after_lease_release`에서 terminal checkpoint 전 lease가 해제된다.
+- C-03은 `after_projection`에서 runtime commit 전 COMPLETED projection을 선노출한다.
+- 모든 candidate의 crash state는 operation-id replay 후 terminal·lease·projection이
+  완료 상태로 수렴하고 replay를 한 번 더 적용해도 동일하다.
 
 ## isolation and network policy
 
@@ -56,5 +63,5 @@ repository, target, home, branch와 worktree를 정리하지 않는다.
 ## retention plan
 
 - tracked: README, runner.py와 input/fixture.json
-- packet: 실제 실행 후 redacted result manifest
+- packet: 실제 실행 후 redacted result manifest와 crash-point matrix
 - local-only 또는 discarded: raw stdout/stderr와 임시 lock state
