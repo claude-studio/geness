@@ -292,6 +292,23 @@ golden vector와 portable/local config boundary도 통과했다.
 decision은 아래에 별도로 기록했지만 production schema, serializer, config policy 또는
 Implementation `CLEAR`를 의미하지 않는다.
 
+2026-08-22 scheduled revalidation에서 같은 fixture command를 두 번 실행해 각각 exit `0`,
+30/30 assertions, `all_assertions_pass=true`와 paired stdout byte equality를 확인했다.
+current paired stdout hash는
+`sha256:4adfd380c2f0094803b2b3645a330b5645472418a7ea6ea8953d32398626f051`이며,
+현재 envelope는 [RUN-OQ006-003](../research/phase-0/evidence/OQ-006/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ006-003/RUN.md)와
+result manifest에 보존했다. Historical A-001/A-004 result manifest와 current runner의
+normalized field shape가 달라 read-only `diff`는 exit `1`이었고, 이를 fixture 실패가 아닌
+evidence projection drift로 분리 기록했다. OQ-006 packet의 C-01 recommendation은 여전히
+`decision_authority: user`이므로 receipt·ADR 없이 자동 채택하지 않으며, Implementation
+`HOLD`도 유지한다.
+
+current evidence 반영 뒤 `py_compile`, input/result JSON parse, Ruby frontmatter check와
+read-only Node Markdown link/anchor/fence check를 다시 실행했다. 각각 exit `0`이며
+`frontmatter_checked=37`, `markdown_files=91`, `local_links=417`,
+`local_anchor_links=27`, `fence_delimiters=154`, `trailing_whitespace=0`, `errors=0`을
+확인했고 `git diff --check --`도 exit `0`이었다.
+
 ### Phase 0 OQ-005 — VERIFIED DECISION
 
 2026-08-22에 OQ-005 C-01을 명시적 AUTOPILOT delegated-decision policy로 채택했다. 현재
@@ -518,10 +535,12 @@ evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-005가 정렬됐으므로, 다음 하나의 검증 가능한 목표는 P0-05 identity/schema/digest
-queue의 OQ-006 schema-lineage recommendation을 같은 delegated-decision evidence gate로
-재검증하는 것이다. 제품 scaffold와 Implementation `CLEAR`는 남은 blocking decision과
-production evidence 전까지 시작하지 않는다.
+OQ-006의 current fixture revalidation과 evidence projection drift 기록이 끝났으므로,
+다음 하나의 검증 가능한 목표는 사용자로부터 OQ-006 C-01 schema-lineage decision receipt를
+받아 packet·Open Questions·Schema/Storage ADR 반영 여부를 판정하는 것이다. 사용자의
+receipt 없이 C-01을 채택하거나 `Resolved`로 옮기지 않는다. 제품 scaffold와
+Implementation `CLEAR`는 남은 blocking decision과 production evidence 전까지 시작하지
+않는다.
 
 이번 OQ-005 decision sync 뒤 다음을 검증했다.
 
