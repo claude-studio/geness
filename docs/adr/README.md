@@ -26,6 +26,7 @@ ADR은 되돌리기 어렵거나 여러 계층의 계약을 바꾸는 결정을 
 | [0009](./0009-threat-model-permission-boundaries.md) | Accepted | Threat model과 Controller 중심 fail-closed permission boundary를 정의한다. |
 | [0010](./0010-controller-runtime-go.md) | Accepted | v1 Controller는 Go + Go modules + CGO + 명시적 `sqlite_fts5`를 사용한다. |
 | [0011](./0011-canonical-command-api.md) | Accepted | 공통 application service가 canonical command API이며 CLI/MCP는 thin transport다. |
+| [0012](./0012-no-background-daemon-v1.md) | Accepted | v1은 required background daemon/host-owned sidecar 없이 explicit lease liveness를 사용한다. |
 
 ## ADR이 필요한 변경
 

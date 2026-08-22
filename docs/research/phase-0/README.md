@@ -80,23 +80,24 @@ transports; it does not select the runtime already resolved by OQ-001.
 
 ## Issue #16 research index
 
-The following are observed Phase 0 research packets for lifecycle, lease and completion.
-They are not Resolved decisions and contain no user decision receipts:
+The following are Phase 0 research packets for lifecycle, lease and completion. OQ-003 is
+resolved through its user receipt and Runtime ADR; OQ-004/OQ-008/OQ-009 remain blocked and
+have no user decision receipts:
 
 | OQ | packet | fixture | RUN evidence | status |
 | --- | --- | --- | --- | --- |
-| OQ-003 | [OQ-003-daemon-lease-liveness.md](./OQ-003-daemon-lease-liveness.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md); [FX-LEASE-LIVENESS-TAKEOVER-001/README.md](./fixtures/FX-LEASE-LIVENESS-TAKEOVER-001/README.md) | [RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ003-001/RUN.md); [liveness RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LEASE-LIVENESS-TAKEOVER-001/RUN-OQ003-001/RUN.md) | decision-ready / user decision pending |
+| OQ-003 | [OQ-003-daemon-lease-liveness.md](./OQ-003-daemon-lease-liveness.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md); [FX-LEASE-LIVENESS-TAKEOVER-001/README.md](./fixtures/FX-LEASE-LIVENESS-TAKEOVER-001/README.md) | [RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ003-001/RUN.md); [liveness RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LEASE-LIVENESS-TAKEOVER-001/RUN-OQ003-001/RUN.md); [USER-DECISION-OQ003-001](./evidence/OQ-003/USER-DECISION-RECEIPT-001.md) | resolved / [ADR-0012](../../adr/0012-no-background-daemon-v1.md) Accepted |
 | OQ-004 | [OQ-004-task-lifecycle.md](./OQ-004-task-lifecycle.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ004-001/RUN.md](./evidence/OQ-004/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ004-001/RUN.md) | blocked / user decision pending |
 | OQ-008 | [OQ-008-plan-approval-policy.md](./OQ-008-plan-approval-policy.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ008-001/RUN.md](./evidence/OQ-008/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ008-001/RUN.md) | blocked / user decision pending |
 | OQ-009 | [OQ-009-completion-lease-atomicity.md](./OQ-009-completion-lease-atomicity.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ009-001/RUN.md](./evidence/OQ-009/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ009-001/RUN.md) | blocked / user decision pending |
 
 The original shared fixture is an evidence-only Python runner. It does not select product
-language, package manager, runtime, schema, daemon, lease policy, approval actor, or completion
+language, package manager, runtime, schema, lease policy, approval actor, or completion
 transaction. Its observed two-run result is 7 assertions per run with equality-equivalent JSON
 output. The new OQ-003 liveness fixture adds two actual child processes, logical-clock
-heartbeat/grace/takeover and 17/17 assertions per run, but complete lifecycle and CANCELLED
-semantics, Plan Gate actor policy, crash-point matrix and production atomicity remain
-unobserved.
+heartbeat/grace/takeover and 17/17 assertions per run. It supports the selected no-daemon
+policy, while complete lifecycle and CANCELLED semantics, Plan Gate actor policy, crash-point
+matrix and production atomicity remain unobserved.
 
 ## Issue #17 research index
 
@@ -172,11 +173,11 @@ test or user decision.
 
 ## Issue #21 Phase 0 Gate audit
 
-[PHASE-0-GATE-AUDIT-001](./PHASE-0-GATE-AUDIT-001.md) records the current Gate result as
-`HOLD` as of its 2026-08-21 audit. OQ-001 and OQ-002 were resolved afterward through their
-user receipts and ADR-0010/ADR-0011. OQ-003 liveness evidence is now decision-ready, but its
-user receipt and the missing OQ-004/OQ-008/OQ-009 evidence remain blockers alongside the
-remaining OQ-003~OQ-014 decisions. No product implementation or Phase 0 `CLEAR` is claimed.
+[PHASE-0-GATE-AUDIT-001](./PHASE-0-GATE-AUDIT-001.md) records the Gate result as `HOLD` as
+of its 2026-08-21 audit. OQ-001 and OQ-002 were resolved afterward through their user
+receipts and ADR-0010/ADR-0011; OQ-003 was subsequently resolved through its user receipt and
+ADR-0012. OQ-004/OQ-008/OQ-009 evidence and the remaining OQ-004~OQ-014 decisions remain
+blockers. No product implementation or Phase 0 `CLEAR` is claimed.
 
 ## Packet 작성 순서
 

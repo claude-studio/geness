@@ -29,8 +29,9 @@ updated_at: "2026-08-21T07:18:40Z"
 - **Research owner:** Codex research; user는 policy 선택과 residual risk 수용 권한을 가진다.
 
 이 packet은 기존 OQ의 결정을 대신하지 않는다. 특히 OQ-008의 일반 `PLAN_APPROVED` actor와
-risk threshold, OQ-003의 liveness, OQ-009의 production atomicity와 secret redaction의 exact
-implementation은 후속 사용자 결정 또는 구현 evidence가 필요하다. 사용자는 C-01의
+risk threshold, OQ-009의 production atomicity와 secret redaction의 exact implementation은
+후속 사용자 결정 또는 구현 evidence가 필요하다. OQ-003의 v1 no-daemon/liveness policy는
+[ADR-0012](../../adr/0012-no-background-daemon-v1.md)와 receipt로 별도 기록됐다. 사용자는 C-01의
 fail-closed boundary와 `user_sensitive`/`secret_handling` permission class를 선택했으며,
 그 receipt와 Accepted ADR-0009가 이 packet의 결정 상태를 소유한다.
 
@@ -133,7 +134,7 @@ user receipt와 ADR-0009가 확정한 C-01 합성 결론이다. OQ-008의 일반
 | C-01 | T-root | resolved target root containment, parent traversal·symlink escape 거부, branch/worktree lifecycle은 user-owned | Storage / Controller boundary | OQ-005/OQ-006/OQ-013 · user | `FX-...-001` `path.*` |
 | C-02 | T-authority | `from-user`/`from-code`/`from-research` provenance 분리; untrusted text·worker result는 approval이 아님 | Interview + Specification | OQ-008/OQ-015 · user | `FX-...-001` `authority.untrusted_instruction` |
 | C-03 | T-stale | spec/plan/approval digest와 revision precondition, operation ID/idempotent replay | Lifecycle / Specification | OQ-007/OQ-009 · user | `FX-...-001` `execution.stale_digest`, `approval.stale_user_receipt` |
-| C-04 | T-race | `project_id + task_id` active writer 하나, observer read-only, grace/takeover는 별도 evidence 후 적용 | Lifecycle / Runtime | OQ-003/OQ-009 · user | `FX-...-001` `lease.*`; takeover remains open |
+| C-04 | T-race | `project_id + task_id` active writer 하나, observer read-only, grace/takeover는 별도 evidence 후 적용 | Lifecycle / Runtime | ADR-0012/OQ-009 · user | `FX-...-001` `lease.*`; production takeover remains open |
 | C-05 | T-capability | setup/preflight read-only, approved in-scope local write만 허용; runtime DB·approval bypass·danger-full-access·external/destructive action은 forbidden 또는 user-only | Host Integration / Execution | OQ-008/OQ-012/OQ-014/OQ-015 · user | `FX-...-001` `approval.*`, `capability.*` |
 | C-06 | T-secret | 저장·projection·model context 전 redaction; raw/credential은 project docs와 memory에 저장하지 않고 detector 불확실성은 `HOLD`/local-only로 라우팅 | Storage / Verification | OQ-011/OQ-013/OQ-015 · user | `FX-...-001` `secret.redacted_output`; exact detector open |
 | C-07 | T-completion | worker self-verification 금지, behavior-bearing AC는 current mechanical+acting evidence와 independent verifier 필요 | Verification / Controller | OQ-004/OQ-008/OQ-009 · user | `FX-...-001` `verification.*` |
@@ -249,7 +250,7 @@ returned exit `0`.
 | R-001 | C-01 is selected, but the general `PLAN_APPROVED` actor and risk threshold remain open. | `high` | OQ-008 still owns ordinary plan approval and exact risk classification. | OQ-008 decision packet and Lifecycle/Specification ADR follow-up. | user | `open` |
 | R-002 | fixture is a pure Python synthetic model, not a production Controller or host sandbox. | `high` | official transport, sandbox enforcement, multi-process race와 crash recovery는 미검증이다. | selected runtime/host 이후 Phase 1/4/6 fixture와 E2E를 실행한다. | user / Phase 1/4/6 | `open` |
 | R-003 | redaction probe covers only synthetic patterns. | `high` | binary output, Unicode, nested JSON, tool transcripts, unknown secret formats와 detector false negative가 미확인이다. | redaction schema/version, fail-closed behavior와 corpus를 user decision 후 별도 security test로 확장한다. | user / Phase 1/4 | `open` |
-| R-004 | lease/approval/transaction observations are not production atomicity. | `high` | heartbeat grace/takeover, cross-workspace arbitration, crash-point matrix와 receipt storage가 미확인이다. | OQ-003/OQ-009의 다중 process/replay fixture와 selected runtime ADR를 완료한다. | user | `open` |
+| R-004 | lease/approval/transaction observations are not production atomicity. | `high` | cross-workspace arbitration, crash-point matrix와 receipt storage가 미확인이다. | OQ-009의 다중 process/replay fixture와 selected runtime ADR/implementation evidence를 완료한다. OQ-003의 no-daemon policy는 ADR-0012로 결정됐다. | user | `open` |
 | R-005 | target-root and project identity policy depends on unresolved OQ-005/OQ-006/OQ-013. | `medium` | fork/rekey, schema migration, config precedence와 symlink policy의 final schema가 미확인이다. | Storage/Schema ADR에서 identity, projection과 config boundary를 함께 확정한다. | user | `open` |
 | R-006 | threat actor scope excludes remote/cloud/organization IAM. | `medium` | external service auth, multi-user shared home와 supply-chain provenance는 별도 threat model이 필요하다. | v1 범위 밖으로 기록하고 remote/cloud release 전 별도 security review를 만든다. | user / Phase 6/7 | `open` |
 
