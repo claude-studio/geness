@@ -1,0 +1,143 @@
+{
+  "fixture_schema": "fixture.lifecycle-recovery.input.v1",
+  "deterministic": true,
+  "recovery_policies": [
+    {
+      "id": "C-01",
+      "failed_recovery": "explicit_user_reopen",
+      "cancelled_recovery": "terminal"
+    },
+    {
+      "id": "C-02",
+      "failed_recovery": "explicit_user_reopen",
+      "cancelled_recovery": "explicit_user_reopen"
+    },
+    {
+      "id": "C-03",
+      "failed_recovery": "terminal",
+      "cancelled_recovery": "terminal"
+    }
+  ],
+  "recovery_cases": [
+    {
+      "id": "failed-c01-with-receipt",
+      "policy": "C-01",
+      "from": "FAILED",
+      "to": "REOPENED",
+      "user_receipt": true,
+      "expected": "ALLOWED",
+      "reason": "explicit_user_reopen"
+    },
+    {
+      "id": "failed-c02-with-receipt",
+      "policy": "C-02",
+      "from": "FAILED",
+      "to": "REOPENED",
+      "user_receipt": true,
+      "expected": "ALLOWED",
+      "reason": "explicit_user_reopen"
+    },
+    {
+      "id": "failed-c03-terminal",
+      "policy": "C-03",
+      "from": "FAILED",
+      "to": "REOPENED",
+      "user_receipt": true,
+      "expected": "DENIED",
+      "reason": "terminal_candidate_policy"
+    },
+    {
+      "id": "failed-without-receipt",
+      "policy": "C-01",
+      "from": "FAILED",
+      "to": "REOPENED",
+      "user_receipt": false,
+      "expected": "DENIED",
+      "reason": "explicit_user_reopen_required"
+    },
+    {
+      "id": "cancelled-c01-terminal",
+      "policy": "C-01",
+      "from": "CANCELLED",
+      "to": "REOPENED",
+      "user_receipt": true,
+      "expected": "DENIED",
+      "reason": "terminal_candidate_policy"
+    },
+    {
+      "id": "cancelled-c02-with-receipt",
+      "policy": "C-02",
+      "from": "CANCELLED",
+      "to": "REOPENED",
+      "user_receipt": true,
+      "expected": "ALLOWED",
+      "reason": "explicit_user_reopen"
+    },
+    {
+      "id": "cancelled-c03-terminal",
+      "policy": "C-03",
+      "from": "CANCELLED",
+      "to": "REOPENED",
+      "user_receipt": true,
+      "expected": "DENIED",
+      "reason": "terminal_candidate_policy"
+    },
+    {
+      "id": "cancelled-c02-without-receipt",
+      "policy": "C-02",
+      "from": "CANCELLED",
+      "to": "REOPENED",
+      "user_receipt": false,
+      "expected": "DENIED",
+      "reason": "explicit_user_reopen_required"
+    }
+  ],
+  "attempt_cases": [
+    {
+      "id": "attempt-fail-is-not-task-failed",
+      "attempt_verdict": "FAIL",
+      "task_state_before": "RUNNING",
+      "expected_task_state_after": "RUNNING",
+      "expected_task_level_failed": false
+    }
+  ],
+  "completion_cases": [
+    {
+      "id": "missing-terminal-checkpoint",
+      "terminal_checkpoint": false,
+      "lease_active": false,
+      "expected": "DENIED",
+      "reason": "terminal_checkpoint_missing"
+    },
+    {
+      "id": "active-lease-blocks-completion",
+      "terminal_checkpoint": true,
+      "lease_active": true,
+      "expected": "DENIED",
+      "reason": "active_lease"
+    },
+    {
+      "id": "checkpoint-after-lease-release",
+      "terminal_checkpoint": true,
+      "lease_active": false,
+      "expected": "ALLOWED",
+      "reason": "completed_exposed"
+    }
+  ],
+  "completion_order": [
+    "ready_to_complete",
+    "final_run_projection",
+    "terminal_checkpoint",
+    "lease_release",
+    "completed_exposed"
+  ],
+  "learning_cases": [
+    {
+      "id": "candidate-not-memory-before-independent-evidence",
+      "events": ["failure_event_recorded", "candidate_created", "independent_evidence_missing"],
+      "expected_candidate_status": "candidate",
+      "expected_verified_lesson": false,
+      "expected_general_query_visible": false
+    }
+  ]
+}

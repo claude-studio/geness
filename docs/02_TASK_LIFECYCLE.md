@@ -53,14 +53,16 @@ stateDiagram-v2
 
     RUNNING --> FAILED
     VERIFYING --> FAILED
-    FAILED --> REOPENED
+    FAILED --> REOPENED: explicit user receipt
+    CANCELLED
 ```
 
 개별 attempt의 `FAIL`은 task state가 아니다. 현재 v1 proposal에서 task-level
 `FAILED`는 현재 run lineage를 안전하게 복구할 수 없는 system outcome을 evidence와
-함께 기록하고, 사용자가 복구 또는 새 revision을 승인하면 `REOPENED`로 새 lineage를
-시작한다. `CANCELLED`는 사용자 취소 결과다. 두 상태의 정확한 terminal/recovery 의미는
-Phase 0의 [OQ-004](./research/OPEN_QUESTIONS.md)에서 확정한다.
+함께 기록하고, 명시적인 user reopen receipt가 있을 때만 `REOPENED`로 새 lineage를
+시작한다. `CANCELLED`는 terminal 사용자 취소 결과이며 `REOPENED`로 되돌리지 않는다.
+이 recovery policy는 [ADR-0013](./adr/0013-task-lifecycle-recovery.md)에서 채택했고,
+전체 state graph의 진입 edge와 production enforcement는 별도 evidence로 남긴다.
 
 ## 4. Gate 공통 계약
 
@@ -135,6 +137,8 @@ canonical state를 기록한다. `done`과 `resume`은 새로운 task state가 �
 - verify의 수정 가능한 실패는 현재 contract와 AC를 유지하는 successor attempt로
   재개할 수 있다. task당 successor는 최대 5회이며, 반복 fingerprint·진전 없음·예산
   소진은 `BLOCKED`와 사용자 attention으로 끝낸다.
+- task-level `FAILED`의 `REOPENED` 전이는 명시적인 user receipt가 있을 때만 허용한다.
+  `CANCELLED`는 terminal이며 자동 또는 명시적 reopen하지 않는다.
 - v1 resume은 같은 컴퓨터·같은 `GENESS_HOME`·사용자가 준비한 같은 branch/worktree에서만
   지원한다. Geness는 checkout, worktree 생성·삭제·전환을 수행하지 않는다.
 
@@ -211,4 +215,6 @@ schema와 transaction 구현은 Phase 0에서 확정한다.
 untrusted project text, host session, worker result와 이전 revision은 user approval을 대신하지
 않는다. 정확한 approval actor·risk threshold·receipt schema는 OQ-008이, v1 no-daemon
 liveness policy는 [ADR-0012](./adr/0012-no-background-daemon-v1.md)가, completion
-atomicity는 OQ-009가 user decision과 후속 fixture로 닫는다.
+atomicity는 OQ-009가 user decision과 후속 fixture로 닫는다. OQ-004의 recovery policy는
+[ADR-0013](./adr/0013-task-lifecycle-recovery.md)에서 C-01로 닫혔지만, production
+receipt validation과 전체 state graph evidence는 남아 있다.
