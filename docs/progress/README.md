@@ -1,6 +1,6 @@
 # Geness Progress
 
-> 마지막 검증: 2026-08-22
+> 마지막 검증: 2026-08-23
 > Documentation foundation: CLEAR
 > Implementation: HOLD
 
@@ -20,7 +20,8 @@ Progress와 root agent instruction이 존재한다. 로컬 link·anchor, Markdow
 [Documentation Foundation](./0000_DOCUMENTATION_FOUNDATION.md)에 있다.
 
 이번 검증에서는 public stage alias, Geness v1 contract schema, `verification.md` final
-projection, target setup과 Claude–Codex Controller bridge까지 canonical 문서에 정렬했다.
+projection, target setup과 Claude–Codex Controller bridge, versioned semantic digest
+profile까지 canonical 문서에 정렬했다.
 또한 DOC-01의 GitHub task handoff contract를 `AGENTS.md`와 `PLAN.md`에 정렬해 issue body,
 checkpoint, session start/end checklist의 portable 기록 형식을 추가했다.
 
@@ -347,6 +348,25 @@ decision, authority basis와 evidence를 기록했다. exact frontmatter grammar
 table/column/migration, cross-runtime serializer, project ID algorithm, workspace registry,
 crash recovery와 Implementation `CLEAR`는 후속 evidence 범위로 남긴다.
 
+### Phase 0 OQ-007 — VERIFIED DECISION
+
+2026-08-22 scheduled AUTOPILOT run에서 OQ-007 C-01을 같은 delegated-decision evidence
+gate로 채택했다. `FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001`을 두 번 실행해 각각 exit `0`,
+30/30 assertions와 `all_assertions_pass=true`를 확인했고, paired stdout `cmp`도 exit `0`이었다.
+current paired stdout SHA-256은
+`sha256:4adfd380c2f0094803b2b3645a330b5645472418a7ea6ea8953d32398626f051`이다.
+
+C-01은 contract/plan을 raw Markdown bytes가 아닌 명시적인 semantic projection으로
+digest하고, `geness.semantic-json-v1` profile과 SHA-256을 함께 기록하도록 채택한다.
+object key reorder와 editorial body는 semantic digest를 바꾸지 않고, contract/plan
+semantic change는 downstream plan/run을 stale로 만든다. 결정 receipt와
+[ADR-0017](../adr/0017-versioned-semantic-digest.md)에 authority basis와 evidence를
+기록했다.
+
+이 결정은 RFC/JCS compatibility, production serializer, cross-runtime number/Unicode/
+duplicate-key/escaping edge rules, migration과 Implementation `CLEAR`를 확정하지 않는다.
+현재 evidence는 disposable fixture와 docs/research 범위에 한정된다.
+
 ### Phase 0 P0-06 #18 host·command surface research — VERIFIED OBSERVATION
 
 2026-08-21에 [OQ-012 host compatibility packet](../research/phase-0/OQ-012-host-os-compatibility.md),
@@ -505,9 +525,10 @@ merged main `23a6e75` 기준으로 수행했다. OQ-002 command API 14 assertion
 OQ-015 threat model 17 assertions를 각각 재실행해 모두 exit `0`과
 `all_assertions_pass=true`를 확인했다.
 
-현재 Gate 판정은 `HOLD`다. OQ-006~OQ-014 중 남은 user decision receipt가 있고,
-OQ-004/OQ-008은 packet-level blocker이며, OQ-009는 ADR-0014까지 정렬됐지만 production
-evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해제할 근거는 없다.
+현재 Gate 판정은 `HOLD`다. OQ-008과 OQ-010~OQ-014 중 남은 user decision receipt가 있고,
+OQ-004/OQ-008은 packet-level blocker이며, OQ-007과 OQ-009는 ADR까지 정렬됐지만
+production evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해제할
+근거는 없다.
 
 ## 3. 검증된 repository 사실
 
@@ -531,6 +552,7 @@ evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해
 | Architecture | Proposed | [01_ARCHITECTURE](../01_ARCHITECTURE.md) |
 | Controller runtime | Accepted — Go + Go modules + CGO + `sqlite_fts5` | [ADR-0010](../adr/0010-controller-runtime-go.md) |
 | Canonical command API | Accepted — shared application service + thin CLI/MCP transports | [ADR-0011](../adr/0011-canonical-command-api.md) |
+| Contract/plan digest | Accepted — `geness.semantic-json-v1` semantic projection + SHA-256; editorial-only 변경은 digest 불변 | [ADR-0017](../adr/0017-versioned-semantic-digest.md), [06_SPECIFICATION](../06_SPECIFICATION.md) |
 | Lease liveness / daemon policy | Accepted — v1 required daemon/host-owned sidecar 제외, explicit heartbeat/checkpoint/grace/takeover | [ADR-0012](../adr/0012-no-background-daemon-v1.md) |
 | Lifecycle | Proposed, OQ-004 C-01 recovery policy Accepted; other Phase 0 decisions open | [ADR-0013](../adr/0013-task-lifecycle-recovery.md), [02_TASK_LIFECYCLE](../02_TASK_LIFECYCLE.md) |
 | Storage boundary / identity lineage | Accepted C-01, schema and registry TBD | [ADR-0002](../adr/0002-project-and-local-state-boundary.md), [ADR-0015](../adr/0015-project-workspace-identity.md) |
@@ -556,22 +578,22 @@ evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-006 schema-lineage decision sync가 끝났으므로, 다음 하나의 검증 가능한 목표는 OQ-007
-C-01 digest canonicalization recommendation을 같은 delegated-decision evidence gate로
-재검증하고 Specification ADR 반영 여부를 판정하는 것이다. 제품 scaffold와 Implementation
-`CLEAR`는 남은 blocking decision과 production evidence 전까지 시작하지 않는다.
+OQ-007 digest canonicalization decision sync가 끝났으므로, 다음 하나의 검증 가능한 목표는
+OQ-010 C-01 lesson evaluator recommendation을 같은 delegated-decision evidence gate로
+재검증하고 Learning ADR 반영 여부를 판정하는 것이다. OQ-008은 fixture가
+`selected_candidate=null`을 반환한 user-decision blocker로 유지한다. 제품 scaffold와
+Implementation `CLEAR`는 남은 blocking decision과 production evidence 전까지 시작하지
+않는다.
 
-이번 OQ-005 decision sync 뒤 다음을 검증했다.
+이번 OQ-007 decision sync 뒤 다음을 검증했다.
 
 - `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` 두 실행 → 각각 exit `0`, 30/30 assertions;
-  paired stdout equality 확인
-- `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile .../runner.py` → exit `0`
-- input 및 OQ-005 두 result manifest `python3 -m json.tool` → 각각 exit `0`
-- `git diff --check --` → exit `0`
-- Ruby YAML frontmatter 검사 → `frontmatter_checked=35`, `errors=0`
-- read-only Node Markdown local-link/anchor/fence 검사 → `markdown_files=89`,
-  `local_links=416`, `local_anchor_links=29`, `fence_delimiters=156`,
-  `trailing_whitespace=0`, `errors=0`
+  paired stdout byte equality 확인
+- `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile runner.py` → exit `0`
+- `python3 -m json.tool input/fixture.json >/dev/null` → exit `0`
+- paired stdout `python3 -m json.tool` 및 `jq` assertion summary → 각각 exit `0`
+- `cmp` paired stdout → exit `0`
+- paired stdout SHA-256 → `4adfd380c2f0094803b2b3645a330b5645472418a7ea6ea8953d32398626f051`
 
 ## 7. 갱신 규칙
 

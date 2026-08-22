@@ -24,7 +24,8 @@ updated_at: "2026-08-21T00:57:55Z"
   threshold, CLI command, target `.geness/` 생성, product implementation과 user decision
   receipt 확정
 - **Dependencies:** #14 closed/done; OQ-005 identity boundary는 [ADR-0015](../../adr/0015-project-workspace-identity.md)로
-  resolved됐고 OQ-006 schema와 OQ-007 digest는 user decision 전이다.
+  resolved됐고 OQ-006 schema는 [ADR-0016](../../adr/0016-schema-lineage-and-projection-ownership.md),
+  OQ-007 digest는 [ADR-0017](../../adr/0017-versioned-semantic-digest.md)로 정렬됐다.
 - **Research owner:** Codex review
 
 이 packet은 현재 Storage/Architecture 경계를 검증하는 research다. config candidate를

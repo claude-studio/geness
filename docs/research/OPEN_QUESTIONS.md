@@ -18,7 +18,7 @@
 | OQ-004 | exact task state transition과 `FAILED` terminal 의미는 무엇인가? | C-01: explicit user receipt가 있는 `FAILED`만 reopen, `CANCELLED`는 terminal | 사용자 | Accepted ADR-0013 |
 | OQ-005 | clone, fork, worktree, folder rename에서 project/workspace ID는 어떻게 변하는가? | C-01: explicit project lineage, clone shared project/distinct workspace, fork explicit detach/rekey | delegated user authority | [ADR-0015](../adr/0015-project-workspace-identity.md) |
 | OQ-006 | task Markdown frontmatter와 SQLite schema v1은 무엇인가? | portable Markdown contract/projection과 runtime SQLite mutable-state owner를 분리 | delegated user authority | [ADR-0016](../adr/0016-schema-lineage-and-projection-ownership.md) |
-| OQ-007 | contract와 plan digest를 어떤 canonicalization으로 계산하는가? | versioned canonical serializer | 사용자 | Specification ADR |
+| OQ-007 | contract와 plan digest를 어떤 canonicalization으로 계산하는가? | versioned semantic projection + canonical JSON + SHA-256 | delegated user authority | [ADR-0017](../adr/0017-versioned-semantic-digest.md) |
 | OQ-008 | 모든 `PLAN_APPROVED`가 human approval인가? | 위험·scope 변경만 별도 승인하는 policy 검토 | 사용자 | Lifecycle/Specification |
 | OQ-009 | completion commit과 writer lease release의 원자적 순서는 무엇인가? | C-01: projection은 비권위로 준비하고 terminal record·completion·lease release를 한 runtime transaction에 기록 | 사용자 / delegated autonomous delivery | [ADR-0014](../adr/0014-completion-lease-atomicity.md) |
 | OQ-010 | lesson fingerprint, 승격, 감쇠와 만료 threshold는 무엇인가? | replay fixture로 false positive/negative 비교 | 사용자 | Learning ADR |
@@ -52,13 +52,15 @@
 | RQ-010 | C-01: terminal checkpoint·completion record·writer lease release는 한 runtime transaction에 기록하고, current runtime read 뒤에만 `COMPLETED`를 노출한다. | [ADR-0014](../adr/0014-completion-lease-atomicity.md), [OQ-009 delegated receipt](./phase-0/OQ-009-completion-lease-atomicity.md#8-decision) |
 | RQ-011 | C-01: project lineage와 workspace-scoped runtime identity를 분리하고, fork/detach와 동명 repository는 explicit detach/rekey 뒤 새 project로 취급한다. | [ADR-0015](../adr/0015-project-workspace-identity.md), [OQ-005 receipt](./phase-0/evidence/OQ-005/USER-DECISION-RECEIPT-001.md) |
 | RQ-012 | C-01: portable task Markdown은 contract/projection을 보유하고 runtime SQLite는 mutable state·revision guard·attempt·lease·verdict의 canonical owner가 되며, stale write는 거부하고 projection은 operation ID로 reconcile한다. | [ADR-0016](../adr/0016-schema-lineage-and-projection-ownership.md), [OQ-006 receipt](./phase-0/evidence/OQ-006/USER-DECISION-RECEIPT-001.md) |
+| RQ-013 | C-01: contract/plan digest는 `geness.semantic-json-v1` versioned semantic projection과 SHA-256을 사용하고 editorial-only 변경은 digest를 무효화하지 않는다. | [ADR-0017](../adr/0017-versioned-semantic-digest.md), [OQ-007 receipt](./phase-0/evidence/OQ-007/USER-DECISION-RECEIPT-001.md) |
 
 OQ-001은 RQ-006 receipt와 Accepted ADR-0010으로, OQ-002는 RQ-007 receipt와 Accepted
 ADR-0011으로, OQ-003은 RQ-008 receipt와 Accepted ADR-0012로, OQ-004는 RQ-009 receipt와
 Accepted ADR-0013으로, OQ-005는 RQ-011 delegated receipt와 Accepted ADR-0015로, OQ-006은
-RQ-012 delegated receipt와 Accepted ADR-0016으로 Resolved로 기록했다. OQ-015는 앞선
+RQ-012 delegated receipt와 Accepted ADR-0016으로, OQ-007은 RQ-013 delegated receipt와
+Accepted ADR-0017으로 Resolved로 기록했다. OQ-015는 앞선
 packet의 cross-concern synthesis owner이며 RQ-005 receipt로 C-01 boundary를 Resolved로
-기록했다. 이 결정들은 OQ-007/OQ-008 및 OQ-010/
+기록했다. 이 결정들은 OQ-008 및 OQ-010/
 OQ-011/OQ-012/OQ-013/OQ-014의 user decision을 대체하지 않는다. 특히 일반
 `PLAN_APPROVED` actor와 risk tier는 OQ-008에 남아 있으며, OQ-004의 전체 state graph와
 production receipt validation은 ADR-0013의 제한 범위 밖이다. OQ-009의 production

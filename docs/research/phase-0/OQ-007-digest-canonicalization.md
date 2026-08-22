@@ -3,11 +3,11 @@ packet_schema_version: 1
 packet_id: "OQ-007"
 question_id: "OQ-007"
 title: "contract·plan digest canonicalization과 invalidation 비교"
-status: "decision-ready"
+status: "resolved"
 owner: "Codex review / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-21T00:38:27Z"
-updated_at: "2026-08-21T00:57:55Z"
+updated_at: "2026-08-22T15:02:35Z"
 ---
 
 # OQ-007 — contract·plan digest canonicalization과 invalidation
@@ -21,14 +21,15 @@ updated_at: "2026-08-21T00:57:55Z"
 - **Allowed scope:** versioned semantic projection 후보, contract/plan golden vector, key-order와
   editorial/semantic 변경, downstream invalidation 관계의 fixture 관찰
 - **Non-goals:** SHA-256 이외 hash 선택, RFC/JCS compatibility 채택, production serializer,
-  schema/migration, user approval receipt와 Specification ADR 확정
+  schema/migration, cross-runtime edge-case validation과 Implementation `CLEAR`
 - **Dependencies:** #14 closed/done; OQ-005 identity boundary는 [ADR-0015](../../adr/0015-project-workspace-identity.md)로
   resolved됐고 OQ-006 schema lineage는 [ADR-0016](../../adr/0016-schema-lineage-and-projection-ownership.md)로
   resolved됐다. OQ-001 runtime follow-up은 아직 pending이다.
 - **Research owner:** Codex review
 
-이 packet은 fixture-local canonical JSON profile을 관찰하지만 제품 digest contract를
-채택하지 않는다. OQ-007은 user decision 전까지 `OPEN` 상태의 research로 남긴다.
+이 packet은 fixture-local canonical JSON profile을 관찰하고, 명시적인 AUTOPILOT delegated
+decision gate를 통과한 뒤 C-01의 제품 방향을 ADR-0017로 채택한다. cross-runtime edge
+규칙과 production serializer 구현은 여전히 후속 evidence 범위다.
 
 ## 2. Candidates
 
@@ -76,7 +77,7 @@ updated_at: "2026-08-21T00:57:55Z"
 | run_id | fixture_id | started_at / ended_at | cwd | exact command | exit_status | observation status/result | artifact refs |
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `RUN-OQ007-001` | `FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001` | 2026-08-21T00:49:56Z / 2026-08-21T00:49:57Z | `docs/research/phase-0/fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001` | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` | `0` | `pass` — 30/30 assertions와 contract/plan golden vector | A-001, A-002, A-003 |
-| `RUN-OQ007-002` | `FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001` | 2026-08-21T00:49:57Z / 2026-08-21T00:49:57Z | same as above | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` | `0` | `pass` — parsed JSON output equality confirmed | A-004 |
+| `RUN-OQ007-002` | `FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001` | 2026-08-22T15:02:35Z / 2026-08-22T15:02:35Z | same as above | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` | `0` | `pass` — current revalidation, paired stdout byte-identical | A-004 |
 
 ### 5.3 Golden vector and observed invalidation
 
@@ -95,8 +96,9 @@ Fixture-local algorithm is `fixture.canonical-json-v1`: semantic payload를 UTF-
 | raw Markdown editorial variant | `sha256:1776b4a9ba9c9819b84dc79d981320f029da6908658d145a39756678ea2c6a47` | differs from raw base `sha256:8220efeb9e505d5d0e7501ec1808bec545ed7bd8f2f341ac1337239b8c58af99` |
 
 The fixture observed the candidate policy `editorial_change → digest unchanged under semantic
-projection` and `contract semantic change → contract and downstream plan stale`. These are
-fixture observations aligned with current docs, not a resolved product policy.
+projection` and `contract semantic change → contract and downstream plan stale`. These
+observations support the adopted C-01 direction; the exact cross-runtime edge profile remains
+an implementation evidence gate.
 
 ## 6. Artifacts and evidence
 
@@ -114,7 +116,10 @@ Additional validation commands:
 | --- | ---: | --- |
 | `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile docs/research/phase-0/fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/runner.py` | `0` | runner parses successfully |
 | `python3 -m json.tool docs/research/phase-0/fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/input/fixture.json >/dev/null` | `0` | input is valid JSON |
-| `python3 -m json.tool docs/research/phase-0/evidence/OQ-007/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ007-001/result.json >/dev/null` | `0` | evidence is valid JSON |
+| `python3 -m json.tool docs/research/phase-0/evidence/OQ-007/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ007-001/result.json >/dev/null` | `0` | historical evidence is valid JSON |
+| `python3 -m json.tool docs/research/phase-0/evidence/OQ-007/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ007-002/result.json >/dev/null` | `0` | current evidence is valid JSON |
+| `cmp` of paired current fixture stdout | `0` | deterministic replay output is byte-identical |
+| `jq` assertion summary on current fixture output | `0` | `true`, `30`, `30`, `disabled`, `false` |
 | `git diff --check --` | `0` | no whitespace error after final edit |
 | read-only Node Markdown local-link/fence check | `0` | `markdown_files=57`, `local_links=147`, `fence_delimiters=122`, `trailing_whitespace=0`, `errors=[]` |
 
@@ -125,11 +130,11 @@ Additional validation commands:
 | R-001 | fixture serializer is a restricted Python JSON profile, not a cross-language canonicalization contract. | `high` | number representation, Unicode normalization, escaping, duplicate keys, NaN/Infinity, large values와 other runtime parity가 미확인이다. | user-selected runtime에서 language-independent golden vector와 versioned serializer test를 실행한다. | user / Phase 1 | `open` |
 | R-002 | editorial/semantic classification was exercised on a small synthetic payload. | `medium` | all frontmatter/body fields와 nested schema changes의 classification이 미확인이다. | OQ-006 schema decision 뒤 field-level canonical projection matrix를 추가한다. | user | `open` |
 | R-003 | downstream stale observation is a fixture label, not a production state transaction. | `high` | plan/run/approval invalidation ordering과 crash reconciliation이 미관찰이다. | selected runtime + OQ-009 completion/recovery fixture로 검증한다. | user | `open` |
-| R-004 | SHA-256 is current documented direction but algorithm/version migration policy is not user-accepted. | `medium` | hash agility, old digest migration과 backward compatibility가 미결정이다. | Specification ADR에서 version/upgrade/invalid digest behavior를 결정한다. | user | `open` |
+| R-004 | profile version migration and old digest handling remain unimplemented. | `medium` | hash agility, old digest migration과 backward compatibility가 미결정이다. | ADR-0017 records the profile boundary; Phase 1 defines upgrade/invalid-digest behavior and evidence. | user / Phase 1 | `open` |
 
 ## 8. Decision
 
-- **Packet decision status:** `needs-user-decision`
+- **Packet decision status:** `resolved`
 - **Recommendation:** C-01 — digest는 raw Markdown이 아니라 versioned semantic projection에
   적용하고, canonical serializer와 hash algorithm/version을 명시한 golden vector를 계약으로
   둔다. fixture 결과는 key ordering과 editorial body를 semantic payload에서 분리할 때 stable
@@ -140,22 +145,23 @@ Additional validation commands:
   invalidation과 ADR-0007의 current direction을 지지한다.
 - **Rejected/deferred candidates:** C-02는 YAML parser/serialization ambiguity, C-03은
   editorial false invalidation 때문에 deferred. C-01의 exact cross-runtime serializer profile,
-  numeric/Unicode rules와 adoption은 user/ADR 결정 전이다.
-- **Unresolved impact:** canonicalization version이 닫히지 않으면 approval digest golden
-  vector, migration과 stale evidence freshness를 제품 schema에 고정할 수 없다.
+  numeric/Unicode rules와 migration behavior는 후속 implementation evidence로 남긴다.
+- **Unresolved impact:** production serializer, edge-case vector, migration과 stale evidence
+  freshness enforcement는 제품 schema와 implementation 전에 별도 검증해야 한다.
 
 ### User/authority decision receipt
 
-- **Decision:** `pending`
-- **Actor:** `pending`
-- **Recorded at:** `pending`
-- **Reference:** `pending`
+- **Decision:** C-01 — versioned semantic projection + canonical JSON profile, SHA-256
+- **Actor:** `user-delegated-autonomous-delivery` under the explicit AUTOPILOT delegation
+- **Recorded at:** `2026-08-22T15:02:35Z`
+- **Reference:** [USER-DECISION-OQ007-001](./evidence/OQ-007/USER-DECISION-RECEIPT-001.md), [ADR-0017](../../adr/0017-versioned-semantic-digest.md)
 - **Supersedes:** `none`
 
 ## 9. Next verifiable goal
 
-사용자가 C-01 semantic projection 방향과 canonical serializer/hash version policy를 선택하고,
-선택한 runtime 후보에서 동일 golden vector와 cross-language edge-case fixture를 실행한다.
+다음 목표는 OQ-010 lesson evaluator recommendation을 같은 delegated-decision evidence gate로
+재검증하는 것이다. OQ-008은 fixture가 `selected_candidate=null`을 반환한 별도 user-decision
+blocker로 유지한다.
 
 ## 10. Completeness checklist
 
@@ -167,5 +173,5 @@ Additional validation commands:
 - [x] 실행 command, exit status, artifact와 raw redaction이 기록됐다.
 - [x] cross-runtime/edge-case limitation과 next check가 있다.
 - [x] decision status와 authority receipt가 일치한다.
-- [x] 제품 schema/serializer를 조용히 채택하지 않았다.
+- [x] 제품 serializer의 미검증 edge case와 implementation 범위를 명시적으로 남겼다.
 - [x] 최종 `git diff --check --`와 JSON/Markdown 검증 결과가 기록된다.

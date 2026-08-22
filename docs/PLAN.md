@@ -635,6 +635,7 @@ source:
   brief_id: brief-01J...
   brief_revision: 1
 profile: auto
+digest_profile: geness.semantic-json-v1
 contract_digest: sha256:...
 approval:
   brief_restate: approved
@@ -692,9 +693,19 @@ Phase 0 migration/ADR에서 결정하고, 구현 전에는 schema example만으�
 
 ### 12.1 승인 digest
 
-- digest는 profile, goal, non-goals, constraints, decisions, relevant context, AC 및
-  execution/retry policy를 canonical serialization한 값의 SHA-256으로 계산한다.
-- status, 실행 시각, run 결과처럼 변하는 필드는 contract digest에서 제외한다.
+- digest는 [ADR-0017](./adr/0017-versioned-semantic-digest.md)의
+  `geness.semantic-json-v1` semantic projection을 canonical serialization한 값의
+  SHA-256으로 계산한다. contract projection은 profile, goal, non-goals, constraints,
+  decisions, relevant context, AC 및 execution/retry policy를 포함하고, plan projection은
+  current contract digest와 plan steps, dependency/order, allowed scope와 test policy를
+  포함한다.
+- status, 실행 시각, run result, checkpoint, lease와 editorial body처럼 변하거나
+  presentation-only인 필드는 approval digest에서 제외한다. object key order는 무시하고
+  의미가 있는 array order는 보존한다.
+- number, Unicode, duplicate-key와 escaping edge rule은 profile golden vector로 고정하며
+  host serializer 기본값에 암묵적으로 위임하지 않는다.
+- semantic projection이 바뀌면 승인과 하위 plan/run을 무효화하고, 같은 projection의
+  editorial-only 변경은 digest를 바꾸지 않는다.
 - 해시 대상 필드가 바뀌면 승인과 하위 plan을 무효화한다.
 - 승인 receipt와 digest는 `spec.md` 및 runtime DB 양쪽에 기록한다.
 - 사용자 승인을 받지 않은 silent rewrite를 허용하지 않는다.
@@ -1357,7 +1368,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | OQ-004 | `docs/research/phase-0/OQ-004-task-lifecycle.md` | 허용·거부 전이, `FAILED`·`CANCELLED`, reopen과 completion/learning 순서 fixture + user receipt | [ADR-0013](./adr/0013-task-lifecycle-recovery.md) | RESOLVED |
 | OQ-005 | `docs/research/phase-0/OQ-005-project-workspace-identity.md` | clone, fork, rename, 동명 repository와 worktree identity fixture + delegated decision receipt | [ADR-0015](./adr/0015-project-workspace-identity.md) | RESOLVED |
 | OQ-006 | `docs/research/phase-0/OQ-006-schema-lineage.md` | frontmatter/DB round-trip, stable ID lineage, stale write와 projection recovery fixture | [ADR-0016](./adr/0016-schema-lineage-and-projection-ownership.md) | RESOLVED |
-| OQ-007 | `docs/research/phase-0/OQ-007-digest-canonicalization.md` | versioned test vector, editorial/semantic 변경과 spec/plan invalidation fixture | Specification ADR | OPEN |
+| OQ-007 | `docs/research/phase-0/OQ-007-digest-canonicalization.md` | versioned test vector, editorial/semantic 변경과 spec/plan invalidation fixture + delegated receipt | [ADR-0017](./adr/0017-versioned-semantic-digest.md) | RESOLVED |
 | OQ-008 | `docs/research/phase-0/OQ-008-plan-approval-policy.md` | risk, scope 확대, 외부 write와 일반 plan별 actor/policy decision table | Lifecycle/Specification | OPEN |
 | OQ-009 | `docs/research/phase-0/OQ-009-completion-lease-atomicity.md` | terminal checkpoint, projection과 lease release 각 crash point의 replay fixture + delegated decision receipt | [ADR-0014](./adr/0014-completion-lease-atomicity.md) | RESOLVED |
 | OQ-010 | `docs/research/phase-0/OQ-010-lesson-evaluator.md` | event replay 기반 false-positive/negative, 승격·감쇠·만료 비교 | Learning ADR | OPEN |
@@ -1391,6 +1402,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - [x] OQ-004 lifecycle recovery C-01 fixture evidence와 user decision receipt를 [ADR-0013](./adr/0013-task-lifecycle-recovery.md)에 반영
 - [x] OQ-005 identity fixture evidence와 delegated decision receipt를 [ADR-0015](./adr/0015-project-workspace-identity.md)에 반영
 - [x] OQ-006 schema lineage fixture evidence와 delegated decision receipt를 [ADR-0016](./adr/0016-schema-lineage-and-projection-ownership.md)에 반영
+- [x] OQ-007 digest fixture evidence와 delegated decision receipt를 [ADR-0017](./adr/0017-versioned-semantic-digest.md)에 반영
 - [x] OQ-009 completion/lease atomicity crash-point fixture evidence와 delegated decision receipt를 [ADR-0014](./adr/0014-completion-lease-atomicity.md)에 반영
 - [x] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 C-01 권한 정책·user receipt 작성
 - [ ] 남은 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
@@ -1784,6 +1796,7 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 | 진행 중 문서 Git 정책 | 기본 tracked, 민감·대용량 데이터는 홈에만 저장 | Phase 0 |
 | plan 별도 승인 | scope 확대·external/destructive/security-boundary 변경은 current-digest user receipt 필수, 일반 plan actor/risk policy는 OQ-008 결정 필요 | Phase 0/3 |
 | trace/evidence envelope | stable ID, revision, spec/plan digest, freshness와 verifier provenance를 versioned contract로 비교 | Phase 0/3/4 |
+| contract/plan digest | `geness.semantic-json-v1` semantic projection + SHA-256, editorial-only 변경은 digest 불변 ([ADR-0017](./adr/0017-versioned-semantic-digest.md)) | Accepted; cross-runtime edge/migration validation Phase 1 |
 | verifier independence | 동일 worker 결과의 제한, 독립 actor 자격과 불일치 결과 합성 policy 결정 | Phase 0/4 |
 | memory bootstrap | 미생성·empty·unavailable memory의 typed result와 Phase 3 진행 Gate 결정 | Phase 0/3/5 |
 | lesson fingerprint | project + phase + module/symbol + failure class + violated rule | Phase 0/5 |
@@ -2003,6 +2016,7 @@ approval, digest, lease와 completion 규칙은 [Lifecycle](./02_TASK_LIFECYCLE.
 | 2026-08-22 | 사용자 결정: 공통 application service를 canonical command API로 채택하고 CLI/MCP는 thin transport로 유지하며, ADR-0011과 OQ-002 receipt에 기록. |
 | 2026-08-22 | 사용자 결정: OQ-004 C-01 recovery policy를 채택해 explicit user receipt가 있는 `FAILED`만 reopen하고 `CANCELLED`는 terminal로 유지하며, ADR-0013과 OQ-004 receipt에 기록. |
 | 2026-08-22 | delegated AUTOPILOT decision: OQ-005 C-01 project lineage/workspace identity를 채택하고 ADR-0015와 OQ-005 receipt에 기록. |
+| 2026-08-22 | delegated AUTOPILOT decision: OQ-007 C-01 versioned semantic digest projection과 SHA-256 profile을 채택하고 ADR-0017 및 OQ-007 receipt에 기록. |
 | 2026-08-10 | 초기 계획 작성. 인터뷰, dual-host plugin, target `.geness/`, local memory/runtime 및 실패 교훈 lifecycle 합의 반영. |
 | 2026-08-10 | docs-first 구조, Ouroboros·MCX 출처와 차용 경계, plan approval actor 및 completion lease 순서 정렬. |
 | 2026-08-10 | 전체 문서 감사 결과를 반영해 Phase 0 OQ/evidence matrix, 교차 concern Gate, trace lineage, memory bootstrap과 transport/installed-host E2E 단계 경계를 보강. |

@@ -26,6 +26,7 @@ source:
   brief_id: ...
   brief_revision: 1
 profile: auto
+digest_profile: geness.semantic-json-v1
 contract_digest: sha256:...
 approval:
   brief_restate: approved
@@ -105,9 +106,19 @@ source_refs
 
 ## 6. Contract digest와 approval
 
-- digest 대상은 goal, non-goals, constraints, relevant context, AC와 execution policy다.
-- status, timestamp와 run result는 digest에서 제외한다.
-- canonical serialization과 hash algorithm은 versioned contract다.
+- digest는 [ADR-0017](./adr/0017-versioned-semantic-digest.md)의
+  `geness.semantic-json-v1` semantic projection profile과 SHA-256을 사용한다.
+- contract digest 대상은 profile, goal, non-goals, constraints, decisions, relevant
+  context, AC와 execution/retry policy이며, plan digest는 current contract digest와
+  plan steps, dependency/order, allowed scope와 test policy처럼 실행 의미를 바꾸는
+  field를 포함한다.
+- canonical bytes는 profile이 정한 UTF-8 JSON serialization이다. object key order는
+  의미가 아니며 array order는 보존한다. number, Unicode, duplicate-key와 escaping
+  edge rule은 host serializer 기본값에 맡기지 않고 profile golden vector로 검증한다.
+- status, timestamp, run result, checkpoint, lease와 editorial Markdown body는 approval
+  digest에서 제외한다.
+- semantic projection이 바뀌면 approval과 downstream plan/run을 무효화하고, 같은
+  projection의 editorial-only 변경은 digest를 바꾸지 않는다.
 - 사용자는 digest가 표현하는 현재 spec을 명시적으로 승인한다.
 - 의미 있는 hash 대상 변경은 approval과 downstream plan/run을 무효화한다.
 - 에이전트가 approval actor를 사칭하거나 implicit approval로 처리하지 않는다.
