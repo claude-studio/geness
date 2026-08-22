@@ -100,7 +100,7 @@ Project/workspace lineage policy is defined by [ADR-0015](./adr/0015-project-wor
 
 - Markdown은 사람이 읽는 본문과 machine-readable frontmatter를 함께 가진다.
 - write는 temp file + fsync + atomic replace를 우선한다.
-- revision과 digest를 기록한다.
+- revision, digest와 `geness.semantic-json-v1` digest profile을 기록한다.
 - raw log, credential과 대용량 evidence를 포함하지 않는다.
 - `run.md`는 runtime DB의 projection이며 직접 임의 수정된 경우 reconciliation이
   필요하다.
@@ -112,6 +112,8 @@ Project/workspace lineage policy is defined by [ADR-0015](./adr/0015-project-wor
   canonical owner다. current revision/digest precondition과 operation ID 기반 idempotent
   projection/reconciliation을 적용한다.
 - canonical target root 밖 path와 symlink escape를 거부한다.
+- semantic digest는 [ADR-0017](./adr/0017-versioned-semantic-digest.md)에 따라 계산하며,
+  editorial body는 approval digest의 입력이 아니다.
 
 ## 6. Runtime SQLite 역할
 
@@ -205,5 +207,5 @@ memory SQLite는 빠른 검색 index다. lesson event의 append-only 감사 원�
 - memory index가 손상되면 JSONL에서 재구축한다.
 - runtime migration 실패는 task를 `BLOCKED`로 유지하고 이전 DB를 보존한다.
 - schema 변경은 fixture와 upgrade/rollback test를 요구한다. exact frontmatter grammar,
-  production table/column/index/migration과 cross-runtime serializer는 후속 OQ/evidence로
-  확정한다.
+  production table/column/index/migration과 cross-runtime serializer edge rules는
+  ADR-0017 profile의 후속 OQ/evidence로 확정한다.

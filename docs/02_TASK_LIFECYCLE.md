@@ -121,7 +121,10 @@ canonical state를 기록한다. `done`과 `resume`은 새로운 task state가 �
 - Goal, non-goals, constraints, context, AC 또는 execution policy가 바뀌면 spec approval을
   무효화한다.
 - Spec digest가 바뀌면 plan과 아직 끝나지 않은 run을 stale로 표시한다.
-- Editorial change와 semantic change의 canonicalization 규칙은 Phase 0에서 확정한다.
+- [ADR-0017](./adr/0017-versioned-semantic-digest.md)의 versioned semantic projection은
+  editorial Markdown body와 semantic contract를 구분한다. 같은 projection의 editorial-only
+  변경은 digest를 유지하고, semantic projection 변경은 approval과 downstream plan/run을
+  stale로 만든다.
 - 실행 중 잘못된 가정이 contract에 영향을 주면 `REOPENED`로 돌아간다.
 - 구현 방법만 바뀌고 contract가 같으면 plan/run revision만 갱신할 수 있다.
 

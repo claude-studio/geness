@@ -67,7 +67,7 @@ Persistence / Runtime / Filesystem / Search adapters
 ### Controller
 
 - project/task aggregate와 revision을 관리한다.
-- 상태 전이, schema, digest, lease와 completion policy를 강제한다.
+- 상태 전이, schema, versioned semantic digest, lease와 completion policy를 강제한다.
 - memory evaluator와 검색 budget을 적용한다.
 - 한 번의 판정을 결정적으로 수행한다.
 
@@ -143,6 +143,11 @@ sequenceDiagram
 따라 current revision/digest와 operation ID를 사용해 reconciliation한다. Markdown은
 portable contract/projection이고 runtime DB는 mutable state와 verdict의 권위자다.
 어느 한쪽을 조용히 덮어쓰지 않는다.
+
+contract와 plan digest는 [ADR-0017](./adr/0017-versioned-semantic-digest.md)의
+`geness.semantic-json-v1` semantic projection과 SHA-256을 사용한다. Controller는
+profile/version을 current digest와 함께 검증하며, host adapter나 worker가 Markdown
+formatting을 근거로 digest를 재정의하지 않는다.
 
 v1의 host bridge는 Controller가 Codex child process에 digest·scope·AC·checkpoint를
 포함한 handoff envelope를 전달하고, 결과를 다시 runtime에 기록하는 구조다. worker와

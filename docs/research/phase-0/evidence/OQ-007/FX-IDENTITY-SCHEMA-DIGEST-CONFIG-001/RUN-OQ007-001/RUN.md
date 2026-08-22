@@ -60,5 +60,7 @@ semantics; the parser and SQLite table are fixture-local.
 
 ## Decision status
 
-OQ-007 remains pending user decision. No ADR, product schema, config policy or
-Implementation CLEAR is claimed by this record.
+At the time of this 2026-08-21 execution, OQ-007 remained pending user decision. The
+subsequent delegated decision is recorded in [USER-DECISION-OQ007-001](../../USER-DECISION-RECEIPT-001.md)
+and [ADR-0017](../../../../../../adr/0017-versioned-semantic-digest.md). No product schema,
+config policy or Implementation CLEAR is claimed by this historical record.
