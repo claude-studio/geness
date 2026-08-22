@@ -7,7 +7,7 @@ status: "decision-ready"
 owner: "Codex review / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-21T00:38:27Z"
-updated_at: "2026-08-21T00:57:55Z"
+updated_at: "2026-08-22T13:04:17Z"
 ---
 
 # OQ-006 — task Markdown frontmatter·SQLite schema v1과 lineage
@@ -79,6 +79,7 @@ updated_at: "2026-08-21T00:57:55Z"
 | --- | --- | --- | --- | --- | --- | --- | --- |
 | `RUN-OQ006-001` | `FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001` | 2026-08-21T00:49:56Z / 2026-08-21T00:49:57Z | `docs/research/phase-0/fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001` | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` | `0` | `pass` — frontmatter/DB semantic equality, body equality와 3 stale-write assertions 포함 30/30 | A-001, A-002, A-003 |
 | `RUN-OQ006-002` | `FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001` | 2026-08-21T00:49:57Z / 2026-08-21T00:49:57Z | same as above | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` | `0` | `pass` — parsed JSON output equality confirmed | A-004 |
+| `RUN-OQ006-003` | `FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001` | 2026-08-22 session rerun | same as above | `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` twice | `0` | `pass` — 30/30 assertions per run, `all_assertions_pass=true`, paired stdout byte-identical | A-006 |
 
 ### 5.3 Observed result
 
@@ -88,6 +89,13 @@ updated_at: "2026-08-21T00:57:55Z"
   `DENIED / stale_revision`이며 current state는 revision `2`와 accepted digest로 유지됐다.
 - 이 row/table은 fixture-local in-memory schema이며 production SQLite schema의 선택이나
   crash atomicity evidence가 아니다.
+- 2026-08-22 current revalidation은 두 실행 모두 30/30 assertions와
+  `all_assertions_pass=true`를 반환했고 paired stdout hash는
+  `sha256:4adfd380c2f0094803b2b3645a330b5645472418a7ea6ea8953d32398626f051`이었다.
+- historical A-001/A-004 result manifest는 current runner가 출력하는 nested observation
+  envelope와 field shape가 달라 normalized `diff`가 exit `1`이었다. 의미상 fixture
+  assertions는 통과했지만 evidence projection drift로 기록하며 current manifest는 A-006으로
+  보존한다.
 
 ## 6. Artifacts and evidence
 
@@ -98,6 +106,7 @@ updated_at: "2026-08-21T00:57:55Z"
 | A-003 | synthetic input | `docs/research/phase-0/fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/input/fixture.json` | fixture definition | recorded after final validation | `tracked` | stable frontmatter and revision input |
 | A-004 | redacted rerun result | `docs/research/phase-0/evidence/OQ-006/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ006-002/result.json` | `RUN-OQ006-002` | same manifest; parsed outputs equal | `packet` | repeatability |
 | A-005 | raw stdout/temp DB | temporary per-run state | `RUN-OQ006-001/002` | discarded after redaction; no secret or external write | `discarded` | raw execution only |
+| A-006 | current redacted result manifest | `docs/research/phase-0/evidence/OQ-006/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ006-003/result.json` | `RUN-OQ006-003` | `sha256:4adfd380c2f0094803b2b3645a330b5645472418a7ea6ea8953d32398626f051` | `packet` | current runner envelope and paired revalidation |
 
 The fixture parser intentionally supports only a restricted frontmatter subset; full YAML
 parser behavior, DB migration, concurrent writer race, crash-point recovery와 projection
@@ -112,6 +121,9 @@ Additional validation commands:
 | `python3 -m json.tool docs/research/phase-0/evidence/OQ-006/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ006-001/result.json >/dev/null` | `0` | evidence is valid JSON |
 | `git diff --check --` | `0` | no whitespace error after final edit |
 | read-only Node Markdown local-link/fence check | `0` | `markdown_files=57`, `local_links=147`, `fence_delimiters=122`, `trailing_whitespace=0`, `errors=[]` |
+| `RUN-OQ006-003` paired fixture/artifact comparison and assertion summary | `0` | both runs 30/30, paired stdout and current result manifest byte-identical; `all_assertions_pass=true` |
+| read-only Ruby YAML frontmatter check | `0` | `frontmatter_checked=37`, `errors=0` |
+| read-only Node Markdown local-link/anchor/fence check | `0` | `markdown_files=91`, `local_links=417`, `local_anchor_links=27`, `fence_delimiters=154`, `trailing_whitespace=0`, `errors=0` |
 
 ## 7. Risks and limitations
 
@@ -121,6 +133,7 @@ Additional validation commands:
 | R-002 | SQLite table is in-memory and fixture-local. | `high` | WAL/locking, transaction crash points, migration/rollback과 multi-process writer arbitration이 미관찰이다. | OQ-003/OQ-009 and selected runtime schema spike로 분리한다. | user | `open` |
 | R-003 | one round-trip does not prove all v1 artifact fields or projection recovery. | `medium` | nested frontmatter, AC lineage, evidence freshness, manual edit reconciliation이 미확인이다. | OQ-007 digest vector와 Phase 1 schema validation/round-trip matrix를 추가한다. | user / Phase 1 | `open` |
 | R-004 | stable ID/revision behavior was synthetic and depends on unresolved schema/digest details. | `high` | project/workspace ID algorithm, cross-file lineage와 OQ-007 digest profile are not selected. | C-01 identity boundary를 전제로 Schema/Storage ADR과 후속 fixture에서 exact algorithm/reconciliation을 promote한다. | user | `open` |
+| R-005 | historical A-001/A-004 manifests use a legacy observation envelope that differs from the current runner output. | `medium` | artifact projection shape drift can make historical hash/result comparisons misleading even when current fixture assertions pass. | Retain historical manifests, use A-006 for current evidence, and reconcile the evidence record before schema decisions. | Codex review / QA | `open` |
 
 ## 8. Decision
 
