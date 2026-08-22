@@ -124,6 +124,8 @@ checkpoint를 확인하기 전에는 `COMPLETED`를 노출하지 않는다.
 - lesson 문구 생성과 memory 승격을 같은 단계에서 하지 않는다.
 - 성공한 eligible exposure와 사용된 lesson ID를 learning evaluator 입력으로 기록한다.
 - 자동 guard가 실제로 실행됐는지 evidence를 남긴다.
+- lesson 승격·만료 threshold는 [ADR-0018](./adr/0018-deterministic-lesson-evaluator.md)의
+  C-01 기준과 evaluator/rule version을 event lineage에 연결한다.
 
 ## 8. 테스트 matrix
 
