@@ -75,8 +75,9 @@ Implementation `CLEAR`로 바꾸지 않는다.
 
 - `git diff --check --` → exit `0`
 - OQ-001 receipt YAML parse (`ruby`/Psych) → exit `0`
-- read-only Node Markdown integrity check → exit `0`, `markdown_files=74`,
-  `local_links=293`, `local_anchor_links=25`, `fence_delimiters=126`,
+- OQ-003 packet frontmatter/evidence JSON and current-run evidence match checks → exit `0`
+- read-only Node Markdown integrity check → exit `0`, `markdown_files=76`,
+  `local_links=300`, `local_anchor_links=25`, `fence_delimiters=126`,
   `trailing_whitespace=0`, `errors=[]`
 
 ### Phase 0 OQ-002 disposable fixture — VERIFIED OBSERVATION
@@ -129,13 +130,39 @@ The recorded SHA-256 values are:
 - runner.py: bbdcb46779c33c463e088764a817e55e1c4d32cb237113f1ced7586b970014e5
 - input/fixture.json: c1402c463a01ec3c1f4b292664263d267093d0238587254fdf54fdb5f1cc090e
 
-Observed facts are limited to ALLOWED INITIALIZING → INTERVIEWING, DENIED stale-digest
-PLAN_APPROVED → RUNNING, DENIED invalid INTERVIEWING → RUNNING, a sequential first-writer
-ALLOWED/second-writer DENIED probe, and equality-equivalent terminal replay with
-completed=true and lease_active=false. Heartbeat/grace/takeover, complete lifecycle and
-CANCELLED semantics, Plan Gate actor policy, crash-point matrix and production transaction
-atomicity remain unobserved. No language, package, runtime, schema, daemon, lease policy,
-approval actor or completion transaction was selected; no ADR was created.
+In that original run, observed facts were limited to ALLOWED INITIALIZING → INTERVIEWING,
+DENIED stale-digest PLAN_APPROVED → RUNNING, DENIED invalid INTERVIEWING → RUNNING, a
+sequential first-writer ALLOWED/second-writer DENIED probe, and equality-equivalent terminal
+replay with completed=true and lease_active=false. The separate heartbeat/grace/takeover
+observation is recorded below. Complete lifecycle and CANCELLED semantics, Plan Gate actor
+policy, crash-point matrix and production transaction atomicity remain unobserved. No
+language, package, runtime, schema, daemon, lease policy, approval actor or completion
+transaction was selected; no ADR was created.
+
+### Phase 0 OQ-003 liveness fixture — VERIFIED OBSERVATION
+
+2026-08-22에 [OQ-003 liveness packet](../research/phase-0/OQ-003-daemon-lease-liveness.md)의
+누락된 heartbeat·grace·takeover evidence를 위해
+[`FX-LEASE-LIVENESS-TAKEOVER-001`](../research/phase-0/fixtures/FX-LEASE-LIVENESS-TAKEOVER-001/README.md)을
+추가하고 두 번 실행했다. 각 실행은 실제 writer/observer child process 두 개를 시작했고,
+logical time `0` lease 획득, time `2` heartbeat와 grace deadline `5` 갱신, time `3`·`4`와
+정확한 deadline `5` grace 중 takeover 거부, writer의 `SIGKILL` interruption, time `6`
+stale takeover 허용, time `7` 새 owner heartbeat 허용을 관찰했다.
+
+정확한 command는 다음과 같다.
+
+    PYTHONDONTWRITEBYTECODE=1 python3 docs/research/phase-0/fixtures/FX-LEASE-LIVENESS-TAKEOVER-001/runner.py
+
+두 실행 모두 exit `0`, 17/17 assertions와 `all_assertions_pass=true`였고 stdout/stderr
+hash가 byte-identical이었다. redacted evidence는
+[`result.json`](../research/phase-0/evidence/OQ-003/FX-LEASE-LIVENESS-TAKEOVER-001/RUN-OQ003-001/result.json)에
+보존했으며 runner SHA-256은
+`af6cafaaf7d24625b133eedf530aa3c70e3c1261951597827b53032c5d027268`, input은
+`446dc5f6e01da55c3941cabc8ca491e36c75774853e3ae9680e73c126204dc6d`, result manifest는
+`9c53e1155125f44e44812933ffca9a03abfe65e6d4068026fa005046818da0a1`다. 이 관찰은
+fixture-local logical lease protocol에 한정되며 daemon/sidecar 선택, production clock·DB
+transaction, cross-workspace authority와 Runtime ADR 또는 Implementation `CLEAR`를 의미하지
+않는다. OQ-003은 decision-ready지만 user decision receipt는 pending이다.
 
 ### Phase 0 P0-05 #17 identity·schema·digest·config research — VERIFIED OBSERVATION
 
@@ -298,9 +325,9 @@ merged main `23a6e75` 기준으로 수행했다. OQ-002 command API 14 assertion
 OQ-015 threat model 17 assertions를 각각 재실행해 모두 exit `0`과
 `all_assertions_pass=true`를 확인했다.
 
-현재 Gate 판정은 `HOLD`다. OQ-003~014의 user decision receipt가 없고, OQ-003/OQ-004/OQ-008/
-OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제할 근거가 없다.
-다음 하나의 검증 목표는 OQ-003 two-process heartbeat·grace·takeover fixture evidence다.
+현재 Gate 판정은 `HOLD`다. OQ-003~014의 user decision receipt가 없고, OQ-004/OQ-008/OQ-009는
+packet-level `blocked` 상태이며, Implementation `HOLD`를 해제할 근거가 없다. OQ-003의
+evidence는 decision-ready가 됐지만 user receipt가 남아 있다.
 
 ## 3. 검증된 repository 사실
 
@@ -348,9 +375,9 @@ OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제�
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-003의 two-process heartbeat·grace·takeover fixture evidence를 먼저 확인한다. 그 뒤
-사용자가 남은 Phase 0 blocking packet의 후보를 검토하고 decision receipt를 기록한다. 특히
-P0-05의 OQ-005/006/007/013
+사용자가 OQ-003 C-01/C-02/C-03 후보와 liveness evidence를 검토하고 decision receipt를
+기록한다. 그 뒤 남은 Phase 0 blocking packet의 후보를 검토한다. 특히 P0-05의
+OQ-005/006/007/013
 identity·schema·digest·config recommendation, P0-06의 OQ-012/014 host·command
 recommendation, P0-07의 OQ-010/011 memory·retention·bootstrap recommendation과 OQ-008의
 일반 plan approval policy를

@@ -85,16 +85,18 @@ They are not Resolved decisions and contain no user decision receipts:
 
 | OQ | packet | fixture | RUN evidence | status |
 | --- | --- | --- | --- | --- |
-| OQ-003 | [OQ-003-daemon-lease-liveness.md](./OQ-003-daemon-lease-liveness.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ003-001/RUN.md) | blocked / user decision pending |
+| OQ-003 | [OQ-003-daemon-lease-liveness.md](./OQ-003-daemon-lease-liveness.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md); [FX-LEASE-LIVENESS-TAKEOVER-001/README.md](./fixtures/FX-LEASE-LIVENESS-TAKEOVER-001/README.md) | [RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ003-001/RUN.md); [liveness RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LEASE-LIVENESS-TAKEOVER-001/RUN-OQ003-001/RUN.md) | decision-ready / user decision pending |
 | OQ-004 | [OQ-004-task-lifecycle.md](./OQ-004-task-lifecycle.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ004-001/RUN.md](./evidence/OQ-004/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ004-001/RUN.md) | blocked / user decision pending |
 | OQ-008 | [OQ-008-plan-approval-policy.md](./OQ-008-plan-approval-policy.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ008-001/RUN.md](./evidence/OQ-008/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ008-001/RUN.md) | blocked / user decision pending |
 | OQ-009 | [OQ-009-completion-lease-atomicity.md](./OQ-009-completion-lease-atomicity.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ009-001/RUN.md](./evidence/OQ-009/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ009-001/RUN.md) | blocked / user decision pending |
 
-The shared fixture is an evidence-only Python runner. It does not select product language,
-package manager, runtime, schema, daemon, lease policy, approval actor, or completion
-transaction. Its observed two-run result is 7 assertions per run with equality-equivalent
-JSON output. Heartbeat/grace/takeover, complete lifecycle and CANCELLED semantics, Plan Gate
-actor policy, crash-point matrix and production atomicity remain unobserved.
+The original shared fixture is an evidence-only Python runner. It does not select product
+language, package manager, runtime, schema, daemon, lease policy, approval actor, or completion
+transaction. Its observed two-run result is 7 assertions per run with equality-equivalent JSON
+output. The new OQ-003 liveness fixture adds two actual child processes, logical-clock
+heartbeat/grace/takeover and 17/17 assertions per run, but complete lifecycle and CANCELLED
+semantics, Plan Gate actor policy, crash-point matrix and production atomicity remain
+unobserved.
 
 ## Issue #17 research index
 
@@ -172,9 +174,9 @@ test or user decision.
 
 [PHASE-0-GATE-AUDIT-001](./PHASE-0-GATE-AUDIT-001.md) records the current Gate result as
 `HOLD` as of its 2026-08-21 audit. OQ-001 and OQ-002 were resolved afterward through their
-user receipts and ADR-0010/ADR-0011; OQ-003~014 user decision receipts and the missing
-OQ-003/OQ-004/OQ-008/OQ-009 evidence remain blockers. No product implementation or Phase 0
-`CLEAR` is claimed.
+user receipts and ADR-0010/ADR-0011. OQ-003 liveness evidence is now decision-ready, but its
+user receipt and the missing OQ-004/OQ-008/OQ-009 evidence remain blockers alongside the
+remaining OQ-003~OQ-014 decisions. No product implementation or Phase 0 `CLEAR` is claimed.
 
 ## Packet 작성 순서
 
