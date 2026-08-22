@@ -41,9 +41,11 @@ lease·approval·scope·external write·secret·evidence 문제를 관찰했지�
    corrupt/unavailable memory는 empty로 축약하지 않고 typed `HOLD`로 반환한다.
 
 이 결정은 exact risk tier, 일반 `PLAN_APPROVED` policy actor, secret detector pattern/version,
-approval receipt schema, retention threshold, lease heartbeat/takeover와 production transaction을
-확정하지 않는다. 해당 결정은
-OQ-003/OQ-004/OQ-008/OQ-009/OQ-010/OQ-011 및 관련 ADR/fixture의 user receipt가 소유한다.
+approval receipt schema, retention threshold, production lease transaction을 확정하지 않는다.
+v1 required daemon/sidecar 제외와 explicit lease liveness policy는
+[ADR-0012](./0012-no-background-daemon-v1.md)와 OQ-003 receipt에 기록됐으며, exact
+production transaction과 나머지 concern은 OQ-004/OQ-008/OQ-009/OQ-010/OQ-011 및 관련
+ADR/fixture의 user receipt가 소유한다.
 
 ## 대안 검토
 

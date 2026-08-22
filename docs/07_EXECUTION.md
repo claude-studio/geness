@@ -45,8 +45,9 @@ C-01 baseline에 따라 다음 요청은 Controller에서 fail-closed로 라우�
 - redaction이 완료되지 않은 raw output의 project document/memory/context 저장
 
 이 경우 worker가 성공을 주장해도 attempt는 `HOLD`/attention이며 `RUNNING` 또는 `COMPLETED`로
-승격하지 않는다. exact approval actor/risk policy는 OQ-008, takeover/atomicity는 OQ-003/OQ-009의
-user decision과 후속 fixture가 소유한다.
+승격하지 않는다. exact approval actor/risk policy는 OQ-008, v1 no-daemon takeover guard는
+[ADR-0012](./adr/0012-no-background-daemon-v1.md), completion atomicity는 OQ-009의 user
+decision과 후속 fixture가 소유한다.
 
 ## 4. Attempt contract
 

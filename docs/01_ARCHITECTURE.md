@@ -196,8 +196,9 @@ tests/               unit, contract, integration, E2E
 
 구현 언어와 package 경계는 [ADR-0010](./adr/0010-controller-runtime-go.md)으로 Go와
 Go modules를 채택했고, [ADR-0011](./adr/0011-canonical-command-api.md)으로 공통
-application service와 thin CLI/MCP transport 경계를 채택했다. daemon 여부, DB migration
-도구, exact dependency versions와 package 배포 방식은 여전히
+application service와 thin CLI/MCP transport 경계를, [ADR-0012](./adr/0012-no-background-daemon-v1.md)로
+v1 required background daemon/host-owned sidecar 제외와 explicit lease liveness를 채택했다.
+DB migration 도구, exact dependency versions와 package 배포 방식은 여전히
 [Open Questions](./research/OPEN_QUESTIONS.md)와 [PLAN Phase 0](./PLAN.md#phase-0-핵심-계약과-adr-확정)에서
 닫는다.
 

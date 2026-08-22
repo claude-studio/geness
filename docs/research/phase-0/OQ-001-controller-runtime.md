@@ -299,8 +299,9 @@ D. host-managed Python/uv를 전제로 Python을 채택한다.
 - **Receipt:** [USER-DECISION-OQ001-001](./evidence/OQ-001/USER-DECISION-RECEIPT-001.md)
 - **Accepted ADR:** [ADR-0010](../../adr/0010-controller-runtime-go.md)
 
-daemon 여부는 이 packet의 결론이 아니다. stdio 단발 process가 lease heartbeat 요구를
-충족하는지는 별도 OQ-003에서 두 process trace로 조사한다.
+daemon 여부는 이 packet의 결론이 아니며 별도 OQ-003에서 조사한다. OQ-003은 이후
+two-process trace와 user receipt를 통해 v1 required daemon/sidecar를 제외하는
+[ADR-0012](../../adr/0012-no-background-daemon-v1.md)로 Resolved됐다.
 
 ## Artifact inventory and hashes
 
@@ -339,6 +340,6 @@ license/notice를 다시 검토한다.
 ## Next gate
 
 이 packet은 OQ-001의 조사 evidence와 사용자 선택, receipt와 Accepted ADR을 연결한다.
-다음 검증 가능한 목표는 **OQ-003의 two-process heartbeat·grace·takeover fixture**다.
-OQ-003/OQ-004/OQ-008/OQ-009의 packet-level evidence gap과 나머지 Phase 0 decision이 남아 있으므로
-Progress의 product Implementation `HOLD`와 Phase 0 `HOLD`는 유지한다.
+OQ-003은 resolved됐지만 OQ-004/OQ-008/OQ-009의 packet-level evidence gap과 나머지
+Phase 0 decision이 남아 있으므로 Progress의 product Implementation `HOLD`와 Phase 0
+`HOLD`는 유지한다.

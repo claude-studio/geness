@@ -79,8 +79,11 @@ attention을 반환한다. active task의 profile은 조용히 바꾸지 않는�
 - 긴 operation은 checkpoint/run ID를 먼저 만들고 status/resume할 수 있어야 한다.
 - tool 출력은 전체 transcript/log가 아니라 작은 envelope와 resource reference를 사용한다.
 
-초기에는 stdio MCP와 단발 CLI로 시작할 수 있는지 검증한다. background daemon은
-cross-session heartbeat가 실제로 필요하고 stdio로 충족하지 못할 때만 추가한다.
+초기에는 stdio MCP와 단발 CLI로 시작할 수 있는지 검증한다. [ADR-0012](./adr/0012-no-background-daemon-v1.md)에
+따라 v1은 required background daemon이나 host-owned sidecar를 두지 않으며, explicit
+heartbeat·checkpoint·grace·takeover protocol을 사용한다. cross-session heartbeat가
+stdio/단발 호출로 충족되지 않는다는 production evidence가 생길 때만 별도 ADR로 정책을
+변경한다.
 
 Claude plugin과 Codex 사이의 기본 bridge는 다음 단방향 handoff다.
 

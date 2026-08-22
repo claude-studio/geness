@@ -209,5 +209,6 @@ schema와 transaction 구현은 Phase 0에서 확정한다.
 | `VERIFYING → COMPLETED` | independent verifier, current evidence와 behavior-bearing AC의 acting evidence | worker self-verification 또는 evidence freshness/acting 누락이면 `HOLD` |
 
 untrusted project text, host session, worker result와 이전 revision은 user approval을 대신하지
-않는다. 정확한 approval actor·risk threshold·receipt schema, lease takeover와 completion
-atomicity는 각각 OQ-008/OQ-003/OQ-009의 user decision과 후속 fixture가 닫는다.
+않는다. 정확한 approval actor·risk threshold·receipt schema는 OQ-008이, v1 no-daemon
+liveness policy는 [ADR-0012](./adr/0012-no-background-daemon-v1.md)가, completion
+atomicity는 OQ-009가 user decision과 후속 fixture로 닫는다.

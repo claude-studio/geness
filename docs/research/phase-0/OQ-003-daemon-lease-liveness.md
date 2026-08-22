@@ -3,11 +3,11 @@ packet_schema_version: 1
 packet_id: "OQ-003"
 question_id: "OQ-003"
 title: "v1 background daemon과 lease liveness 비교"
-status: "decision-ready"
+status: "resolved"
 owner: "Codex / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-20T00:00:00Z"
-updated_at: "2026-08-22T17:01:51+09:00"
+updated_at: "2026-08-22T18:21:07+09:00"
 ---
 
 # OQ-003 — background daemon과 lease liveness
@@ -18,8 +18,8 @@ updated_at: "2026-08-22T17:01:51+09:00"
 - Phase/Gate: Phase 0 / decision packet
 - Authority: user
 - Allowed scope: daemon/no-daemon lease liveness trade-off와 disposable fixture 관찰
-- Non-goals: 제품 언어, package manager, runtime, production schema, daemon 구현,
-  plugin scaffold와 user decision receipt 확정
+- Non-goals: 제품 언어, package manager, runtime, production schema, daemon 구현과
+  plugin scaffold
 - Dependencies: #15 merged prerequisite; OQ-001 is resolved by ADR-0010 and OQ-002 is
   resolved by ADR-0011 and its user receipt
 
@@ -27,19 +27,20 @@ updated_at: "2026-08-22T17:01:51+09:00"
 
 | candidate | description | evidence |
 | --- | --- | --- |
-| C-01 | no-daemon stdio/short-lived Controller와 explicit checkpoint/takeover | observed — FX-LEASE-LIVENESS-TAKEOVER-001; not selected |
-| C-02 | local background daemon이 heartbeat와 lease authority를 유지 | unverified |
-| C-03 | host-owned heartbeat sidecar 또는 별도 lease monitor | unverified |
+| C-01 | no-daemon stdio/short-lived Controller와 explicit checkpoint/takeover | observed — FX-LEASE-LIVENESS-TAKEOVER-001; selected |
+| C-02 | local background daemon이 heartbeat와 lease authority를 유지 | unverified; not selected |
+| C-03 | host-owned heartbeat sidecar 또는 별도 lease monitor | unverified; not selected |
 
-No candidate is selected. The fixture evidence closes the missing liveness observation but does
-not automatically choose a daemon policy.
+C-01 is selected by the user decision receipt and [ADR-0012](../../adr/0012-no-background-daemon-v1.md).
+The fixture evidence supports the selected no-daemon liveness protocol but does not establish
+production clock, SQLite or installation behavior.
 
 ## 3. Trade-off and actual observation
 
-No-daemon은 설치·lifecycle 복잡성이 낮을 수 있지만 process 중단 뒤 heartbeat, grace
-period와 safe takeover의 실제 경계가 필요하다. Daemon/sidecar는 지속 heartbeat를 제공할
-수 있지만 process ownership, crash recovery와 installation boundary를 추가한다. 이
-trade-off 자체는 사용자 결정 대상이며 fixture가 자동으로 확정하지 않는다.
+No-daemon은 설치·lifecycle 복잡성이 낮지만 process 중단 뒤 heartbeat, grace period와
+safe takeover의 명시적 경계가 필요하다. Daemon/sidecar는 지속 heartbeat를 제공할 수
+있지만 process ownership, crash recovery와 installation boundary를 추가한다. 이 trade-off
+를 바탕으로 사용자는 v1에서 C-01을 선택했다.
 
 FX-LIFECYCLE-LEASE-COMPLETION-001 observed:
 
@@ -114,16 +115,17 @@ Additional execution environment:
 - High: the new fixture uses a logical clock and POSIX file lock; production clock source,
   SQLite transaction, crash points and cross-workspace writer authority remain unobserved.
 - High: daemon/sidecar installation, process ownership, host lifecycle and operational cost
-  were not compared; C-01/C-02/C-03 still require user judgment.
-- Medium: fixture rules are observations only and cannot establish user requirements or a
-  Runtime ADR.
+  were not independently benchmarked; C-02/C-03 remain unverified alternatives even though
+  C-01 is selected as the v1 policy.
+- Medium: fixture rules are observations only and do not establish production clock, SQLite
+  transaction, cross-workspace authority or installed-host behavior.
 
 ## 6. Decision
 
-- Packet status: decision-ready / needs-user-decision
-- Recommendation: no automatic selection; the two-process fixture now supplies the missing
-  heartbeat/grace/takeover observation. Ask the user to choose among C-01/C-02/C-03 after
-  reviewing the remaining production and operational evidence gaps.
-- User decision receipt: pending
-- No Runtime ADR is created. OQ-003 remains open and Implementation remains HOLD; no
-  Implementation CLEAR is claimed.
+- Packet status: resolved
+- Decision: C-01 — v1 excludes a required background daemon and host-owned sidecar; stdio or
+  short-lived invocation uses explicit heartbeat/checkpoint/grace/takeover protocol.
+- User decision receipt: [USER-DECISION-OQ003-001](./evidence/OQ-003/USER-DECISION-RECEIPT-001.md)
+- Accepted Runtime ADR: [ADR-0012](../../adr/0012-no-background-daemon-v1.md)
+- OQ-003 is resolved, but production liveness/atomicity evidence and the product-level
+  Implementation `HOLD` remain. No Implementation `CLEAR` is claimed.

@@ -14,7 +14,7 @@
 | --- | --- | --- | --- | --- |
 | OQ-001 | Controller 언어와 패키지 도구는 무엇인가? | Go + Go modules + CGO + 명시적 `sqlite_fts5` | 사용자 | Accepted ADR-0010 |
 | OQ-002 | 공통 library, CLI와 MCP 중 어떤 계층이 canonical command API인가? | library/application service가 규칙, CLI/MCP는 thin transport | 사용자 | Accepted ADR-0011 |
-| OQ-003 | v1에 background daemon이 필요한가? | 제외 후 lease heartbeat 요구를 측정 | 사용자 | Runtime ADR |
+| OQ-003 | v1에 background daemon이 필요한가? | v1 daemon/sidecar 제외, stdio·단발 호출과 explicit lease liveness | 사용자 | Accepted ADR-0012 |
 | OQ-004 | exact task state transition과 `FAILED` terminal 의미는 무엇인가? | typed result와 recovery edge를 fixture로 확정 | 사용자 | Lifecycle |
 | OQ-005 | clone, fork, worktree, folder rename에서 project/workspace ID는 어떻게 변하는가? | clone 공유, fork explicit detach/rekey 후보 | 사용자 | Storage ADR |
 | OQ-006 | task Markdown frontmatter와 SQLite schema v1은 무엇인가? | concern별 canonical owner를 먼저 고정 | 사용자 | Schema/Storage ADR |
@@ -47,10 +47,11 @@
 | RQ-005 | C-01 fail-closed Controller permission boundary, 민감 action의 current-digest user receipt와 secret redaction fail-closed 원칙을 채택한다. | [ADR-0009](../adr/0009-threat-model-permission-boundaries.md), [OQ-015 receipt](./phase-0/evidence/OQ-015/USER-DECISION-RECEIPT-001.md) |
 | RQ-006 | v1 Controller는 Go + Go modules + CGO와 명시적 `sqlite_fts5` build contract를 사용한다. | [ADR-0010](../adr/0010-controller-runtime-go.md), [OQ-001 receipt](./phase-0/evidence/OQ-001/USER-DECISION-RECEIPT-001.md) |
 | RQ-007 | 공통 application service가 canonical command API이며 CLI/MCP는 thin transport다. | [ADR-0011](../adr/0011-canonical-command-api.md), [OQ-002 receipt](./phase-0/evidence/OQ-002/USER-DECISION-RECEIPT-001.md) |
+| RQ-008 | v1은 required background daemon/host-owned sidecar 없이 explicit lease heartbeat·checkpoint·grace·takeover를 사용한다. | [ADR-0012](../adr/0012-no-background-daemon-v1.md), [OQ-003 receipt](./phase-0/evidence/OQ-003/USER-DECISION-RECEIPT-001.md) |
 
 OQ-001은 RQ-006 receipt와 Accepted ADR-0010으로, OQ-002는 RQ-007 receipt와 Accepted
-ADR-0011으로 Resolved로 기록했다. OQ-015는 앞선
+ADR-0011으로, OQ-003은 RQ-008 receipt와 Accepted ADR-0012로 Resolved로 기록했다. OQ-015는 앞선
 packet의 cross-concern synthesis owner이며 RQ-005 receipt로 C-01 boundary를 Resolved로
-기록했다. 두 결정은 OQ-003/OQ-004/OQ-008/OQ-009 및 OQ-005/OQ-006/OQ-007/OQ-010/
+기록했다. 이 결정들은 OQ-004/OQ-008/OQ-009 및 OQ-005/OQ-006/OQ-007/OQ-010/
 OQ-011/OQ-012/OQ-013/OQ-014의 user decision을 대체하지 않는다. 특히 일반
 `PLAN_APPROVED` actor와 risk tier는 OQ-008에 남아 있다.

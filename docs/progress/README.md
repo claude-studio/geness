@@ -75,9 +75,11 @@ Implementation `CLEAR`로 바꾸지 않는다.
 
 - `git diff --check --` → exit `0`
 - OQ-001 receipt YAML parse (`ruby`/Psych) → exit `0`
-- OQ-003 packet frontmatter/evidence JSON and current-run evidence match checks → exit `0`
-- read-only Node Markdown integrity check → exit `0`, `markdown_files=76`,
-  `local_links=300`, `local_anchor_links=25`, `fence_delimiters=126`,
+- OQ-003 packet/receipt frontmatter, evidence JSON and current-run evidence checks → exit `0`
+- OQ-003 liveness fixture current smoke run → exit `0`, `17/17 assertions`,
+  `all_assertions_pass=true`
+- read-only Node Markdown integrity check → exit `0`, `markdown_files=78`,
+  `local_links=326`, `local_anchor_links=25`, `fence_delimiters=126`,
   `trailing_whitespace=0`, `errors=[]`
 
 ### Phase 0 OQ-002 disposable fixture — VERIFIED OBSERVATION
@@ -161,8 +163,21 @@ hash가 byte-identical이었다. redacted evidence는
 `446dc5f6e01da55c3941cabc8ca491e36c75774853e3ae9680e73c126204dc6d`, result manifest는
 `9c53e1155125f44e44812933ffca9a03abfe65e6d4068026fa005046818da0a1`다. 이 관찰은
 fixture-local logical lease protocol에 한정되며 daemon/sidecar 선택, production clock·DB
-transaction, cross-workspace authority와 Runtime ADR 또는 Implementation `CLEAR`를 의미하지
-않는다. OQ-003은 decision-ready지만 user decision receipt는 pending이다.
+transaction, cross-workspace authority와 Implementation `CLEAR`를 의미하지 않는다. OQ-003
+liveness evidence는 아래의 user decision과 Runtime ADR로 후속 반영됐다.
+
+### Phase 0 OQ-003 — VERIFIED DECISION
+
+2026-08-22에 사용자는 OQ-003 C-01인 v1 required background daemon/host-owned sidecar
+제외를 확정했다. stdio MCP 또는 단발 CLI/application-service 호출을 기본으로 하고,
+explicit heartbeat·checkpoint·grace·safe takeover protocol을 사용한다. 결정은
+[USER-DECISION-OQ003-001](../research/phase-0/evidence/OQ-003/USER-DECISION-RECEIPT-001.md)과
+Accepted [ADR-0012](../adr/0012-no-background-daemon-v1.md)에 기록했다.
+
+이 결정은 fixture-local logical-clock liveness evidence를 production clock, SQLite
+transaction, cross-workspace authority, exact threshold 또는 installed-host E2E로
+승격하지 않는다. OQ-004/OQ-008/OQ-009와 나머지 Phase 0 decision, product
+Implementation `HOLD`는 유지한다.
 
 ### Phase 0 P0-05 #17 identity·schema·digest·config research — VERIFIED OBSERVATION
 
@@ -325,9 +340,10 @@ merged main `23a6e75` 기준으로 수행했다. OQ-002 command API 14 assertion
 OQ-015 threat model 17 assertions를 각각 재실행해 모두 exit `0`과
 `all_assertions_pass=true`를 확인했다.
 
-현재 Gate 판정은 `HOLD`다. OQ-003~014의 user decision receipt가 없고, OQ-004/OQ-008/OQ-009는
-packet-level `blocked` 상태이며, Implementation `HOLD`를 해제할 근거가 없다. OQ-003의
-evidence는 decision-ready가 됐지만 user receipt가 남아 있다.
+현재 Gate 판정은 `HOLD`다. OQ-004~OQ-014 중 남은 user decision receipt가 있고,
+OQ-004/OQ-008/OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제할
+근거가 없다. OQ-003은 evidence, user receipt와 ADR-0012까지 정렬됐지만 다른 Phase 0
+결정과 production evidence가 남아 있다.
 
 ## 3. 검증된 repository 사실
 
@@ -351,6 +367,7 @@ evidence는 decision-ready가 됐지만 user receipt가 남아 있다.
 | Architecture | Proposed | [01_ARCHITECTURE](../01_ARCHITECTURE.md) |
 | Controller runtime | Accepted — Go + Go modules + CGO + `sqlite_fts5` | [ADR-0010](../adr/0010-controller-runtime-go.md) |
 | Canonical command API | Accepted — shared application service + thin CLI/MCP transports | [ADR-0011](../adr/0011-canonical-command-api.md) |
+| Lease liveness / daemon policy | Accepted — v1 required daemon/host-owned sidecar 제외, explicit heartbeat/checkpoint/grace/takeover | [ADR-0012](../adr/0012-no-background-daemon-v1.md) |
 | Lifecycle | Proposed, Phase 0 decisions open | [02_TASK_LIFECYCLE](../02_TASK_LIFECYCLE.md) |
 | Storage boundary | Accepted, schema TBD | [ADR-0002](../adr/0002-project-and-local-state-boundary.md) |
 | Dual-host boundary | Accepted, manifest prototype TBD | [ADR-0001](../adr/0001-dual-host-shared-core.md) |
@@ -375,14 +392,11 @@ evidence는 decision-ready가 됐지만 user receipt가 남아 있다.
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-사용자가 OQ-003 C-01/C-02/C-03 후보와 liveness evidence를 검토하고 decision receipt를
-기록한다. 그 뒤 남은 Phase 0 blocking packet의 후보를 검토한다. 특히 P0-05의
-OQ-005/006/007/013
-identity·schema·digest·config recommendation, P0-06의 OQ-012/014 host·command
-recommendation, P0-07의 OQ-010/011 memory·retention·bootstrap recommendation과 OQ-008의
-일반 plan approval policy를
-선택하기 전에는 Architecture/Storage/Host/Specification/Learning ADR을 Accepted로
-바꾸거나 제품 scaffold를 만들지 않는다.
+OQ-004 task lifecycle packet의 `FAILED`·`CANCELLED`·reopen과 completion/learning 순서
+fixture evidence를 보강해 decision-ready 상태로 만든다. 그 뒤 OQ-008/OQ-009의
+approval·atomicity evidence와 P0-05/P0-06/P0-07 recommendation의 user decision을
+순서대로 검토한다. 이 결정을 선택하기 전에는 Architecture/Storage/Host/Specification/
+Learning ADR을 Accepted로 바꾸거나 제품 scaffold를 만들지 않는다.
 
 이번 DOC-01 문서 변경 뒤 다음을 검증했다.
 

@@ -1350,7 +1350,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | --- | --- | --- | --- | --- |
 | OQ-001 | `docs/research/phase-0/OQ-001-controller-runtime.md` | 후보별 배포 크기, FTS5 capability, stdio round-trip과 dual-host 설치 spike + user receipt | [ADR-0010](./adr/0010-controller-runtime-go.md) | RESOLVED |
 | OQ-002 | `docs/research/phase-0/OQ-002-canonical-command-api.md` | 동일 fixture를 후보 application/CLI/MCP 경계로 실행한 typed result·idempotency 비교 + user receipt | [ADR-0011](./adr/0011-canonical-command-api.md) | RESOLVED |
-| OQ-003 | `docs/research/phase-0/OQ-003-daemon-lease-liveness.md` | daemon 유무별 두 process heartbeat, 중단, grace와 takeover trace | Runtime ADR | OPEN — decision-ready evidence |
+| OQ-003 | `docs/research/phase-0/OQ-003-daemon-lease-liveness.md` | C-01 two-process heartbeat, 중단, grace와 takeover trace + user receipt; C-02/C-03 비선택 기록 | [ADR-0012](./adr/0012-no-background-daemon-v1.md) | RESOLVED |
 | OQ-004 | `docs/research/phase-0/OQ-004-task-lifecycle.md` | 허용·거부 전이, `FAILED`·`CANCELLED`, reopen과 completion/learning 순서 fixture | Lifecycle | OPEN |
 | OQ-005 | `docs/research/phase-0/OQ-005-project-workspace-identity.md` | clone, fork, rename, 동명 repository와 worktree identity fixture | Storage ADR | OPEN |
 | OQ-006 | `docs/research/phase-0/OQ-006-schema-lineage.md` | frontmatter/DB round-trip, stable ID lineage, stale write와 projection recovery fixture | Schema/Storage ADR | OPEN |
@@ -1369,7 +1369,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 없다.
 
 - cross-workspace `project_id + task_id` lease의 전역 writer 권위와
-  project-scoped memory writer arbitration: OQ-003, OQ-006, OQ-009와 함께 검토
+  project-scoped memory writer arbitration: ADR-0012의 no-daemon 정책을 전제로 OQ-006/OQ-009와 함께 검토
 - requirement → AC → step → attempt → evidence → verdict의 stable identity, revision,
   spec/plan digest와 evidence freshness envelope: OQ-006, OQ-007과 함께 검토
 - reviewer/verifier 독립성, 동일 worker 결과의 최종 검증 제한과 불일치 결과 합성:
@@ -1384,7 +1384,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - [ ] 교차 concern을 기존 OQ에 귀속하거나 결정 권한이 있는 새 OQ로 등록
 - [x] OQ-001 Go runtime 선택과 user decision receipt를 [ADR-0010](./adr/0010-controller-runtime-go.md)에 반영
 - [x] OQ-002 canonical command API 선택과 user decision receipt를 [ADR-0011](./adr/0011-canonical-command-api.md)에 반영
-- [x] OQ-003 two-process heartbeat·grace·takeover fixture evidence를 packet에 반영
+- [x] OQ-003 two-process heartbeat·grace·takeover fixture evidence와 C-01 user decision receipt를 [ADR-0012](./adr/0012-no-background-daemon-v1.md)에 반영
 - [x] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 C-01 권한 정책·user receipt 작성
 - [ ] 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
 - [ ] Open Questions의 `Resolved` 표와 위 Status를 근거 링크로 동기화
@@ -1767,7 +1767,7 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 | progress relay verbosity | stage change, AC count, attention, blocker, verdict만 기본 표시; raw log는 상세 조회 | Phase 0/4 |
 | Controller 언어 | Go + Go modules + CGO + 명시적 `sqlite_fts5` build contract ([ADR-0010](./adr/0010-controller-runtime-go.md)) | Accepted; cross-platform validation Phase 0/1 |
 | CLI/MCP 경계 | 공통 application service + CLI/MCP thin transport ([ADR-0011](./adr/0011-canonical-command-api.md)) | Accepted; command/schema details Phase 0/2 |
-| Background daemon | 첫 버전에서는 제외, lease heartbeat 필요성 측정 후 결정 | Phase 0/4 |
+| Background daemon | v1 required daemon/host-owned sidecar 제외, stdio·단발 호출과 explicit lease heartbeat/checkpoint/grace/takeover ([ADR-0012](./adr/0012-no-background-daemon-v1.md)) | Accepted; production liveness/atomicity validation Phase 0/4 |
 | cross-workspace lease authority | workspace-local runtime과 project/task 전역 writer arbitration 후보를 race fixture로 비교 | Phase 0 |
 | project memory writer | 여러 workspace Controller 사이의 project-scoped append/index 권위와 crash 복구 후보 비교 | Phase 0/5 |
 | 사용자 명령 이름 | 하나의 주 진입점과 status/resume 보조 진입점 | Phase 0 |
