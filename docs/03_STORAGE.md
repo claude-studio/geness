@@ -1,11 +1,14 @@
 # Geness Storage and Identity
 
-> 상태: Accepted boundary and identity lineage / implementation technology TBD
+> 상태: Accepted boundary, identity lineage and schema ownership / implementation technology TBD
 
 ## 1. 목적
 
 이 문서는 Geness 소스 문서, 대상 저장소 artifact, 사용자 로컬 runtime과 memory의
 소유권을 정의한다. SQLite table과 migration의 정확한 schema는 Phase 0에서 확정한다.
+OQ-006과 [ADR-0016](./adr/0016-schema-lineage-and-projection-ownership.md)은 portable
+task frontmatter/projection과 runtime SQLite mutable-state owner, stale-write와
+reconciliation 경계를 먼저 확정한다.
 
 ## 2. 세 저장 경계
 
@@ -104,6 +107,10 @@ Project/workspace lineage policy is defined by [ADR-0015](./adr/0015-project-wor
 - `verification.md`는 runtime의 AC verdict와 evidence freshness를 사람이 읽도록
   투영한 문서다. 직접 수정되거나 stale하면 Controller가 runtime 정본과 reconciliation
   해야 하며, 문서만으로 `COMPLETED`를 선언할 수 없다.
+- Markdown frontmatter와 body는 portable contract/projection이고, runtime SQLite는
+  mutable task state·revision guard·attempt·lease·verdict·evidence freshness의
+  canonical owner다. current revision/digest precondition과 operation ID 기반 idempotent
+  projection/reconciliation을 적용한다.
 - canonical target root 밖 path와 symlink escape를 거부한다.
 
 ## 6. Runtime SQLite 역할
@@ -197,4 +204,6 @@ memory SQLite는 빠른 검색 index다. lesson event의 append-only 감사 원�
 - destructive migration 전에 backup 또는 재구축 가능성을 확인한다.
 - memory index가 손상되면 JSONL에서 재구축한다.
 - runtime migration 실패는 task를 `BLOCKED`로 유지하고 이전 DB를 보존한다.
-- schema 변경은 fixture와 upgrade/rollback test를 요구한다.
+- schema 변경은 fixture와 upgrade/rollback test를 요구한다. exact frontmatter grammar,
+  production table/column/index/migration과 cross-runtime serializer는 후속 OQ/evidence로
+  확정한다.

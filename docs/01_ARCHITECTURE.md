@@ -139,7 +139,9 @@ sequenceDiagram
 - memory SQLite FTS는 재구축 가능한 검색 index다.
 - host session과 대화 transcript는 canonical state가 아니다.
 
-문서와 DB가 불일치하면 digest, revision과 event lineage를 사용해 reconciliation한다.
+문서와 DB가 불일치하면 [ADR-0016](./adr/0016-schema-lineage-and-projection-ownership.md)에
+따라 current revision/digest와 operation ID를 사용해 reconciliation한다. Markdown은
+portable contract/projection이고 runtime DB는 mutable state와 verdict의 권위자다.
 어느 한쪽을 조용히 덮어쓰지 않는다.
 
 v1의 host bridge는 Controller가 Codex child process에 digest·scope·AC·checkpoint를
@@ -201,7 +203,8 @@ tests/               unit, contract, integration, E2E
 Go modules를 채택했고, [ADR-0011](./adr/0011-canonical-command-api.md)으로 공통
 application service와 thin CLI/MCP transport 경계를, [ADR-0012](./adr/0012-no-background-daemon-v1.md)로
 v1 required background daemon/host-owned sidecar 제외와 explicit lease liveness를 채택했다.
-DB migration 도구, exact dependency versions와 package 배포 방식은 여전히
+schema grammar/columns/migrations, DB migration 도구, exact dependency versions와 package
+배포 방식은 여전히
 [Open Questions](./research/OPEN_QUESTIONS.md)와 [PLAN Phase 0](./PLAN.md#phase-0-핵심-계약과-adr-확정)에서
 닫는다.
 

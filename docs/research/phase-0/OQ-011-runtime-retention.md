@@ -24,7 +24,9 @@ updated_at: "2026-08-21T05:41:00Z"
   secret redaction implementation, user-facing prune command, product bootstrap 구현과 user decision receipt
   확정
 - **Dependencies:** P0-05 #17 `closed/status:done`; [ADR-0002](../../adr/0002-project-and-local-state-boundary.md),
-  [ADR-0003](../../adr/0003-failure-candidate-is-not-memory.md), OQ-006/OQ-010 user decision pending
+  [ADR-0003](../../adr/0003-failure-candidate-is-not-memory.md), OQ-006 schema owner는
+  [ADR-0016](../../adr/0016-schema-lineage-and-projection-ownership.md)로 resolved됐고
+  OQ-010 user decision은 pending
 - **Research owner:** Codex review
 
 이 packet은 `~/.geness/runtime/`과 `~/.geness/memory/`의 accepted boundary를 관찰 가능한

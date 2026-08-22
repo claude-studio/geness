@@ -23,7 +23,8 @@ updated_at: "2026-08-21T05:41:00Z"
 - **Non-goals:** production event/SQLite schema, FTS query algorithm, project writer arbitration,
   team export format, LLM prompt wording, 제품 evaluator 구현과 user decision receipt 확정
 - **Dependencies:** P0-05 #17 `closed/status:done`; [ADR-0003](../../adr/0003-failure-candidate-is-not-memory.md),
-  OQ-006/OQ-007의 schema·digest user decision은 pending
+  OQ-006 schema owner는 [ADR-0016](../../adr/0016-schema-lineage-and-projection-ownership.md)로
+  resolved됐고 OQ-007 digest user decision은 pending
 - **Research owner:** Codex review
 
 이 packet은 [ADR-0003](../../adr/0003-failure-candidate-is-not-memory.md)의 accepted 원칙을

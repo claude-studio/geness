@@ -58,7 +58,10 @@ package manager, runtime, production schema, migration, daemon, config file, tas
 cross-language serializer or scaffold. The temporary Git probe does not decide hosted fork
 semantics; the parser and SQLite table are fixture-local.
 
-## Decision status
+## Decision status at execution time
 
-OQ-006 remains pending user decision. No ADR, product schema, config policy or
-Implementation CLEAR is claimed by this record.
+At the time of this execution record, OQ-006 was pending a decision. The later delegated
+C-01 decision is recorded in [USER-DECISION-OQ006-001](../../USER-DECISION-RECEIPT-001.md)
+and [ADR-0016](../../../../../../adr/0016-schema-lineage-and-projection-ownership.md).
+This record remains evidence-only and does not select a production schema, config policy or
+Implementation `CLEAR`.

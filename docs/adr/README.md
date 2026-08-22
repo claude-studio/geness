@@ -30,6 +30,7 @@ ADR은 되돌리기 어렵거나 여러 계층의 계약을 바꾸는 결정을 
 | [0013](./0013-task-lifecycle-recovery.md) | Accepted | C-01: 명시적 user receipt가 있는 `FAILED`만 `REOPENED`; `CANCELLED`는 terminal이다. |
 | [0014](./0014-completion-lease-atomicity.md) | Accepted | terminal checkpoint와 writer lease release를 한 runtime transaction으로 기록하고 runtime 확인 뒤 완료를 노출한다. |
 | [0015](./0015-project-workspace-identity.md) | Accepted | explicit project lineage와 workspace-scoped identity를 분리하고 fork/detach는 명시적 rekey로 제한한다. |
+| [0016](./0016-schema-lineage-and-projection-ownership.md) | Accepted | portable Markdown contract/projection과 runtime SQLite mutable-state owner를 분리하고 stale write와 projection reconciliation 경계를 정한다. |
 
 ## ADR이 필요한 변경
 

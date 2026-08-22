@@ -265,9 +265,9 @@ OQ-008은 `blocked / user decision pending`으로 유지했다. At that observat
 [OQ-006](../research/phase-0/OQ-006-schema-lineage.md),
 [OQ-007](../research/phase-0/OQ-007-digest-canonicalization.md),
 [OQ-013](../research/phase-0/OQ-013-config-machine-contract.md) packet과 공통 disposable
-fixture를 추가했다. OQ-005는 아래 delegated decision receipt와 ADR-0015로 정렬했고,
-OQ-006/OQ-007/OQ-013은 여전히 decision-ready recommendation이며 사용자 decision receipt가
-없다.
+fixture를 추가했다. OQ-005는 아래 delegated decision receipt와 ADR-0015로 정렬했다. 당시
+OQ-006/OQ-007/OQ-013은 decision-ready recommendation이었고 사용자 decision receipt가
+없었다.
 
 정확한 fixture command를 두 번 실행했다.
 
@@ -299,9 +299,9 @@ current paired stdout hash는
 현재 envelope는 [RUN-OQ006-003](../research/phase-0/evidence/OQ-006/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ006-003/RUN.md)와
 result manifest에 보존했다. Historical A-001/A-004 result manifest와 current runner의
 normalized field shape가 달라 read-only `diff`는 exit `1`이었고, 이를 fixture 실패가 아닌
-evidence projection drift로 분리 기록했다. OQ-006 packet의 C-01 recommendation은 여전히
-`decision_authority: user`이므로 receipt·ADR 없이 자동 채택하지 않으며, Implementation
-`HOLD`도 유지한다.
+evidence projection drift로 분리 기록했다. 당시 OQ-006 packet의 `decision_authority: user`
+와 pending receipt를 보존했으며, 같은 delegated decision gate의 결과는 아래의 OQ-006
+VERIFIED DECISION section에 기록한다. Implementation `HOLD`는 유지한다.
 
 current evidence 반영 뒤 `py_compile`, input/result JSON parse, Ruby frontmatter check와
 read-only Node Markdown link/anchor/fence check를 다시 실행했다. 각각 exit `0`이며
@@ -325,6 +325,27 @@ repository는 명시적 detach/rekey 뒤에만 새 project lineage로 취급한�
 decision, authority basis와 evidence를 기록했다. 이 결정은 project ID 생성 algorithm,
 fork 자동 감지, workspace registry/reconciliation, cross-workspace writer authority,
 production schema 또는 Implementation `CLEAR`를 확정하지 않는다.
+
+### Phase 0 OQ-006 — VERIFIED DECISION
+
+2026-08-22 scheduled AUTOPILOT run에서 OQ-006 C-01을 delegated-decision policy로 채택했다.
+packet은 clear recommendation과 decision-ready status를 가졌고, fixture를 두 번 실행해
+각각 exit `0`, 30/30 assertions와 `all_assertions_pass=true`를 확인했다. paired stdout
+`cmp`도 exit `0`이었고 SHA-256은
+`sha256:4adfd380c2f0094803b2b3645a330b5645472418a7ea6ea8953d32398626f051`이었다. Historical
+A-001/A-004와 current A-006의 field-shape mismatch는 semantic contradiction가 아닌
+evidence projection drift로 유지한다.
+
+C-01은 task Markdown frontmatter/body를 Git-portable contract/projection으로, runtime
+SQLite를 mutable task state·revision guard·attempt·lease·verdict·evidence freshness의
+canonical owner로 둔다. current revision/digest precondition에서 stale write는 거부하고,
+document projection은 operation ID 기반 idempotent reconciliation을 사용하며 completion
+authority가 아니다.
+
+결정 receipt와 [ADR-0016](../adr/0016-schema-lineage-and-projection-ownership.md)에
+decision, authority basis와 evidence를 기록했다. exact frontmatter grammar, production
+table/column/migration, cross-runtime serializer, project ID algorithm, workspace registry,
+crash recovery와 Implementation `CLEAR`는 후속 evidence 범위로 남긴다.
 
 ### Phase 0 P0-06 #18 host·command surface research — VERIFIED OBSERVATION
 
@@ -535,12 +556,10 @@ evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-006의 current fixture revalidation과 evidence projection drift 기록이 끝났으므로,
-다음 하나의 검증 가능한 목표는 사용자로부터 OQ-006 C-01 schema-lineage decision receipt를
-받아 packet·Open Questions·Schema/Storage ADR 반영 여부를 판정하는 것이다. 사용자의
-receipt 없이 C-01을 채택하거나 `Resolved`로 옮기지 않는다. 제품 scaffold와
-Implementation `CLEAR`는 남은 blocking decision과 production evidence 전까지 시작하지
-않는다.
+OQ-006 schema-lineage decision sync가 끝났으므로, 다음 하나의 검증 가능한 목표는 OQ-007
+C-01 digest canonicalization recommendation을 같은 delegated-decision evidence gate로
+재검증하고 Specification ADR 반영 여부를 판정하는 것이다. 제품 scaffold와 Implementation
+`CLEAR`는 남은 blocking decision과 production evidence 전까지 시작하지 않는다.
 
 이번 OQ-005 decision sync 뒤 다음을 검증했다.
 

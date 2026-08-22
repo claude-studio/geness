@@ -3,11 +3,11 @@ packet_schema_version: 1
 packet_id: "OQ-006"
 question_id: "OQ-006"
 title: "task Markdown frontmatter·SQLite schema v1과 lineage 비교"
-status: "decision-ready"
+status: "resolved"
 owner: "Codex review / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-21T00:38:27Z"
-updated_at: "2026-08-22T13:04:17Z"
+updated_at: "2026-08-22T14:33:16Z"
 ---
 
 # OQ-006 — task Markdown frontmatter·SQLite schema v1과 lineage
@@ -29,8 +29,10 @@ updated_at: "2026-08-22T13:04:17Z"
   결과는 boundary recommendation으로만 남긴다.
 - **Research owner:** Codex review
 
-이 packet은 관찰과 권고를 보존한다. OQ-006을 `Resolved`로 옮기거나 Schema/Storage ADR을
-만들지 않으며 Implementation `HOLD`를 유지한다.
+이 packet은 관찰과 권고를 보존한다. C-01의 concern-level owner 결정은 delegated decision
+receipt와 [ADR-0016](../../adr/0016-schema-lineage-and-projection-ownership.md)로 반영한다.
+정확한 production schema와 migration은 여전히 후속 evidence 범위이며 Implementation
+`HOLD`를 유지한다.
 
 ## 2. Candidates
 
@@ -137,7 +139,7 @@ Additional validation commands:
 
 ## 8. Decision
 
-- **Packet decision status:** `needs-user-decision`
+- **Packet decision status:** `resolved`
 - **Recommendation:** C-01 — portable Markdown frontmatter는 사람이 읽고 Git으로 공유하는
   contract/projection으로 두고, runtime SQLite는 mutable state·revision guard·attempt·lease·
   verdict의 canonical owner로 둔다. 문서와 DB 사이에는 revision/digest/operation ID 기반
@@ -153,17 +155,17 @@ Additional validation commands:
 
 ### User/authority decision receipt
 
-- **Decision:** `pending`
-- **Actor:** `pending`
-- **Recorded at:** `pending`
-- **Reference:** `pending`
+- **Decision:** C-01 — portable Markdown frontmatter/projection과 runtime SQLite mutable-state owner를 분리
+- **Actor:** `user-delegated-autonomous-delivery` under the explicit AUTOPILOT delegation
+- **Recorded at:** `2026-08-22T14:33:16Z`
+- **Authority basis:** clear C-01 recommendation, deterministic two-run fixture evidence, no contradictory schema-owner evidence와 delegated docs/research scope 조건을 충족했다. 역사적 A-001/A-004 envelope mismatch는 semantic contradiction가 아닌 evidence projection drift로 유지한다. 이 receipt는 대화형 사용자 메시지를 가장하지 않는다.
+- **Reference:** [OQ-006 decision receipt](./evidence/OQ-006/USER-DECISION-RECEIPT-001.md), [ADR-0016](../../adr/0016-schema-lineage-and-projection-ownership.md)
 - **Supersedes:** `none`
 
 ## 9. Next verifiable goal
 
-사용자가 C-01 boundary recommendation을 채택할지 결정하고, OQ-005/007 결과와 함께
-frontmatter grammar·runtime migration·projection recovery의 Schema/Storage ADR 범위를
-정한다.
+다음 목표는 OQ-007 digest canonicalization recommendation을 같은 delegated-decision
+evidence gate로 재검증하고, C-01 schema lineage와의 dependency를 확인하는 것이다.
 
 ## 10. Completeness checklist
 
