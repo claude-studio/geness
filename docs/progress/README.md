@@ -115,8 +115,9 @@ scaffold를 확정하지 않으며, Implementation `HOLD`를 해제하지 않는
 ### Phase 0 P0-04 #16 lifecycle·lease·completion research — VERIFIED OBSERVATION
 
 On 2026-08-20, the disposable fixture and four observed research packets for OQ-003,
-OQ-004, OQ-008 and OQ-009 were added under docs/research/phase-0/. The packets are
-not Resolved decisions and all user decision receipts remain pending.
+OQ-004, OQ-008 and OQ-009 were added under docs/research/phase-0/. At that observation
+point the packets were not Resolved decisions and all decision receipts were pending;
+later decisions are recorded in the dedicated sections below.
 
 The exact fixture runner command was run twice:
 
@@ -137,8 +138,8 @@ DENIED stale-digest PLAN_APPROVED → RUNNING, DENIED invalid INTERVIEWING → R
 sequential first-writer ALLOWED/second-writer DENIED probe, and equality-equivalent terminal
 replay with completed=true and lease_active=false. The separate heartbeat/grace/takeover
 observation is recorded below. Complete lifecycle and CANCELLED semantics, Plan Gate actor
-policy, crash-point matrix and production transaction atomicity remain unobserved. At that
-original observation point no language, package, runtime, schema, daemon, lease policy,
+policy, crash-point matrix and production transaction atomicity remained unobserved at that
+original observation point. No language, package, runtime, schema, daemon, lease policy,
 approval actor or completion transaction was selected; the later decisions are recorded in
 the dedicated decision sections below.
 
@@ -177,12 +178,12 @@ Accepted [ADR-0012](../adr/0012-no-background-daemon-v1.md)에 기록했다.
 
 이 결정은 fixture-local logical-clock liveness evidence를 production clock, SQLite
 transaction, cross-workspace authority, exact threshold 또는 installed-host E2E로
-승격하지 않는다. OQ-008/OQ-009와 나머지 Phase 0 decision, product Implementation
-`HOLD`는 유지한다.
+승격하지 않는다. At that observation point OQ-008/OQ-009와 나머지 Phase 0 decision,
+product Implementation `HOLD`는 유지했다.
 
 ### Phase 0 OQ-004 lifecycle recovery fixture — VERIFIED OBSERVATION
 
-2026-08-22에 기존 OQ-003/OQ-008/OQ-009 evidence runner를 변경하지 않고,
+2026-08-22에 당시 기준으로 기존 OQ-003/OQ-008/OQ-009 evidence runner를 변경하지 않고,
 [`FX-LIFECYCLE-RECOVERY-002`](../research/phase-0/fixtures/FX-LIFECYCLE-RECOVERY-002/README.md)를
 OQ-004 follow-up fixture로 추가했다. 이 fixture는 C-01/C-02/C-03 후보별
 `FAILED`·`CANCELLED` recovery, explicit user receipt guard, completion exposure guard와
@@ -221,8 +222,8 @@ Accepted [ADR-0013](../adr/0013-task-lifecycle-recovery.md)에 기록했다. OQ-
 
 이 결정은 follow-up fixture의 14/14 deterministic assertion과 두 raw JSON output의
 `cmp` 동일성에 근거하지만, production persistence, receipt validation, crash replay,
-lease takeover과 전체 state graph를 증명하지 않는다. OQ-008 Plan Gate actor/risk policy,
-OQ-009 completion atomicity와 제품 Implementation `HOLD`는 유지한다.
+lease takeover과 전체 state graph를 증명하지 않는다. At that observation point OQ-008 Plan
+Gate actor/risk policy, OQ-009 completion atomicity와 제품 Implementation `HOLD`는 유지했다.
 
 이번 decision sync에서 `python3 -m json.tool docs/research/phase-0/fixtures/FX-LIFECYCLE-RECOVERY-002/input/fixture.json >/dev/null`,
 YAML frontmatter parse, read-only Markdown local-link check와 `git diff --check --`를
@@ -254,8 +255,9 @@ execution records는 [RUN-OQ008-002-A](../research/phase-0/evidence/OQ-008/FX-PL
 
 이 결과는 candidate comparison evidence일 뿐 OQ-008 policy 선택, 일반 risk threshold,
 receipt schema, production enforcement 또는 Implementation `CLEAR`를 의미하지 않는다.
-OQ-008은 `blocked / user decision pending`으로 유지하며, 다음 목표는 OQ-009
-completion/lease atomicity의 crash-point replay evidence 작성이다.
+OQ-008은 `blocked / user decision pending`으로 유지했다. At that observation point의
+다음 목표는 OQ-009 completion/lease atomicity crash-point replay evidence 작성이었고,
+그 결과는 아래의 OQ-009 VERIFIED DECISION section에 기록돼 있다.
 
 ### Phase 0 P0-05 #17 identity·schema·digest·config research — VERIFIED OBSERVATION
 
@@ -410,6 +412,34 @@ byte-identical이었다. `node /tmp/geness-p0-06-markdown-check.mjs`는 exit `0`
 `markdown_files=69`, `local_links=240`, `local_anchor_links=25`, `fence_delimiters=154`,
 `trailing_whitespace=0`, `errors=[]`를 반환했으며 `git diff --check --`도 exit `0`이었다.
 
+### Phase 0 OQ-009 — VERIFIED DECISION
+
+2026-08-22에 OQ-009 disposable fixture를 crash-point matrix로 확장했다. C-01/C-02/C-03의
+`after_projection`, `after_lease_release`, `after_terminal_checkpoint`,
+`after_runtime_commit`을 모두 재현했으며, 두 실행 모두 exit `0`, 43/43 assertions,
+`all_assertions_pass=true`와 byte-identical stdout을 반환했다. C-01은 4/4 crash state에서
+unsafe invariant가 없었고, C-02는 terminal checkpoint 전 lease release, C-03은 runtime
+commit 전 completion exposure를 관찰했다. 12개 row 모두 operation-id replay 뒤 안전한
+상태로 수렴했고 두 번째 replay도 동일했다.
+
+decision-ready recommendation과 고정된 fixture 결과가 delegated AUTOPILOT 조건을 모두
+충족해 C-01을 채택했다. [ADR-0014](../adr/0014-completion-lease-atomicity.md)와 OQ-009
+packet에 결정 receipt·trade-off·risk를 기록했으며, final projection은 runtime completion
+authority가 아니고 terminal checkpoint·completion record·lease release는 한 runtime
+transaction에 기록한다. 이 결정은 production SQLite/WAL/multi-process crash 검증이나
+Implementation `CLEAR`를 의미하지 않는다.
+
+증거는 [RUN-OQ009-002-A](../research/phase-0/evidence/OQ-009/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ009-002/RUN-A.md),
+[RUN-OQ009-002-B](../research/phase-0/evidence/OQ-009/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ009-002/RUN-B.md)와
+`result.json`에 보존했다. runner SHA-256은
+`9c3361989c10fd361a67e0432c88a6573ebfe399f639b791f8442623adb1cc54`, input은
+`bc5d871017fd45b8aeed16d2c71a1587992ee4a4e3affaab300c9e319e2b8147`, result는
+`219b98005ecac98195dbe4c29ba4b8a5b58d9825dfbb84e6e8367d715269e4db`다. 최종 검사에서
+fixture/result JSON parse, `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile runner.py`,
+fixture 두 번 실행과 `cmp`, `git diff --check --`가 모두 exit `0`이었다. Read-only inline
+Markdown 검사는 `markdown_files=89`, `frontmatter_files=35`, `local_links=396`,
+`local_anchor_links=29`, `fence_delimiters=156`, `errors=[]`를 반환했다.
+
 ### Phase 0 P0-GATE #21 — HOLD audit
 
 2026-08-21에 [Phase 0 Gate audit](../research/phase-0/PHASE-0-GATE-AUDIT-001.md)을
@@ -419,9 +449,8 @@ OQ-015 threat model 17 assertions를 각각 재실행해 모두 exit `0`과
 `all_assertions_pass=true`를 확인했다.
 
 현재 Gate 판정은 `HOLD`다. OQ-005~OQ-014 중 남은 user decision receipt가 있고,
-OQ-008/OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제할
-근거가 없다. OQ-003과 OQ-004는 각각 evidence, user receipt와 ADR까지 정렬됐지만 다른
-Phase 0 결정과 production evidence가 남아 있다.
+OQ-004/OQ-008은 packet-level blocker이며, OQ-009는 ADR-0014까지 정렬됐지만 production
+evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해제할 근거는 없다.
 
 ## 3. 검증된 repository 사실
 
@@ -470,10 +499,9 @@ Phase 0 결정과 production evidence가 남아 있다.
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-008 candidate comparison evidence가 정렬됐으므로, 다음 하나의 검증 가능한 목표는
-OQ-009 completion/lease atomicity의 각 crash point replay evidence를 작성하고 사용자
-결정을 받는 것이다. 그 뒤 P0-05/P0-06/P0-07 recommendation의 user decision을 순서대로
-검토한다. 제품 scaffold와 Implementation `CLEAR`는 남은 blocking decision과 production
+OQ-009가 정렬됐으므로, 다음 하나의 검증 가능한 목표는 P0-05 identity/schema/digest
+queue의 OQ-005 recommendation을 같은 delegated-decision evidence gate로 재검증하는
+것이다. 제품 scaffold와 Implementation `CLEAR`는 남은 blocking decision과 production
 evidence 전까지 시작하지 않는다.
 
 이번 DOC-01 문서 변경 뒤 다음을 검증했다.

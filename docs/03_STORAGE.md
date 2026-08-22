@@ -142,7 +142,9 @@ memory SQLite는 빠른 검색 index다. lesson event의 append-only 감사 원�
 - WAL 사용 여부는 filesystem·backup·multi-process 시험 후 결정한다.
 - transaction은 짧게 유지하고 무한 busy retry를 하지 않는다.
 - stale revision write를 거부한다.
-- project document projection 실패와 DB commit 성공을 operation ID로 복구한다.
+- [ADR-0014](./adr/0014-completion-lease-atomicity.md)에 따라 runtime terminal checkpoint와
+  writer lease release를 한 transaction으로 기록한다. project document projection 실패와
+  DB commit 성공 또는 그 반대는 completion authority를 바꾸지 않고 operation ID로 복구한다.
 
 ## 9. Retention
 

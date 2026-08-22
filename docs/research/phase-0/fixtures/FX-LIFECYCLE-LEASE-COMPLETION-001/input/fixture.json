@@ -1,5 +1,5 @@
 {
-  "fixture_schema": "fixture.lifecycle-lease-completion.input.v1",
+  "fixture_schema": "fixture.lifecycle-lease-completion.input.v2",
   "deterministic": true,
   "state_cases": [
     {
@@ -41,6 +41,34 @@
         "lease_active": false,
         "completed": true
       }
+      ,
+      "crash_points": [
+        "after_projection",
+        "after_lease_release",
+        "after_terminal_checkpoint",
+        "after_runtime_commit"
+      ],
+      "candidates": [
+        {
+          "id": "C-01",
+          "description": "projection is prepared, then terminal checkpoint and lease release commit atomically",
+          "expected_unsafe_crash_points": []
+        },
+        {
+          "id": "C-02",
+          "description": "lease release commits before terminal checkpoint",
+          "expected_unsafe_crash_points": ["after_lease_release"]
+        },
+        {
+          "id": "C-03",
+          "description": "completed projection is exposed before runtime terminal/lease commit",
+          "expected_unsafe_crash_points": [
+            "after_projection",
+            "after_lease_release",
+            "after_terminal_checkpoint"
+          ]
+        }
+      ]
     }
   ]
 }

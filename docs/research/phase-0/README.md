@@ -81,15 +81,15 @@ transports; it does not select the runtime already resolved by OQ-001.
 ## Issue #16 research index
 
 The following are Phase 0 research packets for lifecycle, lease and completion. OQ-003 is
-resolved through its user receipt and Runtime ADR; OQ-004/OQ-008/OQ-009 remain blocked and
-have no user decision receipts:
+resolved through its user receipt and Runtime ADR; OQ-004/OQ-008 remain blocked, while OQ-009
+is resolved through its delegated decision receipt and ADR-0014:
 
 | OQ | packet | fixture | RUN evidence | status |
 | --- | --- | --- | --- | --- |
 | OQ-003 | [OQ-003-daemon-lease-liveness.md](./OQ-003-daemon-lease-liveness.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md); [FX-LEASE-LIVENESS-TAKEOVER-001/README.md](./fixtures/FX-LEASE-LIVENESS-TAKEOVER-001/README.md) | [RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ003-001/RUN.md); [liveness RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LEASE-LIVENESS-TAKEOVER-001/RUN-OQ003-001/RUN.md); [USER-DECISION-OQ003-001](./evidence/OQ-003/USER-DECISION-RECEIPT-001.md) | resolved / [ADR-0012](../../adr/0012-no-background-daemon-v1.md) Accepted |
 | OQ-004 | [OQ-004-task-lifecycle.md](./OQ-004-task-lifecycle.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ004-001/RUN.md](./evidence/OQ-004/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ004-001/RUN.md) | blocked / user decision pending |
 | OQ-008 | [OQ-008-plan-approval-policy.md](./OQ-008-plan-approval-policy.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md); [FX-PLAN-APPROVAL-POLICY-001/README.md](./fixtures/FX-PLAN-APPROVAL-POLICY-001/README.md) | [RUN-OQ008-001/RUN.md](./evidence/OQ-008/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ008-001/RUN.md); [RUN-OQ008-002-A/RUN.md](./evidence/OQ-008/FX-PLAN-APPROVAL-POLICY-001/RUN-OQ008-002-A/RUN.md); [RUN-OQ008-002-B/RUN.md](./evidence/OQ-008/FX-PLAN-APPROVAL-POLICY-001/RUN-OQ008-002-B/RUN.md) | blocked / user decision pending |
-| OQ-009 | [OQ-009-completion-lease-atomicity.md](./OQ-009-completion-lease-atomicity.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ009-001/RUN.md](./evidence/OQ-009/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ009-001/RUN.md) | blocked / user decision pending |
+| OQ-009 | [OQ-009-completion-lease-atomicity.md](./OQ-009-completion-lease-atomicity.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ009-002-A/RUN-A.md](./evidence/OQ-009/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ009-002/RUN-A.md); [RUN-OQ009-002-B/RUN-B.md](./evidence/OQ-009/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ009-002/RUN-B.md) | resolved / [ADR-0014](../../adr/0014-completion-lease-atomicity.md) Accepted |
 
 The original shared fixture is an evidence-only Python runner. It does not select product
 language, package manager, runtime, schema, lease policy, approval actor, or completion
@@ -179,8 +179,9 @@ test or user decision.
 [PHASE-0-GATE-AUDIT-001](./PHASE-0-GATE-AUDIT-001.md) records the Gate result as `HOLD` as
 of its 2026-08-21 audit. OQ-001 and OQ-002 were resolved afterward through their user
 receipts and ADR-0010/ADR-0011; OQ-003 was subsequently resolved through its user receipt and
-ADR-0012. OQ-004/OQ-008/OQ-009 evidence and the remaining OQ-004~OQ-014 decisions remain
-blockers. No product implementation or Phase 0 `CLEAR` is claimed.
+ADR-0012. OQ-004/OQ-008 evidence and the remaining OQ-005~OQ-014 decisions remain blockers.
+OQ-009 was subsequently resolved through its crash-point matrix, delegated decision receipt
+and ADR-0014. No product implementation or Phase 0 `CLEAR` is claimed.
 
 ## Packet 작성 순서
 
