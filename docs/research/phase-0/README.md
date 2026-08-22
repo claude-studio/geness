@@ -70,13 +70,13 @@ contract. Cross-platform release and installed-host validation remain open.
 
 ## Issue #15 research index
 
-OQ-002 remains decision-ready and user-decision pending. Its fixture compares the shared
-application service boundary with CLI and MCP-like thin transports; it does not select the
-runtime already resolved by OQ-001.
+OQ-002 is resolved through the user receipt and [ADR-0011](../../adr/0011-canonical-command-api.md).
+Its fixture compares the shared application service boundary with CLI and MCP-like thin
+transports; it does not select the runtime already resolved by OQ-001.
 
 | OQ | packet | fixture | RUN evidence | status |
 | --- | --- | --- | --- | --- |
-| OQ-002 | [OQ-002-canonical-command-api.md](./OQ-002-canonical-command-api.md) | [FX-COMMAND-API-TYPED-RESULT-001/README.md](./fixtures/FX-COMMAND-API-TYPED-RESULT-001/README.md) | [RUN-OQ002-001/result.json](./evidence/OQ-002/FX-COMMAND-API-TYPED-RESULT-001/RUN-OQ002-001/result.json) | decision-ready / user decision pending |
+| OQ-002 | [OQ-002-canonical-command-api.md](./OQ-002-canonical-command-api.md) | [FX-COMMAND-API-TYPED-RESULT-001/README.md](./fixtures/FX-COMMAND-API-TYPED-RESULT-001/README.md) | [RUN-OQ002-001/result.json](./evidence/OQ-002/FX-COMMAND-API-TYPED-RESULT-001/RUN-OQ002-001/result.json); [USER-DECISION-OQ002-001](./evidence/OQ-002/USER-DECISION-RECEIPT-001.md) | resolved / [ADR-0011](../../adr/0011-canonical-command-api.md) Accepted |
 
 ## Issue #16 research index
 
@@ -171,9 +171,10 @@ test or user decision.
 ## Issue #21 Phase 0 Gate audit
 
 [PHASE-0-GATE-AUDIT-001](./PHASE-0-GATE-AUDIT-001.md) records the current Gate result as
-`HOLD` as of its 2026-08-21 audit. OQ-001 was resolved afterward through the user receipt
-and ADR-0010; OQ-002~014 user decision receipts and the missing OQ-003/OQ-004/OQ-008/OQ-009
-evidence remain blockers. No product implementation or Phase 0 `CLEAR` is claimed.
+`HOLD` as of its 2026-08-21 audit. OQ-001 and OQ-002 were resolved afterward through their
+user receipts and ADR-0010/ADR-0011; OQ-003~014 user decision receipts and the missing
+OQ-003/OQ-004/OQ-008/OQ-009 evidence remain blockers. No product implementation or Phase 0
+`CLEAR` is claimed.
 
 ## Packet 작성 순서
 

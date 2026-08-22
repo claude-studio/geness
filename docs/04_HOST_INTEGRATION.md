@@ -71,7 +71,8 @@ attention을 반환한다. active task의 profile은 조용히 바꾸지 않는�
 
 ## 4. CLI와 MCP
 
-- 공통 domain/application library가 권위자다.
+- [ADR-0011](./adr/0011-canonical-command-api.md)에 따라 공통 domain/application
+  service가 canonical command API 권위자다.
 - CLI와 MCP는 같은 dispatch/application service를 호출한다.
 - MCP는 durable state 자체가 아니라 control surface다.
 - transport error와 도메인 `HOLD`를 구분한다.

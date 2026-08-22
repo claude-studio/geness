@@ -140,6 +140,7 @@ Geness 자체의 docs-first 개발 방식은
 - [x] v1에서는 task당 active writer 하나만 허용하고 다른 host/process는 observer로 제한한다.
 - [x] 공통 기능은 하나의 Controller와 상태 머신으로 구현한다.
 - [x] v1 Controller는 Go + Go modules + CGO + 명시적 `sqlite_fts5` build contract를 사용한다.
+- [x] 공통 application service가 canonical command API이며 CLI/MCP는 thin transport다.
 - [x] 호스트별 매니페스트와 필요한 어댑터만 분리한다.
 - [x] 프로젝트 문서는 Geness 설치 경로가 아니라 실제 작업 대상 저장소에 생성한다.
 - [x] 대상 저장소의 Geness 루트는 `.geness/`다.
@@ -1022,7 +1023,7 @@ exact fingerprint
 
 ## 17. 공통 Controller와 MCP/CLI 경계
 
-다음 원칙을 적용한다.
+OQ-002와 [ADR-0011](./adr/0011-canonical-command-api.md)에 따라 다음 원칙을 적용한다.
 
 - 도메인 로직은 host, MCP transport와 분리된 library에 둔다.
 - CLI와 MCP는 동일한 application service를 호출한다.
@@ -1348,7 +1349,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | OQ | 계획 artifact | 최소 evidence | 반영 대상 | Status |
 | --- | --- | --- | --- | --- |
 | OQ-001 | `docs/research/phase-0/OQ-001-controller-runtime.md` | 후보별 배포 크기, FTS5 capability, stdio round-trip과 dual-host 설치 spike + user receipt | [ADR-0010](./adr/0010-controller-runtime-go.md) | RESOLVED |
-| OQ-002 | `docs/research/phase-0/OQ-002-canonical-command-api.md` | 동일 fixture를 후보 application/CLI/MCP 경계로 실행한 typed result·idempotency 비교 | Architecture ADR | OPEN |
+| OQ-002 | `docs/research/phase-0/OQ-002-canonical-command-api.md` | 동일 fixture를 후보 application/CLI/MCP 경계로 실행한 typed result·idempotency 비교 + user receipt | [ADR-0011](./adr/0011-canonical-command-api.md) | RESOLVED |
 | OQ-003 | `docs/research/phase-0/OQ-003-daemon-lease-liveness.md` | daemon 유무별 두 process heartbeat, 중단, grace와 takeover trace | Runtime ADR | OPEN |
 | OQ-004 | `docs/research/phase-0/OQ-004-task-lifecycle.md` | 허용·거부 전이, `FAILED`·`CANCELLED`, reopen과 completion/learning 순서 fixture | Lifecycle | OPEN |
 | OQ-005 | `docs/research/phase-0/OQ-005-project-workspace-identity.md` | clone, fork, rename, 동명 repository와 worktree identity fixture | Storage ADR | OPEN |
@@ -1382,6 +1383,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - [ ] OQ-001부터 OQ-014까지 각 decision packet과 필요한 spike/fixture evidence 작성
 - [ ] 교차 concern을 기존 OQ에 귀속하거나 결정 권한이 있는 새 OQ로 등록
 - [x] OQ-001 Go runtime 선택과 user decision receipt를 [ADR-0010](./adr/0010-controller-runtime-go.md)에 반영
+- [x] OQ-002 canonical command API 선택과 user decision receipt를 [ADR-0011](./adr/0011-canonical-command-api.md)에 반영
 - [x] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 C-01 권한 정책·user receipt 작성
 - [ ] 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
 - [ ] Open Questions의 `Resolved` 표와 위 Status를 근거 링크로 동기화
@@ -1763,7 +1765,7 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 | impl 자동 진행 policy | plan approval 이후 기본 5회 bounded successor impl/verify loop; contract·scope·권한 변경, oscillation과 budget 초과는 사용자 Gate/BLOCKED | Phase 0/4 |
 | progress relay verbosity | stage change, AC count, attention, blocker, verdict만 기본 표시; raw log는 상세 조회 | Phase 0/4 |
 | Controller 언어 | Go + Go modules + CGO + 명시적 `sqlite_fts5` build contract ([ADR-0010](./adr/0010-controller-runtime-go.md)) | Accepted; cross-platform validation Phase 0/1 |
-| CLI/MCP 경계 | 공통 library + CLI/MCP thin transport | Phase 0 |
+| CLI/MCP 경계 | 공통 application service + CLI/MCP thin transport ([ADR-0011](./adr/0011-canonical-command-api.md)) | Accepted; command/schema details Phase 0/2 |
 | Background daemon | 첫 버전에서는 제외, lease heartbeat 필요성 측정 후 결정 | Phase 0/4 |
 | cross-workspace lease authority | workspace-local runtime과 project/task 전역 writer arbitration 후보를 race fixture로 비교 | Phase 0 |
 | project memory writer | 여러 workspace Controller 사이의 project-scoped append/index 권위와 crash 복구 후보 비교 | Phase 0/5 |
@@ -1990,6 +1992,7 @@ approval, digest, lease와 completion 규칙은 [Lifecycle](./02_TASK_LIFECYCLE.
 | 2026-08-20 | Phase 4 checklist와 완료 조건을 ADR-0007 및 Verification Stage Guide에 맞춰 runtime final verdict, run/verification projection과 completion transaction으로 정렬. |
 | 2026-08-20 | DOC-01 handoff contract를 추가하고 Issue body, checkpoint, session start/end checklist를 `AGENTS.md`와 정렬. |
 | 2026-08-22 | 사용자 결정: v1 Controller runtime은 Go + Go modules + CGO + 명시적 `sqlite_fts5` build contract를 사용하며, ADR-0010과 OQ-001 receipt에 기록. |
+| 2026-08-22 | 사용자 결정: 공통 application service를 canonical command API로 채택하고 CLI/MCP는 thin transport로 유지하며, ADR-0011과 OQ-002 receipt에 기록. |
 | 2026-08-10 | 초기 계획 작성. 인터뷰, dual-host plugin, target `.geness/`, local memory/runtime 및 실패 교훈 lifecycle 합의 반영. |
 | 2026-08-10 | docs-first 구조, Ouroboros·MCX 출처와 차용 경계, plan approval actor 및 completion lease 순서 정렬. |
 | 2026-08-10 | 전체 문서 감사 결과를 반영해 Phase 0 OQ/evidence matrix, 교차 concern Gate, trace lineage, memory bootstrap과 transport/installed-host E2E 단계 경계를 보강. |

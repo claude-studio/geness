@@ -52,6 +52,8 @@ Persistence / Runtime / Filesystem / Search adapters
 - Adapter는 입력을 검증 가능한 application command로 변환하고 결과를 host 형식으로
   투영한다.
 - 동일한 정책을 CLI, MCP, Skill과 hook에 중복 구현하지 않는다.
+- [ADR-0011](./adr/0011-canonical-command-api.md)에 따라 공통 application service가
+  canonical command API이며 CLI/MCP는 thin transport다.
 
 ## 4. 구성 요소
 
@@ -193,9 +195,11 @@ tests/               unit, contract, integration, E2E
 ## 10. 구현 전 결정
 
 구현 언어와 package 경계는 [ADR-0010](./adr/0010-controller-runtime-go.md)으로 Go와
-Go modules를 채택했다. CLI/MCP entrypoint, daemon 여부, DB migration 도구, exact
-dependency versions와 package 배포 방식은 여전히 [Open Questions](./research/OPEN_QUESTIONS.md)와
-[PLAN Phase 0](./PLAN.md#phase-0-핵심-계약과-adr-확정)에서 닫는다.
+Go modules를 채택했고, [ADR-0011](./adr/0011-canonical-command-api.md)으로 공통
+application service와 thin CLI/MCP transport 경계를 채택했다. daemon 여부, DB migration
+도구, exact dependency versions와 package 배포 방식은 여전히
+[Open Questions](./research/OPEN_QUESTIONS.md)와 [PLAN Phase 0](./PLAN.md#phase-0-핵심-계약과-adr-확정)에서
+닫는다.
 
 ## 11. Threat model and permission boundary
 
