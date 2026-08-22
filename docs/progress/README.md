@@ -445,6 +445,17 @@ exit `0`이었다. read-only Markdown 검사는
 research evidence이지 production threshold, retention worker, bootstrap command, event/SQLite
 schema, Learning/Storage ADR 또는 Implementation `CLEAR`가 아니다.
 
+2026-08-22T15:33:58Z에 scheduled autopilot revalidation으로 같은 fixture를 current worktree에서
+두 번 다시 실행했다. 두 실행 모두 exit `0`, `43/43` assertions와 `all_assertions_pass=true`였고,
+paired stdout은 `cmp=0`, raw stdout SHA-256은
+`de54f8842b75bd1de711bbf0d309fff83b53010203ecf5b6945033b869565713`였다. projection hash는
+두 실행 모두 `sha256:0e3e7e4ef2ae40c0b6e68673774afe7cc2d8b74a122fb38438d7ddf8371b2b07`로 기존
+evidence와 일치했다. 이 결과는 C-01 recommendation을 재검증했지만, OQ-010의
+`decision_authority: user`와 `needs-user-decision`을 바꾸지 않는다. 사용자 receipt 없이
+Learning ADR, `Resolved` 상태 또는 canonical evaluator threshold를 생성하지 않았으며, 이
+권한 blocker는 [autopilot blocker #88](https://github.com/claude-studio/geness/issues/88)에
+기록했다.
+
 ### Phase 0 P0-08 #20 threat model·권한 정책 — VERIFIED DECISION
 
 2026-08-21에 [OQ-015 threat model packet](../research/phase-0/OQ-015-threat-model-permission-policy.md),
@@ -578,12 +589,11 @@ production evidence와 다른 Phase 0 결정이 남아 있다. Implementation `H
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-007 digest canonicalization decision sync가 끝났으므로, 다음 하나의 검증 가능한 목표는
-OQ-010 C-01 lesson evaluator recommendation을 같은 delegated-decision evidence gate로
-재검증하고 Learning ADR 반영 여부를 판정하는 것이다. OQ-008은 fixture가
-`selected_candidate=null`을 반환한 user-decision blocker로 유지한다. 제품 scaffold와
-Implementation `CLEAR`는 남은 blocking decision과 production evidence 전까지 시작하지
-않는다.
+OQ-010 fixture revalidation이 끝났으므로, 다음 하나의 검증 가능한 목표는 사용자가 C-01/C-02와
+recurrence·unassisted-success·minimum-age threshold를 선택하고 durable decision receipt를
+남기는 것이다. 그 receipt 전까지 OQ-010은 `needs-user-decision`, Learning ADR은 생성하지
+않으며 제품 scaffold와 Implementation `CLEAR`도 시작하지 않는다. OQ-008은 fixture가
+`selected_candidate=null`을 반환한 user-decision blocker로 유지한다.
 
 이번 OQ-007 decision sync 뒤 다음을 검증했다.
 
