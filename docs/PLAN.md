@@ -1350,7 +1350,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | --- | --- | --- | --- | --- |
 | OQ-001 | `docs/research/phase-0/OQ-001-controller-runtime.md` | 후보별 배포 크기, FTS5 capability, stdio round-trip과 dual-host 설치 spike + user receipt | [ADR-0010](./adr/0010-controller-runtime-go.md) | RESOLVED |
 | OQ-002 | `docs/research/phase-0/OQ-002-canonical-command-api.md` | 동일 fixture를 후보 application/CLI/MCP 경계로 실행한 typed result·idempotency 비교 + user receipt | [ADR-0011](./adr/0011-canonical-command-api.md) | RESOLVED |
-| OQ-003 | `docs/research/phase-0/OQ-003-daemon-lease-liveness.md` | daemon 유무별 두 process heartbeat, 중단, grace와 takeover trace | Runtime ADR | OPEN |
+| OQ-003 | `docs/research/phase-0/OQ-003-daemon-lease-liveness.md` | daemon 유무별 두 process heartbeat, 중단, grace와 takeover trace | Runtime ADR | OPEN — decision-ready evidence |
 | OQ-004 | `docs/research/phase-0/OQ-004-task-lifecycle.md` | 허용·거부 전이, `FAILED`·`CANCELLED`, reopen과 completion/learning 순서 fixture | Lifecycle | OPEN |
 | OQ-005 | `docs/research/phase-0/OQ-005-project-workspace-identity.md` | clone, fork, rename, 동명 repository와 worktree identity fixture | Storage ADR | OPEN |
 | OQ-006 | `docs/research/phase-0/OQ-006-schema-lineage.md` | frontmatter/DB round-trip, stable ID lineage, stale write와 projection recovery fixture | Schema/Storage ADR | OPEN |
@@ -1384,6 +1384,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - [ ] 교차 concern을 기존 OQ에 귀속하거나 결정 권한이 있는 새 OQ로 등록
 - [x] OQ-001 Go runtime 선택과 user decision receipt를 [ADR-0010](./adr/0010-controller-runtime-go.md)에 반영
 - [x] OQ-002 canonical command API 선택과 user decision receipt를 [ADR-0011](./adr/0011-canonical-command-api.md)에 반영
+- [x] OQ-003 two-process heartbeat·grace·takeover fixture evidence를 packet에 반영
 - [x] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 C-01 권한 정책·user receipt 작성
 - [ ] 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
 - [ ] Open Questions의 `Resolved` 표와 위 Status를 근거 링크로 동기화

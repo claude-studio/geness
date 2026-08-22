@@ -1,0 +1,76 @@
+{
+  "fixture_id": "FX-LEASE-LIVENESS-TAKEOVER-001",
+  "schema": "fixture.oq003.input.v1",
+  "project_id": "synthetic-project-oq003",
+  "task_id": "synthetic-task-001",
+  "config": {
+    "heartbeat_interval": 2,
+    "grace_period": 3
+  },
+  "timeline": [
+    {
+      "actor": "writer-A",
+      "operation": "acquire",
+      "logical_time": 0
+    },
+    {
+      "actor": "observer-B",
+      "operation": "observe",
+      "logical_time": 1
+    },
+    {
+      "actor": "writer-A",
+      "operation": "heartbeat",
+      "logical_time": 2
+    },
+    {
+      "actor": "observer-B",
+      "operation": "acquire",
+      "logical_time": 3
+    },
+    {
+      "actor": "observer-B",
+      "operation": "observe",
+      "logical_time": 4
+    },
+    {
+      "actor": "writer-A",
+      "operation": "interrupt",
+      "logical_time": 4
+    },
+    {
+      "actor": "observer-B",
+      "operation": "acquire",
+      "logical_time": 4
+    },
+    {
+      "actor": "observer-B",
+      "operation": "acquire",
+      "logical_time": 5
+    },
+    {
+      "actor": "observer-B",
+      "operation": "acquire",
+      "logical_time": 6
+    },
+    {
+      "actor": "observer-B",
+      "operation": "heartbeat",
+      "logical_time": 7
+    },
+    {
+      "actor": "observer-B",
+      "operation": "observe",
+      "logical_time": 8
+    }
+  ],
+  "expected": {
+    "writer_owner": "writer-A",
+    "observer_owner": "observer-B",
+    "writer_interrupt_exit_status": -9,
+    "takeover_before_grace": "DENIED",
+    "takeover_after_grace": "ALLOWED",
+    "grace_deadline_after_writer_heartbeat": 5,
+    "takeover_logical_time": 6
+  }
+}
