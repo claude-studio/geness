@@ -20,8 +20,8 @@ updated_at: "2026-08-20T00:00:00Z"
 - Allowed scope: daemon/no-daemon lease liveness trade-off와 disposable fixture 관찰
 - Non-goals: 제품 언어, package manager, runtime, production schema, daemon 구현,
   plugin scaffold와 user decision receipt 확정
-- Dependencies: #15 merged prerequisite; OQ-001 is resolved by ADR-0010 and OQ-002 remains
-  user-decision pending
+- Dependencies: #15 merged prerequisite; OQ-001 is resolved by ADR-0010 and OQ-002 is
+  resolved by ADR-0011 and its user receipt
 
 ## 2. Candidates
 

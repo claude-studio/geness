@@ -3,11 +3,11 @@ packet_schema_version: 1
 packet_id: "OQ-002"
 question_id: "OQ-002"
 title: "Canonical command API와 CLI/MCP 경계 비교"
-status: "decision-ready"
+status: "resolved"
 owner: "Codex review / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-20T12:36:59Z"
-updated_at: "2026-08-20T12:58:39Z"
+updated_at: "2026-08-22T16:44:59+09:00"
 ---
 
 # OQ-002 — Canonical command API와 CLI/MCP 경계 비교
@@ -31,8 +31,9 @@ updated_at: "2026-08-20T12:58:39Z"
   아니다.
 - **Research owner:** Codex
 
-이 packet은 관찰과 권고를 보존한다. `OQ-002`를 `Resolved`로 옮기거나 ADR을 만들지
-않으며, 제품 Implementation `HOLD`를 유지한다.
+이 packet은 관찰·권고·사용자 결정·receipt를 연결한다. OQ-002는 사용자 receipt와
+[ADR-0011](../../adr/0011-canonical-command-api.md)에 따라 `Resolved`가 됐지만, 제품
+Implementation `HOLD`는 유지한다.
 
 ## 2. Candidates
 
@@ -137,7 +138,7 @@ runner output. No secret, credential, environment dump, target `.geness/` state 
 
 ## 8. Decision
 
-- **Packet decision status:** `needs-user-decision`
+- **Packet decision status:** `resolved`
 - **Recommendation:** C-01 — shared library/application service owns domain policy and
   typed result; CLI and MCP remain thin transports that preserve the domain envelope and
   add only transport-specific errors.
@@ -150,23 +151,27 @@ runner output. No secret, credential, environment dump, target `.geness/` state 
 - **Rejected/deferred candidates:** C-02 and C-03 remain deferred; they were not selected
   or rejected as product policy because their production cost and official host behavior
   were not measured.
-- **Unresolved impact:** Until the user chooses, no OQ-002 command API ADR, production
-  schema, daemon policy or scaffold may be created. The product runtime is already fixed by
-  ADR-0010; Implementation remains `HOLD`.
+- **User decision:** The user selected C-01. The shared application service is the canonical
+  command API; CLI and MCP call it as thin transports, preserve the domain result envelope,
+  and add only transport-specific errors.
+- **Unresolved impact:** Final command names, MCP tool schemas/protocol versions, production
+  schema/digest formats, daemon/lease policy, installed-host behavior and product scaffold
+  remain open. The product runtime is fixed by ADR-0010, the command API boundary by
+  ADR-0011, and Implementation remains `HOLD`.
 
 ### User/authority decision receipt
 
-- **Decision:** `pending`
-- **Actor:** `pending`
-- **Recorded at:** `pending`
-- **Reference:** `pending`
+- **Decision:** `C-01 — shared application service with thin CLI/MCP transports`
+- **Actor:** `user`
+- **Recorded at:** `2026-08-22T16:44:59+09:00`
+- **Reference:** `evidence/OQ-002/USER-DECISION-RECEIPT-001.md`; [ADR-0011](../../adr/0011-canonical-command-api.md)
 - **Supersedes:** `none`
 
 ## 9. Next verifiable goal
 
-User reviews C-01/C-02/C-03 and decides whether the shared library/application-service
-boundary should become an Architecture ADR candidate. The Go runtime is already fixed by
-OQ-001/ADR-0010; schema and transport details remain separate Phase 0 decisions.
+The next verifiable goal is the OQ-003 two-process heartbeat, grace and takeover fixture. The
+Go runtime and canonical command API boundary are fixed by ADR-0010/ADR-0011; lease,
+transaction, schema and transport details remain separate Phase 0 decisions.
 
 ## 10. Completeness checklist
 
@@ -181,4 +186,4 @@ OQ-001/ADR-0010; schema and transport details remain separate Phase 0 decisions.
 - [x] decision status와 authority receipt가 일치한다.
 - [x] secret/raw log/대용량 output이 packet에 없다.
 - [x] 제품 scaffold, manifest, package와 target `.geness/` 변경이 없다.
-- [x] `git diff --check --`와 `python3 /tmp/geness-oq002-markdown-check.py`를 최종 packet/fixture/evidence 변경 이후 실행했고 exit status와 결과를 기록했다.
+- [x] `git diff --check --`와 read-only Node Markdown integrity check를 최종 packet/fixture/evidence 변경 이후 실행했고 exit status와 결과를 기록했다.

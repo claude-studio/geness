@@ -339,6 +339,6 @@ license/notice를 다시 검토한다.
 ## Next gate
 
 이 packet은 OQ-001의 조사 evidence와 사용자 선택, receipt와 Accepted ADR을 연결한다.
-다음 검증 가능한 목표는 **OQ-002의 사용자 결정 receipt 기록**이다. OQ-003/OQ-004/
-OQ-008/OQ-009의 packet-level evidence gap과 나머지 Phase 0 decision이 남아 있으므로
+다음 검증 가능한 목표는 **OQ-003의 two-process heartbeat·grace·takeover fixture**다.
+OQ-003/OQ-004/OQ-008/OQ-009의 packet-level evidence gap과 나머지 Phase 0 decision이 남아 있으므로
 Progress의 product Implementation `HOLD`와 Phase 0 `HOLD`는 유지한다.

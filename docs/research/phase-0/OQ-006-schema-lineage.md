@@ -23,8 +23,9 @@ updated_at: "2026-08-21T00:57:55Z"
 - **Non-goals:** production table/column/migration 선택, transaction crash atomicity, daemon,
   memory DB, product language/runtime, target `.geness/` 생성과 user decision receipt 확정
 - **Dependencies:** #14 / OQ-001 runtime은 [ADR-0010](../../adr/0010-controller-runtime-go.md)으로
-  resolved됐고 OQ-002의 사용자 결정은 pending이다. OQ-005 identity policy와 OQ-007
-  digest profile이 아직 확정되지 않았으므로 결과는 boundary recommendation으로만 남긴다.
+  resolved됐고 OQ-002는 [ADR-0011](../../adr/0011-canonical-command-api.md)과 receipt로
+  resolved됐다. OQ-005 identity policy와 OQ-007 digest profile이 아직 확정되지 않았으므로
+  결과는 boundary recommendation으로만 남긴다.
 - **Research owner:** Codex review
 
 이 packet은 관찰과 권고를 보존한다. OQ-006을 `Resolved`로 옮기거나 Schema/Storage ADR을
