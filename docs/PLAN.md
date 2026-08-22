@@ -1356,7 +1356,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | OQ-003 | `docs/research/phase-0/OQ-003-daemon-lease-liveness.md` | C-01 two-process heartbeat, 중단, grace와 takeover trace + user receipt; C-02/C-03 비선택 기록 | [ADR-0012](./adr/0012-no-background-daemon-v1.md) | RESOLVED |
 | OQ-004 | `docs/research/phase-0/OQ-004-task-lifecycle.md` | 허용·거부 전이, `FAILED`·`CANCELLED`, reopen과 completion/learning 순서 fixture + user receipt | [ADR-0013](./adr/0013-task-lifecycle-recovery.md) | RESOLVED |
 | OQ-005 | `docs/research/phase-0/OQ-005-project-workspace-identity.md` | clone, fork, rename, 동명 repository와 worktree identity fixture + delegated decision receipt | [ADR-0015](./adr/0015-project-workspace-identity.md) | RESOLVED |
-| OQ-006 | `docs/research/phase-0/OQ-006-schema-lineage.md` | frontmatter/DB round-trip, stable ID lineage, stale write와 projection recovery fixture | Schema/Storage ADR | OPEN |
+| OQ-006 | `docs/research/phase-0/OQ-006-schema-lineage.md` | frontmatter/DB round-trip, stable ID lineage, stale write와 projection recovery fixture | [ADR-0016](./adr/0016-schema-lineage-and-projection-ownership.md) | RESOLVED |
 | OQ-007 | `docs/research/phase-0/OQ-007-digest-canonicalization.md` | versioned test vector, editorial/semantic 변경과 spec/plan invalidation fixture | Specification ADR | OPEN |
 | OQ-008 | `docs/research/phase-0/OQ-008-plan-approval-policy.md` | risk, scope 확대, 외부 write와 일반 plan별 actor/policy decision table | Lifecycle/Specification | OPEN |
 | OQ-009 | `docs/research/phase-0/OQ-009-completion-lease-atomicity.md` | terminal checkpoint, projection과 lease release 각 crash point의 replay fixture + delegated decision receipt | [ADR-0014](./adr/0014-completion-lease-atomicity.md) | RESOLVED |
@@ -1390,6 +1390,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - [x] OQ-003 two-process heartbeat·grace·takeover fixture evidence와 C-01 user decision receipt를 [ADR-0012](./adr/0012-no-background-daemon-v1.md)에 반영
 - [x] OQ-004 lifecycle recovery C-01 fixture evidence와 user decision receipt를 [ADR-0013](./adr/0013-task-lifecycle-recovery.md)에 반영
 - [x] OQ-005 identity fixture evidence와 delegated decision receipt를 [ADR-0015](./adr/0015-project-workspace-identity.md)에 반영
+- [x] OQ-006 schema lineage fixture evidence와 delegated decision receipt를 [ADR-0016](./adr/0016-schema-lineage-and-projection-ownership.md)에 반영
 - [x] OQ-009 completion/lease atomicity crash-point fixture evidence와 delegated decision receipt를 [ADR-0014](./adr/0014-completion-lease-atomicity.md)에 반영
 - [x] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 C-01 권한 정책·user receipt 작성
 - [ ] 남은 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영

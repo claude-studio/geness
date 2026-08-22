@@ -50,7 +50,10 @@ revalidation; the mismatch is tracked for follow-up before relying on historical
   `trailing_whitespace=0`, `errors=0`
 - `git diff --check --` → exit `0`
 
-## Decision status
+## Decision status at execution time
 
-OQ-006 remains pending user decision. This revalidation does not create an ADR, select a
-production schema, create a product scaffold or change the Implementation `HOLD`.
+At the time of this revalidation, the packet still awaited a decision. The subsequent
+delegated C-01 decision is recorded in [USER-DECISION-OQ006-001](../../USER-DECISION-RECEIPT-001.md)
+and [ADR-0016](../../../../../../adr/0016-schema-lineage-and-projection-ownership.md).
+This revalidation and decision do not select a production schema, create a product scaffold
+or change the Implementation `HOLD`.

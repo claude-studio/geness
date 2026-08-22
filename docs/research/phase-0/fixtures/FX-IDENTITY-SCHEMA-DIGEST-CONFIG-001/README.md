@@ -14,8 +14,9 @@ OQ-005, OQ-006, OQ-007, OQ-013
 SQLite projection의 의미 보존, stale write 거부, contract/plan digest canonicalization과
 portable/local config 경계를 최소 입력으로 관찰한다.
 
-결과는 Phase 0 research evidence일 뿐 제품 Controller 구현, schema 채택, ADR 또는 사용자
-결정 receipt가 아니다.
+결과는 Phase 0 research evidence이며, 제품 Controller 구현이나 production schema를
+대신하지 않는다. OQ-005와 OQ-006의 별도 delegated decision receipt·ADR은 이 fixture의
+관찰을 근거로 하지만 fixture 자체가 그 결정을 수행하지 않는다.
 
 ## scope and non-goals
 

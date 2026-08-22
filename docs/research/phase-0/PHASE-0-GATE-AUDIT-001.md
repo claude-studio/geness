@@ -28,11 +28,12 @@ or user risk tolerance.
 
 **Decision: `HOLD`**
 
-The available fixtures provide decision-ready observations, but the required user
-decision receipts for OQ-001 through OQ-014 do not exist. OQ-003, OQ-004, OQ-008 and
-OQ-009 also remain packet-level `blocked` because their missing liveness, lifecycle,
-approval and atomicity evidence has not been observed. `docs/progress/README.md`
-continues to record Implementation `HOLD`.
+The available fixtures provide decision-ready observations, but at this audit snapshot the
+required user decision receipts for OQ-001 through OQ-014 did not exist. OQ-003, OQ-004,
+OQ-008 and OQ-009 also remained packet-level `blocked` because their missing liveness,
+lifecycle, approval and atomicity evidence had not been observed. OQ-006 was subsequently
+resolved by delegated receipt and [ADR-0016](../../adr/0016-schema-lineage-and-projection-ownership.md);
+`docs/progress/README.md` continues to record Implementation `HOLD`.
 
 ## 3. Gate criteria
 
