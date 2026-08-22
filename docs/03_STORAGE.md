@@ -1,6 +1,6 @@
 # Geness Storage and Identity
 
-> 상태: Accepted boundary / implementation technology TBD
+> 상태: Accepted boundary and identity lineage / implementation technology TBD
 
 ## 1. 목적
 
@@ -59,6 +59,8 @@ summary, `verification.md`는 final verify projection이다. mutable state와 ve
 
 ## 3. Project identity
 
+Project/workspace lineage policy is defined by [ADR-0015](./adr/0015-project-workspace-identity.md).
+
 `project.json` 최소 필드:
 
 ```json
@@ -72,16 +74,24 @@ summary, `verification.md`는 final verify projection이다. mutable state와 ve
 
 - 폴더명은 display slug일 뿐 identity가 아니다.
 - `project_id`는 folder rename과 worktree에 안정적이어야 한다.
-- clone은 project ID를 공유하고 fork는 explicit detach/rekey하는 방향을 우선 검토한다.
-- fork/clone의 정확한 정책은 ADR로 확정하기 전까지 TBD다.
+- 일반 clone은 `project_id`를 공유하지만 distinct `workspace_id`를 사용한다.
+- folder rename은 project metadata를 보존하는 한 같은 project와 workspace로 유지한다.
+- Git worktree는 같은 project의 distinct workspace다.
+- fork, detach와 동명 repository는 사용자의 명시적 detach/rekey 뒤 새 project lineage가 된다.
+- display name, folder path, branch, remote와 host session만으로 project identity를 자동
+  detach하거나 공유하지 않는다.
 
 ## 4. Workspace identity
 
 - `workspace_id`는 한 machine의 clone/worktree 실행 경계를 구분한다.
 - memory는 project 단위로 공유하고 runtime은 workspace 단위로 격리한다.
+- clone과 Git worktree는 project가 같아도 workspace가 distinct하며, metadata-preserving
+  folder rename은 기존 workspace를 유지한다.
 - workspace path가 바뀌어 orphan runtime이 생길 수 있으므로 registry 또는 cleanup 정책이
   필요하다.
 - host session ID나 branch 이름만으로 workspace identity를 만들지 않는다.
+- ID 생성 algorithm, explicit rekey UX, registry/reconciliation과 cross-workspace writer
+  authority는 후속 Phase 0/implementation evidence가 필요하다.
 
 ## 5. Project document contract
 

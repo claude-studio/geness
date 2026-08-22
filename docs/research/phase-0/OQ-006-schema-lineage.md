@@ -24,7 +24,8 @@ updated_at: "2026-08-21T00:57:55Z"
   memory DB, product language/runtime, target `.geness/` 생성과 user decision receipt 확정
 - **Dependencies:** #14 / OQ-001 runtime은 [ADR-0010](../../adr/0010-controller-runtime-go.md)으로
   resolved됐고 OQ-002는 [ADR-0011](../../adr/0011-canonical-command-api.md)과 receipt로
-  resolved됐다. OQ-005 identity policy와 OQ-007 digest profile이 아직 확정되지 않았으므로
+  resolved됐다. OQ-005의 identity boundary는 [ADR-0015](../../adr/0015-project-workspace-identity.md)로
+  확정됐지만 exact ID algorithm/reconciliation과 OQ-007 digest profile이 아직 열려 있으므로
   결과는 boundary recommendation으로만 남긴다.
 - **Research owner:** Codex review
 
@@ -119,7 +120,7 @@ Additional validation commands:
 | R-001 | fixture parser is not a full YAML implementation and its one-line JSON subset is not a product compatibility promise. | `high` | YAML scalar/anchor/multiline/duplicate-key semantics와 cross-language parser parity가 미확인이다. | selected runtime 뒤 official parser/schema fixture와 schema version/migration test를 추가한다. | user / Phase 1 | `open` |
 | R-002 | SQLite table is in-memory and fixture-local. | `high` | WAL/locking, transaction crash points, migration/rollback과 multi-process writer arbitration이 미관찰이다. | OQ-003/OQ-009 and selected runtime schema spike로 분리한다. | user | `open` |
 | R-003 | one round-trip does not prove all v1 artifact fields or projection recovery. | `medium` | nested frontmatter, AC lineage, evidence freshness, manual edit reconciliation이 미확인이다. | OQ-007 digest vector와 Phase 1 schema validation/round-trip matrix를 추가한다. | user / Phase 1 | `open` |
-| R-004 | stable ID/revision behavior was synthetic and depends on unresolved OQ-005/OQ-007 policy. | `high` | project/workspace ID algorithm과 cross-file lineage are not selected. | user decisions를 받은 뒤 Schema/Storage ADR로 promote한다. | user | `open` |
+| R-004 | stable ID/revision behavior was synthetic and depends on unresolved schema/digest details. | `high` | project/workspace ID algorithm, cross-file lineage와 OQ-007 digest profile are not selected. | C-01 identity boundary를 전제로 Schema/Storage ADR과 후속 fixture에서 exact algorithm/reconciliation을 promote한다. | user | `open` |
 
 ## 8. Decision
 

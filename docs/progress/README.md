@@ -265,8 +265,9 @@ OQ-008은 `blocked / user decision pending`으로 유지했다. At that observat
 [OQ-006](../research/phase-0/OQ-006-schema-lineage.md),
 [OQ-007](../research/phase-0/OQ-007-digest-canonicalization.md),
 [OQ-013](../research/phase-0/OQ-013-config-machine-contract.md) packet과 공통 disposable
-fixture를 추가했다. 네 packet은 decision-ready recommendation이지만 사용자 decision
-receipt가 없으므로 `Resolved` 또는 ADR로 승격하지 않았다.
+fixture를 추가했다. OQ-005는 아래 delegated decision receipt와 ADR-0015로 정렬했고,
+OQ-006/OQ-007/OQ-013은 여전히 decision-ready recommendation이며 사용자 decision receipt가
+없다.
 
 정확한 fixture command를 두 번 실행했다.
 
@@ -282,13 +283,31 @@ golden vector와 portable/local config boundary도 통과했다.
 
 - `runner.py`: `42475a16c6e8136000eb5ee03297bef289a795e50af69855499ce4694c5e2a61`
 - `input/fixture.json`: `06a74865a1852918d61e5cec7138dc521beee6084234bfee9d585b32de98fc4e`
-- redacted result manifest: `c3dbbbf7a77605a2c195f3721178611c55e30bc79ef9c4a15fa262bc940e1c8c`
+- redacted result manifest: `5bd6d0ecc1d0871a697a323292b7fe83703229eebadaba2f3a02f613c37fa075`
 
 추가 검증은 `python3 -m py_compile` exit `0`, input/result JSON validation exit `0`,
 `git diff --check --` exit `0`, read-only Markdown 검사 `markdown_files=57`,
 `local_links=147`, `fence_delimiters=122`, `trailing_whitespace=0`, `errors=[]`였다.
-이 결과는 identity/schema/digest/config 후보의 조사 evidence이지 production schema,
-serializer, config policy, ADR 또는 Implementation `CLEAR`가 아니다.
+이 결과는 identity/schema/digest/config 후보의 조사 evidence다. OQ-005의 C-01 policy
+decision은 아래에 별도로 기록했지만 production schema, serializer, config policy 또는
+Implementation `CLEAR`를 의미하지 않는다.
+
+### Phase 0 OQ-005 — VERIFIED DECISION
+
+2026-08-22에 OQ-005 C-01을 명시적 AUTOPILOT delegated-decision policy로 채택했다. 현재
+worktree에서 fixture runner를 두 번 호출한 subprocess comparison은 각각 exit `0`과
+30/30 assertions를 반환했고 stdout은 equality-equivalent였다. 보존된 result manifest도
+각각 `all_assertions_pass=true`를 유지한다.
+
+C-01은 explicit stable project lineage와 workspace-scoped runtime identity를 분리한다.
+일반 clone은 project를 공유하고 workspace는 분리하며, metadata-preserving folder rename은
+같은 workspace를 유지하고, Git worktree는 distinct workspace가 된다. fork·detach와 동명
+repository는 명시적 detach/rekey 뒤에만 새 project lineage로 취급한다.
+
+[ADR-0015](../adr/0015-project-workspace-identity.md)와 [OQ-005 decision receipt](../research/phase-0/evidence/OQ-005/USER-DECISION-RECEIPT-001.md)에
+decision, authority basis와 evidence를 기록했다. 이 결정은 project ID 생성 algorithm,
+fork 자동 감지, workspace registry/reconciliation, cross-workspace writer authority,
+production schema 또는 Implementation `CLEAR`를 확정하지 않는다.
 
 ### Phase 0 P0-06 #18 host·command surface research — VERIFIED OBSERVATION
 
@@ -448,7 +467,7 @@ merged main `23a6e75` 기준으로 수행했다. OQ-002 command API 14 assertion
 OQ-015 threat model 17 assertions를 각각 재실행해 모두 exit `0`과
 `all_assertions_pass=true`를 확인했다.
 
-현재 Gate 판정은 `HOLD`다. OQ-005~OQ-014 중 남은 user decision receipt가 있고,
+현재 Gate 판정은 `HOLD`다. OQ-006~OQ-014 중 남은 user decision receipt가 있고,
 OQ-004/OQ-008은 packet-level blocker이며, OQ-009는 ADR-0014까지 정렬됐지만 production
 evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해제할 근거는 없다.
 
@@ -476,7 +495,7 @@ evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해
 | Canonical command API | Accepted — shared application service + thin CLI/MCP transports | [ADR-0011](../adr/0011-canonical-command-api.md) |
 | Lease liveness / daemon policy | Accepted — v1 required daemon/host-owned sidecar 제외, explicit heartbeat/checkpoint/grace/takeover | [ADR-0012](../adr/0012-no-background-daemon-v1.md) |
 | Lifecycle | Proposed, OQ-004 C-01 recovery policy Accepted; other Phase 0 decisions open | [ADR-0013](../adr/0013-task-lifecycle-recovery.md), [02_TASK_LIFECYCLE](../02_TASK_LIFECYCLE.md) |
-| Storage boundary | Accepted, schema TBD | [ADR-0002](../adr/0002-project-and-local-state-boundary.md) |
+| Storage boundary / identity lineage | Accepted C-01, schema and registry TBD | [ADR-0002](../adr/0002-project-and-local-state-boundary.md), [ADR-0015](../adr/0015-project-workspace-identity.md) |
 | Dual-host boundary | Accepted, manifest prototype TBD | [ADR-0001](../adr/0001-dual-host-shared-core.md) |
 | Interview principles | Accepted, implementation TBD | [ADR-0004](../adr/0004-ouroboros-interview-principles.md) |
 | Failure learning | Accepted principle, thresholds TBD | [ADR-0003](../adr/0003-failure-candidate-is-not-memory.md) |
@@ -499,18 +518,22 @@ evidence와 다른 Phase 0 결정이 남아 있다. Implementation `HOLD`를 해
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-009가 정렬됐으므로, 다음 하나의 검증 가능한 목표는 P0-05 identity/schema/digest
-queue의 OQ-005 recommendation을 같은 delegated-decision evidence gate로 재검증하는
-것이다. 제품 scaffold와 Implementation `CLEAR`는 남은 blocking decision과 production
-evidence 전까지 시작하지 않는다.
+OQ-005가 정렬됐으므로, 다음 하나의 검증 가능한 목표는 P0-05 identity/schema/digest
+queue의 OQ-006 schema-lineage recommendation을 같은 delegated-decision evidence gate로
+재검증하는 것이다. 제품 scaffold와 Implementation `CLEAR`는 남은 blocking decision과
+production evidence 전까지 시작하지 않는다.
 
-이번 DOC-01 문서 변경 뒤 다음을 검증했다.
+이번 OQ-005 decision sync 뒤 다음을 검증했다.
 
-- `git diff --check` → exit `0`
-- read-only Node Markdown integrity 검사 → tracked Markdown 30개, local link/anchor,
-  fenced code block과 trailing whitespace 검사 `errors=0`
-- `AGENTS.md`와 `docs/PLAN.md`의 handoff contract, checkpoint heading과 session
-  start/end checklist가 서로 정렬돼 있음을 diff로 확인
+- `PYTHONDONTWRITEBYTECODE=1 python3 runner.py` 두 실행 → 각각 exit `0`, 30/30 assertions;
+  paired stdout equality 확인
+- `PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile .../runner.py` → exit `0`
+- input 및 OQ-005 두 result manifest `python3 -m json.tool` → 각각 exit `0`
+- `git diff --check --` → exit `0`
+- Ruby YAML frontmatter 검사 → `frontmatter_checked=35`, `errors=0`
+- read-only Node Markdown local-link/anchor/fence 검사 → `markdown_files=89`,
+  `local_links=416`, `local_anchor_links=29`, `fence_delimiters=156`,
+  `trailing_whitespace=0`, `errors=0`
 
 ## 7. 갱신 규칙
 

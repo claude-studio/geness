@@ -22,8 +22,8 @@ updated_at: "2026-08-21T00:57:55Z"
   editorial/semantic 변경, downstream invalidation 관계의 fixture 관찰
 - **Non-goals:** SHA-256 이외 hash 선택, RFC/JCS compatibility 채택, production serializer,
   schema/migration, user approval receipt와 Specification ADR 확정
-- **Dependencies:** #14 closed/done; OQ-005/006 identity/schema boundary와 OQ-001 runtime
-  decision은 아직 pending이다.
+- **Dependencies:** #14 closed/done; OQ-005 identity boundary는 [ADR-0015](../../adr/0015-project-workspace-identity.md)로
+  resolved됐고 OQ-006 schema lineage와 OQ-001 runtime follow-up은 아직 pending이다.
 - **Research owner:** Codex review
 
 이 packet은 fixture-local canonical JSON profile을 관찰하지만 제품 digest contract를

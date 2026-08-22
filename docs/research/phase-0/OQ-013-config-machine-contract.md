@@ -23,8 +23,8 @@ updated_at: "2026-08-21T00:57:55Z"
 - **Non-goals:** config key 최종 schema, precedence/merge algorithm, secrets policy의 최종
   threshold, CLI command, target `.geness/` 생성, product implementation과 user decision
   receipt 확정
-- **Dependencies:** #14 closed/done; OQ-005 identity, OQ-006 schema와 OQ-007 digest는 user
-  decision 전이다.
+- **Dependencies:** #14 closed/done; OQ-005 identity boundary는 [ADR-0015](../../adr/0015-project-workspace-identity.md)로
+  resolved됐고 OQ-006 schema와 OQ-007 digest는 user decision 전이다.
 - **Research owner:** Codex review
 
 이 packet은 현재 Storage/Architecture 경계를 검증하는 research다. config candidate를

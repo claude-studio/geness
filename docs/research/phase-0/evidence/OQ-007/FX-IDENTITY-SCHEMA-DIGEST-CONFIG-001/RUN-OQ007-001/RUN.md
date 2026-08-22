@@ -40,7 +40,7 @@ The two stdout values were parsed as JSON and compared equal. The fixture declar
 - runner.py: `sha256:42475a16c6e8136000eb5ee03297bef289a795e50af69855499ce4694c5e2a61`
 - input/fixture.json: `sha256:06a74865a1852918d61e5cec7138dc521beee6084234bfee9d585b32de98fc4e`
 - fixture README: `sha256:7be95ce69ec566482f376ab5542d615f5fc40456dede8f480eedb2a68bb2315a`
-- result manifest (both runs): `sha256:c3dbbbf7a77605a2c195f3721178611c55e30bc79ef9c4a15fa262bc940e1c8c`
+- result manifest (both runs): `sha256:5bd6d0ecc1d0871a697a323292b7fe83703229eebadaba2f3a02f613c37fa075`
 
 ## Validation commands
 

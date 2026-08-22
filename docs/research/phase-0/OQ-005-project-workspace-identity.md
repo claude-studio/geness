@@ -3,11 +3,11 @@ packet_schema_version: 1
 packet_id: "OQ-005"
 question_id: "OQ-005"
 title: "clone·fork·rename·worktree project/workspace identity 비교"
-status: "decision-ready"
+status: "resolved"
 owner: "Codex review / Phase 0 research"
 decision_authority: "user"
 opened_at: "2026-08-21T00:38:27Z"
-updated_at: "2026-08-21T00:57:55Z"
+updated_at: "2026-08-22T12:03:46Z"
 ---
 
 # OQ-005 — clone·fork·rename·worktree project/workspace identity
@@ -29,8 +29,9 @@ updated_at: "2026-08-21T00:57:55Z"
   API 결정을 대신하지 않는다.
 - **Research owner:** Codex review
 
-이 packet은 관찰과 권고를 보존한다. `OQ-005`를 `Resolved`로 옮기거나 Storage ADR을
-만들지 않으며 제품 Implementation `HOLD`를 유지한다.
+이 packet은 관찰과 채택된 권고를 보존한다. C-01의 policy decision은 [ADR-0015](../../adr/0015-project-workspace-identity.md)와
+decision receipt로 기록했지만, 제품 Implementation `HOLD`와 ID 생성·registry 구현의
+미결정은 유지한다.
 
 ## 2. Candidates
 
@@ -98,10 +99,10 @@ evidence section below.
 
 | artifact_id | kind | path/URI | produced by | sha256 or reason | retention | supports |
 | --- | --- | --- | --- | --- | --- | --- |
-| A-001 | redacted result manifest | `docs/research/phase-0/evidence/OQ-005/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ005-001/result.json` | `RUN-OQ005-001` | recorded after final validation | `packet` | identity relation matrix와 local Git observation |
+| A-001 | redacted result manifest | `docs/research/phase-0/evidence/OQ-005/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ005-001/result.json` | `RUN-OQ005-001` | `sha256:5bd6d0ecc1d0871a697a323292b7fe83703229eebadaba2f3a02f613c37fa075` | `packet` | identity relation matrix와 local Git observation |
 | A-002 | fixture runner | `docs/research/phase-0/fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/runner.py` | fixture definition | recorded after final validation | `tracked` | repeatable local Git/identity probe |
 | A-003 | synthetic input | `docs/research/phase-0/fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/input/fixture.json` | fixture definition | recorded after final validation | `tracked` | deterministic identity cases |
-| A-004 | redacted rerun result | `docs/research/phase-0/evidence/OQ-005/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ005-002/result.json` | `RUN-OQ005-002` | same manifest; parsed outputs equal | `packet` | repeatability |
+| A-004 | redacted rerun result | `docs/research/phase-0/evidence/OQ-005/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ005-002/result.json` | `RUN-OQ005-002` | `sha256:5bd6d0ecc1d0871a697a323292b7fe83703229eebadaba2f3a02f613c37fa075`; parsed outputs equal | `packet` | repeatability |
 | A-005 | raw stdout/temp Git state | temporary per-run state | `RUN-OQ005-001/002` | discarded after redaction; no secret or external write | `discarded` | raw execution only |
 
 The fixture state, absolute temporary paths and raw stdout/stderr are not preserved. No target
@@ -129,14 +130,14 @@ Tool/runtime versions and environment:
 
 | risk_id | risk/limitation | impact | evidence gap | mitigation/next check | owner | status |
 | --- | --- | --- | --- | --- | --- | --- |
-| R-001 | local Git clone/worktree facts do not define Geness project lineage policy. | `high` | fork intent, project.json copy, registry migration과 explicit rekey UX가 관찰되지 않았다. | 사용자에게 C-01/C-02/C-03 중 lineage policy를 선택받고 Storage ADR/fixture를 별도로 확정한다. | user | `open` |
+| R-001 | local Git clone/worktree facts do not define all project lineage mechanics. | `high` | fork intent, project.json copy, registry migration과 explicit rekey UX가 관찰되지 않았다. | C-01 policy는 ADR-0015로 채택하고, metadata/rekey/registry migration을 후속 evidence로 검증한다. | Phase 0 / Storage | `open` |
 | R-002 | fork is represented by local clone plus synthetic remote/detach marker, not a hosted fork API. | `medium` | GitHub/GitLab fork metadata와 remote normalization이 미관찰이다. | selected host/provider가 생긴 뒤 read-only provider fixture를 승인해 추가한다. | user / Phase 6 | `open` |
 | R-003 | workspace registry, path rename reconciliation과 cross-workspace writer arbitration은 실행하지 않았다. | `high` | orphan runtime, lease takeover와 same project의 concurrent worktree가 미관찰이다. | OQ-003/OQ-006/OQ-009 race/recovery fixture로 분리한다. | user | `open` |
-| R-004 | C-02/C-03은 독립 product implementation이 아니라 trade-off inference다. | `medium` | remote/object/path identity의 충돌·성능 비교가 없다. | 사용자 결정 전에는 제품 ID algorithm을 구현하지 않는다. | user | `open` |
+| R-004 | C-02/C-03은 독립 product implementation이 아니라 trade-off inference다. | `medium` | remote/object/path identity의 충돌·성능 비교가 없다. | C-01을 기본 lineage policy로 유지하되, 제품 ID algorithm은 별도 결정·evidence 전까지 구현하지 않는다. | Phase 0 / Storage | `open` |
 
 ## 8. Decision
 
-- **Packet decision status:** `needs-user-decision`
+- **Packet decision status:** `resolved`
 - **Recommendation:** C-01 — explicit stable project lineage와 workspace-scoped runtime을
   분리하고, clone은 shared project, rename은 metadata-preserving same workspace, worktree는
   distinct workspace, fork는 명시적 detach/rekey로 취급한다.
@@ -147,23 +148,27 @@ Tool/runtime versions and environment:
   `docs/03_STORAGE.md`의 project/workspace 경계와 `ADR-0002`의 portable/local boundary에
   맞는다.
 - **Rejected/deferred candidates:** C-02는 remote/object 예외와 fork intent 불명확성 때문에
-  deferred; C-03은 rename/clone/worktree resume 불안정성 때문에 deferred. 사용자 결정 전
-  rejected/accepted로 확정하지 않는다.
+  deferred; C-03은 rename/clone/worktree resume 불안정성 때문에 deferred한다. 두 후보는
+  제품 구현의 대체 identity 권위자로 사용하지 않는다.
 - **Unresolved impact:** project ID 생성·rekey algorithm, workspace registry와 cross-workspace
-  writer authority가 닫히지 않으면 제품 schema와 runtime 구현을 시작할 수 없다.
+  writer authority가 닫히지 않으므로 제품 schema와 runtime 구현은 여전히 별도 Gate를 필요로
+  한다.
 
 ### User/authority decision receipt
 
-- **Decision:** `pending`
-- **Actor:** `pending`
-- **Recorded at:** `pending`
-- **Reference:** `pending`
+- **Decision:** C-01 — explicit project lineage와 workspace-scoped runtime identity를 분리
+- **Actor:** `user-delegated-autonomous-delivery` under the explicit AUTOPILOT delegation
+- **Recorded at:** `2026-08-22T12:03:46Z`
+- **Authority basis:** packet recommendation, deterministic two-run fixture evidence, no contradictory
+  repository evidence와 delegated docs/research scope 조건을 충족했다. 이 receipt는 대화형
+  사용자 메시지를 가장하지 않는다.
+- **Reference:** [ADR-0015](../../adr/0015-project-workspace-identity.md), [OQ-005 decision receipt](./evidence/OQ-005/USER-DECISION-RECEIPT-001.md)
 - **Supersedes:** `none`
 
 ## 9. Next verifiable goal
 
-사용자가 C-01/C-02/C-03 중 project/workspace lineage policy를 선택하고, 선택 결과를 Storage
-ADR 및 project identity migration/reconciliation fixture의 입력으로 기록한다.
+다음 목표는 OQ-006 schema lineage recommendation을 같은 delegated-decision evidence gate로
+재검증하고, OQ-005의 C-01 identity boundary와의 dependency를 확인하는 것이다.
 
 ## 10. Completeness checklist
 
