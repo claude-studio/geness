@@ -32,7 +32,7 @@ ADR은 되돌리기 어렵거나 여러 계층의 계약을 바꾸는 결정을 
 | [0015](./0015-project-workspace-identity.md) | Accepted | explicit project lineage와 workspace-scoped identity를 분리하고 fork/detach는 명시적 rekey로 제한한다. |
 | [0016](./0016-schema-lineage-and-projection-ownership.md) | Accepted | portable Markdown contract/projection과 runtime SQLite mutable-state owner를 분리하고 stale write와 projection reconciliation 경계를 정한다. |
 | [0017](./0017-versioned-semantic-digest.md) | Accepted | contract/plan digest는 versioned semantic projection과 SHA-256을 사용하고 editorial-only 변경은 무효화하지 않는다. |
-| [0018](./0018-learning-evaluator-thresholds.md) | Accepted | deterministic evidence-gated lesson evaluator와 `2 / 3 / 7일` promotion/expiry threshold를 사용한다. |
+| [0018](./0018-deterministic-lesson-evaluator.md) | Accepted | lesson은 deterministic evidence gate로 승격·만료하며 recurrence `2`, eligible unassisted success `3`, minimum age `7 days`를 사용한다. |
 
 ## ADR이 필요한 변경
 

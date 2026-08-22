@@ -137,6 +137,9 @@ sequenceDiagram
   선언할 수 없다.
 - memory event JSONL은 lesson history의 감사 원본이다.
 - memory SQLite FTS는 재구축 가능한 검색 index다.
+- lesson lifecycle의 deterministic recurrence·expiry threshold는
+  [ADR-0018](./adr/0018-deterministic-lesson-evaluator.md)가 소유하며, production schema와
+  evaluator implementation은 후속 Phase 5 evidence 범위다.
 - host session과 대화 transcript는 canonical state가 아니다.
 
 문서와 DB가 불일치하면 [ADR-0016](./adr/0016-schema-lineage-and-projection-ownership.md)에

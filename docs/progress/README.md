@@ -403,9 +403,9 @@ Implementation `CLEAR`가 아니다. OQ-012/OQ-014와 ADR-0008의 user decision�
 
 2026-08-21에 [OQ-010 lesson evaluator](../research/phase-0/OQ-010-lesson-evaluator.md),
 [OQ-011 runtime retention](../research/phase-0/OQ-011-runtime-retention.md) packet과
-폐기 가능한 `FX-MEMORY-RETENTION-BOOTSTRAP-001`을 추가했다. OQ-010은 아래의 C-01
-decision receipt와 ADR-0018로 정렬했고, OQ-011은 여전히 decision-ready recommendation으로
-user decision을 기다린다. Implementation `HOLD`는 유지한다.
+폐기 가능한 `FX-MEMORY-RETENTION-BOOTSTRAP-001`을 추가했다. OQ-010은 아래 delegated
+decision receipt와 [ADR-0018](../adr/0018-deterministic-lesson-evaluator.md)로 resolved됐고,
+OQ-011은 decision-ready recommendation과 user decision pending으로 유지한다.
 
 정확한 fixture command를 두 번 실행했다.
 
@@ -441,33 +441,20 @@ exit `0`이었다. read-only Markdown 검사는
 `markdown_files=64`, `local_links=185`, `local_anchor_links=15`, `fence_delimiters=152`,
 `trailing_whitespace=0`, `errors=[]`를 반환했다.
 
-현재 관찰은 deterministic evaluator와 runtime retention/memory capability 후보의 research
-evidence다. OQ-010의 production evaluator, retention worker, bootstrap command, event/SQLite
-schema와 OQ-011의 Storage decision은 여전히 후속 범위이며 Implementation `CLEAR`가 아니다.
+당시 관찰은 deterministic evaluator, runtime retention과 memory capability result 후보의
+research evidence였으며 production threshold, retention worker, bootstrap command, event/SQLite
+schema와 Implementation `CLEAR`를 의미하지 않았다. 현재 OQ-010의 docs/research threshold
+profile 채택은 아래의 별도 ADR과 receipt에 기록돼 있다.
 
 2026-08-22T15:33:58Z에 scheduled autopilot revalidation으로 같은 fixture를 current worktree에서
 두 번 다시 실행했다. 두 실행 모두 exit `0`, `43/43` assertions와 `all_assertions_pass=true`였고,
 paired stdout은 `cmp=0`, raw stdout SHA-256은
 `de54f8842b75bd1de711bbf0d309fff83b53010203ecf5b6945033b869565713`였다. projection hash는
 두 실행 모두 `sha256:0e3e7e4ef2ae40c0b6e68673774afe7cc2d8b74a122fb38438d7ddf8371b2b07`로 기존
-evidence와 일치했다. 이 결과는 아래 OQ-010 C-01 decision의 evidence로 사용한다. production
-evaluator, event/SQLite schema와 Implementation `CLEAR`는 여전히 후속 범위이며, OQ-011
-retention decision과 OQ-008 등 다른 Phase 0 blocker는 유지한다.
-
-### Phase 0 OQ-010 — VERIFIED DECISION
-
-2026-08-23에 사용자의 현재 대화 지시 `진행해`를 OQ-010 C-01 권고와 초기 threshold를
-채택하라는 명시적 decision으로 기록했다. C-01은 구조화 fingerprint와 versioned
-event/evaluator rule을 사용하고, 독립 run 2회 또는 재현 가능한 guard evidence를
-promotion 기준으로 한다. eligible unassisted success 3회와 최소 7일 관찰 기간을
-candidate/probationary expiry 기준으로 하며, 일반 retrieval에는 `verified|enforced`만
-노출한다.
-
-결정은 [USER-DECISION-OQ010-001](../research/phase-0/evidence/OQ-010/USER-DECISION-RECEIPT-001.md)과
-Accepted [ADR-0018](../adr/0018-learning-evaluator-thresholds.md)에 기록했다. 이 결정은
-fixture의 43/43 deterministic evidence와 paired output equality에 근거하지만 production
-evaluator/schema, merge/split normalization, revocation, calibration, concurrent writer와
-Implementation `CLEAR`를 확정하지 않는다.
+evidence와 일치했다. 이 결과는 당시 C-01 recommendation 재검증 evidence이며, 이후
+delegated decision receipt와 ADR-0018이 아래에 기록됐다. 당시 blocker body를 가진 open
+GitHub projection은 [autopilot blocker #88](https://github.com/claude-studio/geness/issues/88)로
+남아 있다.
 
 ### Phase 0 P0-08 #20 threat model·권한 정책 — VERIFIED DECISION
 
@@ -541,6 +528,30 @@ fixture 두 번 실행과 `cmp`, `git diff --check --`가 모두 exit `0`이었�
 Markdown 검사는 `markdown_files=89`, `frontmatter_files=35`, `local_links=396`,
 `local_anchor_links=29`, `fence_delimiters=156`, `errors=[]`를 반환했다.
 
+### Phase 0 OQ-010 — VERIFIED DECISION
+
+2026-08-23 scheduled AUTOPILOT run에서 [OQ-010 packet](../research/phase-0/OQ-010-lesson-evaluator.md)의
+current fixture를 두 번 실행했다. 두 실행 모두 exit `0`, 43/43 assertions와
+`all_assertions_pass=true`였고, paired stdout `cmp`도 exit `0`이었다. raw stdout SHA-256은
+`sha256:de54f8842b75bd1de711bbf0d309fff83b53010203ecf5b6945033b869565713`, retained projection
+hash는 `sha256:0e3e7e4ef2ae40c0b6e68673774afe7cc2d8b74a122fb38438d7ddf8371b2b07`로 기존 evidence와
+일치했다.
+
+packet의 clear C-01 recommendation, deterministic two-run evidence, contradictory policy 부재와
+delegated docs/research scope 조건을 확인해 C-01 deterministic evidence-gated evaluator를
+채택했다. 독립 `run_id` 2회 재발 또는 reproducible guard evidence가 `verified` 후보를 만들고,
+`candidate|probationary`는 eligible unassisted success 3회와 minimum age 7일을 모두 충족해야
+`expired` 후보가 된다. 같은 run 중복, injected/ineligible/unrelated success와 시간만으로는
+승격·만료를 만들지 않는다. 일반 retrieval은 `verified|enforced`만 노출한다.
+
+[USER-DECISION-OQ010-001](../research/phase-0/evidence/OQ-010/USER-DECISION-RECEIPT-001.md)과
+Accepted [ADR-0018](../adr/0018-deterministic-lesson-evaluator.md)에 결정·authority basis·evidence를
+기록했다. 이 결정은 production fingerprint/schema/evaluator, verified lesson revocation,
+runtime retention/bootstrap policy 또는 Implementation `CLEAR`를 확정하지 않으며, OQ-011은
+별도 다음 목표로 남긴다. GitHub issue #88은 이전 user-decision blocker body로 여전히 OPEN이며,
+이 run의 허용된 external write 범위에는 issue close/edit/relabel이 포함되지 않아 stale projection으로
+보고한다.
+
 ### Phase 0 P0-GATE #21 — HOLD audit
 
 2026-08-21에 [Phase 0 Gate audit](../research/phase-0/PHASE-0-GATE-AUDIT-001.md)을
@@ -582,7 +593,7 @@ production evidence와 다른 Phase 0 결정이 남아 있다. Implementation `H
 | Storage boundary / identity lineage | Accepted C-01, schema and registry TBD | [ADR-0002](../adr/0002-project-and-local-state-boundary.md), [ADR-0015](../adr/0015-project-workspace-identity.md) |
 | Dual-host boundary | Accepted, manifest prototype TBD | [ADR-0001](../adr/0001-dual-host-shared-core.md) |
 | Interview principles | Accepted, implementation TBD | [ADR-0004](../adr/0004-ouroboros-interview-principles.md) |
-| Failure learning | Accepted principle and deterministic thresholds; implementation TBD | [ADR-0003](../adr/0003-failure-candidate-is-not-memory.md), [ADR-0018](../adr/0018-learning-evaluator-thresholds.md) |
+| Failure learning | Accepted C-01 deterministic evaluator thresholds; production implementation TBD | [ADR-0003](../adr/0003-failure-candidate-is-not-memory.md), [ADR-0018](../adr/0018-deterministic-lesson-evaluator.md) |
 | Threat model / permission boundary | Accepted baseline, exact risk/detector/production enforcement TBD | [ADR-0009](../adr/0009-threat-model-permission-boundaries.md) |
 | Implementation plan | Draft | [PLAN](../PLAN.md) |
 
@@ -602,11 +613,11 @@ production evidence와 다른 Phase 0 결정이 남아 있다. Implementation `H
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-010 decision sync가 끝났으므로, 다음 하나의 검증 가능한 목표는 사용자가 OQ-011의
-C-01/C-02/C-03 retention 및 bootstrap mapping을 선택하고 durable decision receipt를
-남기는 것이다. 그 receipt 전까지 OQ-011은 `needs-user-decision`, Storage ADR과 Phase 3
-memory capability Gate sync는 생성하지 않는다. OQ-008은 fixture가 `selected_candidate=null`을
-반환한 user-decision blocker로 유지한다.
+OQ-010 C-01 decision sync가 끝났으므로, 다음 하나의 검증 가능한 목표는 OQ-011 C-01
+runtime retention/bootstrap recommendation을 같은 delegated-decision evidence gate로
+검토하고, retention/bootstrap receipt와 Storage/Phase 3 canonical sync 가능 여부를 판정하는
+것이다. OQ-008은 fixture가 `selected_candidate=null`을 반환한 별도 user-decision blocker로
+유지하고, OQ-010의 production implementation은 시작하지 않는다.
 
 이번 OQ-007 decision sync 뒤 다음을 검증했다.
 
