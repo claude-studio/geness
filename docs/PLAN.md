@@ -150,6 +150,7 @@ Geness 자체의 docs-first 개발 방식은
 - [x] 사용자 로컬 하위 이름은 `memory/`와 `runtime/`을 사용한다.
 - [x] 저장소 폴더명만 프로젝트 식별자로 사용하지 않는다.
 - [x] 프로젝트는 `project_id`, clone/worktree 실행 환경은 `workspace_id`로 구분한다.
+- [x] clone은 project lineage를 공유하되 workspace는 분리하고, rename은 metadata-preserving same workspace, worktree는 distinct workspace, fork/동명 repository는 explicit detach/rekey 뒤 새 project로 취급한다.
 - [x] 사람이 읽고 Git으로 공유하는 계약 정본은 대상 저장소의 Markdown 문서다.
 - [x] DB, 원본 로그, 잠금, lease와 대용량 증거는 `~/.geness/`에 둔다.
 - [x] `memory.sqlite3`와 `runtime.sqlite3`의 수명과 책임을 분리한다.
@@ -1354,7 +1355,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | OQ-002 | `docs/research/phase-0/OQ-002-canonical-command-api.md` | 동일 fixture를 후보 application/CLI/MCP 경계로 실행한 typed result·idempotency 비교 + user receipt | [ADR-0011](./adr/0011-canonical-command-api.md) | RESOLVED |
 | OQ-003 | `docs/research/phase-0/OQ-003-daemon-lease-liveness.md` | C-01 two-process heartbeat, 중단, grace와 takeover trace + user receipt; C-02/C-03 비선택 기록 | [ADR-0012](./adr/0012-no-background-daemon-v1.md) | RESOLVED |
 | OQ-004 | `docs/research/phase-0/OQ-004-task-lifecycle.md` | 허용·거부 전이, `FAILED`·`CANCELLED`, reopen과 completion/learning 순서 fixture + user receipt | [ADR-0013](./adr/0013-task-lifecycle-recovery.md) | RESOLVED |
-| OQ-005 | `docs/research/phase-0/OQ-005-project-workspace-identity.md` | clone, fork, rename, 동명 repository와 worktree identity fixture | Storage ADR | OPEN |
+| OQ-005 | `docs/research/phase-0/OQ-005-project-workspace-identity.md` | clone, fork, rename, 동명 repository와 worktree identity fixture + delegated decision receipt | [ADR-0015](./adr/0015-project-workspace-identity.md) | RESOLVED |
 | OQ-006 | `docs/research/phase-0/OQ-006-schema-lineage.md` | frontmatter/DB round-trip, stable ID lineage, stale write와 projection recovery fixture | Schema/Storage ADR | OPEN |
 | OQ-007 | `docs/research/phase-0/OQ-007-digest-canonicalization.md` | versioned test vector, editorial/semantic 변경과 spec/plan invalidation fixture | Specification ADR | OPEN |
 | OQ-008 | `docs/research/phase-0/OQ-008-plan-approval-policy.md` | risk, scope 확대, 외부 write와 일반 plan별 actor/policy decision table | Lifecycle/Specification | OPEN |
@@ -1388,9 +1389,10 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - [x] OQ-002 canonical command API 선택과 user decision receipt를 [ADR-0011](./adr/0011-canonical-command-api.md)에 반영
 - [x] OQ-003 two-process heartbeat·grace·takeover fixture evidence와 C-01 user decision receipt를 [ADR-0012](./adr/0012-no-background-daemon-v1.md)에 반영
 - [x] OQ-004 lifecycle recovery C-01 fixture evidence와 user decision receipt를 [ADR-0013](./adr/0013-task-lifecycle-recovery.md)에 반영
+- [x] OQ-005 identity fixture evidence와 delegated decision receipt를 [ADR-0015](./adr/0015-project-workspace-identity.md)에 반영
 - [x] OQ-009 completion/lease atomicity crash-point fixture evidence와 delegated decision receipt를 [ADR-0014](./adr/0014-completion-lease-atomicity.md)에 반영
 - [x] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 C-01 권한 정책·user receipt 작성
-- [ ] 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
+- [ ] 남은 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
 - [ ] Open Questions의 `Resolved` 표와 위 Status를 근거 링크로 동기화
 
 완료 조건:
@@ -1777,7 +1779,7 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 | 사용자 명령 이름 | 하나의 주 진입점과 status/resume 보조 진입점 | Phase 0 |
 | `.geness/config.yaml` | 프로젝트별 허용 범위·테스트 정책이 필요하면 포함 | Phase 0 |
 | task별 machine JSON | Markdown frontmatter로 충분한지 먼저 검증 | Phase 0/2 |
-| project ID clone/fork 의미 | clone은 공유, fork는 명시적 detach/rekey 후보 | Phase 0 |
+| project ID clone/fork 의미 | clone은 project lineage 공유·workspace 분리, fork/동명 repository는 explicit detach/rekey 뒤 새 project | Accepted; [ADR-0015](./adr/0015-project-workspace-identity.md) |
 | 진행 중 문서 Git 정책 | 기본 tracked, 민감·대용량 데이터는 홈에만 저장 | Phase 0 |
 | plan 별도 승인 | scope 확대·external/destructive/security-boundary 변경은 current-digest user receipt 필수, 일반 plan actor/risk policy는 OQ-008 결정 필요 | Phase 0/3 |
 | trace/evidence envelope | stable ID, revision, spec/plan digest, freshness와 verifier provenance를 versioned contract로 비교 | Phase 0/3/4 |
@@ -1799,7 +1801,7 @@ artifact projection 계약은 [ADR-0007](./adr/0007-v1-contract-and-verification
 | --- | --- | --- |
 | Codex·Claude plugin schema drift | 한 호스트 설치 실패 | 두 manifest 분리, compatibility fixture와 E2E gate |
 | 호스트별 hook 의미 차이 | 상태 불일치 | hook을 보조 기능으로 한정하고 Controller를 권위자로 유지 |
-| project ID clone/fork 충돌 | 잘못된 memory 공유 | committed project ID 정책과 explicit detach/rekey 제공 |
+| project ID clone/fork 충돌 | 잘못된 memory 공유 | ADR-0015의 committed project lineage와 explicit detach/rekey를 구현하고 registry/reconciliation evidence를 추가 |
 | workspace-local runtime과 전역 task lease의 권위 불일치 | 두 writer 허용 또는 영구 stale lease | Phase 0 arbitration 결정, 두 workspace race와 takeover fixture |
 | project-scoped memory writer 충돌 | JSONL event와 SQLite/FTS projection 불일치 | 전역 writer 결정, append/index crash replay와 rebuild fixture |
 | SQLite write contention | 체크포인트 유실 | single writer, WAL 검토, 짧은 transaction, busy retry 제한 |
@@ -1999,6 +2001,7 @@ approval, digest, lease와 completion 규칙은 [Lifecycle](./02_TASK_LIFECYCLE.
 | 2026-08-22 | 사용자 결정: v1 Controller runtime은 Go + Go modules + CGO + 명시적 `sqlite_fts5` build contract를 사용하며, ADR-0010과 OQ-001 receipt에 기록. |
 | 2026-08-22 | 사용자 결정: 공통 application service를 canonical command API로 채택하고 CLI/MCP는 thin transport로 유지하며, ADR-0011과 OQ-002 receipt에 기록. |
 | 2026-08-22 | 사용자 결정: OQ-004 C-01 recovery policy를 채택해 explicit user receipt가 있는 `FAILED`만 reopen하고 `CANCELLED`는 terminal로 유지하며, ADR-0013과 OQ-004 receipt에 기록. |
+| 2026-08-22 | delegated AUTOPILOT decision: OQ-005 C-01 project lineage/workspace identity를 채택하고 ADR-0015와 OQ-005 receipt에 기록. |
 | 2026-08-10 | 초기 계획 작성. 인터뷰, dual-host plugin, target `.geness/`, local memory/runtime 및 실패 교훈 lifecycle 합의 반영. |
 | 2026-08-10 | docs-first 구조, Ouroboros·MCX 출처와 차용 경계, plan approval actor 및 completion lease 순서 정렬. |
 | 2026-08-10 | 전체 문서 감사 결과를 반영해 Phase 0 OQ/evidence matrix, 교차 concern Gate, trace lineage, memory bootstrap과 transport/installed-host E2E 단계 경계를 보강. |

@@ -104,13 +104,13 @@ remain unobserved.
 
 ## Issue #17 research index
 
-The following are observed Phase 0 research packets for identity, schema, digest and config.
-They are decision-ready recommendations, not Resolved decisions, and contain no user decision
-receipts:
+The following are Phase 0 research packets for identity, schema, digest and config. OQ-005 is
+resolved through the delegated decision receipt and [ADR-0015](../../adr/0015-project-workspace-identity.md);
+OQ-006, OQ-007 and OQ-013 remain decision-ready recommendations without decision receipts:
 
 | OQ | packet | shared fixture | RUN evidence | status |
 | --- | --- | --- | --- | --- |
-| OQ-005 | [OQ-005-project-workspace-identity.md](./OQ-005-project-workspace-identity.md) | [FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md](./fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md) | [RUN-OQ005-001/RUN.md](./evidence/OQ-005/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ005-001/RUN.md) | decision-ready / user decision pending |
+| OQ-005 | [OQ-005-project-workspace-identity.md](./OQ-005-project-workspace-identity.md) | [FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md](./fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md) | [RUN-OQ005-001/RUN.md](./evidence/OQ-005/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ005-001/RUN.md); [USER-DECISION-OQ005-001](./evidence/OQ-005/USER-DECISION-RECEIPT-001.md) | resolved / [ADR-0015](../../adr/0015-project-workspace-identity.md) Accepted |
 | OQ-006 | [OQ-006-schema-lineage.md](./OQ-006-schema-lineage.md) | [FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md](./fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md) | [RUN-OQ006-001/RUN.md](./evidence/OQ-006/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ006-001/RUN.md) | decision-ready / user decision pending |
 | OQ-007 | [OQ-007-digest-canonicalization.md](./OQ-007-digest-canonicalization.md) | [FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md](./fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md) | [RUN-OQ007-001/RUN.md](./evidence/OQ-007/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ007-001/RUN.md) | decision-ready / user decision pending |
 | OQ-013 | [OQ-013-config-machine-contract.md](./OQ-013-config-machine-contract.md) | [FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md](./fixtures/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/README.md) | [RUN-OQ013-001/RUN.md](./evidence/OQ-013/FX-IDENTITY-SCHEMA-DIGEST-CONFIG-001/RUN-OQ013-001/RUN.md) | decision-ready / user decision pending |
@@ -118,7 +118,8 @@ receipts:
 The shared fixture executed local Git clone/rename/worktree probes, a synthetic explicit fork
 relation, frontmatter/SQLite round-trip, stale revision rejection, contract/plan golden digest
 vectors and a portable/local config boundary assertion. It reported 30/30 assertions and
-equality-equivalent JSON on two runs. The fixture does not choose project ID generation,
+equality-equivalent JSON on two runs. The OQ-005 C-01 policy is now accepted only for the
+project/workspace lineage boundary; the fixture still does not choose project ID generation,
 production SQLite schema, a cross-language serializer, `.geness/config.yaml`, task machine JSON
 or any product implementation.
 
@@ -179,9 +180,10 @@ test or user decision.
 [PHASE-0-GATE-AUDIT-001](./PHASE-0-GATE-AUDIT-001.md) records the Gate result as `HOLD` as
 of its 2026-08-21 audit. OQ-001 and OQ-002 were resolved afterward through their user
 receipts and ADR-0010/ADR-0011; OQ-003 was subsequently resolved through its user receipt and
-ADR-0012. OQ-004/OQ-008 evidence and the remaining OQ-005~OQ-014 decisions remain blockers.
-OQ-009 was subsequently resolved through its crash-point matrix, delegated decision receipt
-and ADR-0014. No product implementation or Phase 0 `CLEAR` is claimed.
+ADR-0012. OQ-004/OQ-008 evidence and the remaining OQ-006~OQ-014 decisions remain blockers.
+OQ-005 was subsequently resolved through ADR-0015 and its delegated decision receipt, while
+OQ-009 was resolved through its crash-point matrix, delegated decision receipt and ADR-0014.
+No product implementation or Phase 0 `CLEAR` is claimed.
 
 ## Packet 작성 순서
 
