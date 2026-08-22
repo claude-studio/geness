@@ -501,8 +501,10 @@ FAILED
 CANCELLED
 ```
 
-`FAILED`와 `CANCELLED`의 정확한 terminal/recovery 의미는 Phase 0 상태 전이 결정에서
-확정한다. 현재 목록에 있다는 사실만으로 자동 복구 또는 영구 종료를 추론하지 않는다.
+OQ-004 C-01 결정에 따라 task-level `FAILED`는 명시적인 user reopen receipt가 있을 때만
+`REOPENED`로 복구하고, `CANCELLED`는 terminal로 유지한다. 자동 reopen은 허용하지 않는다.
+전체 state graph의 진입 edge와 production receipt validation은
+[ADR-0013](./adr/0013-task-lifecycle-recovery.md) 범위 밖의 후속 evidence다.
 
 핵심 규칙:
 
@@ -1351,7 +1353,7 @@ Phase 상태와 구현 허용 여부는 [Progress](./progress/README.md)가 소�
 | OQ-001 | `docs/research/phase-0/OQ-001-controller-runtime.md` | 후보별 배포 크기, FTS5 capability, stdio round-trip과 dual-host 설치 spike + user receipt | [ADR-0010](./adr/0010-controller-runtime-go.md) | RESOLVED |
 | OQ-002 | `docs/research/phase-0/OQ-002-canonical-command-api.md` | 동일 fixture를 후보 application/CLI/MCP 경계로 실행한 typed result·idempotency 비교 + user receipt | [ADR-0011](./adr/0011-canonical-command-api.md) | RESOLVED |
 | OQ-003 | `docs/research/phase-0/OQ-003-daemon-lease-liveness.md` | C-01 two-process heartbeat, 중단, grace와 takeover trace + user receipt; C-02/C-03 비선택 기록 | [ADR-0012](./adr/0012-no-background-daemon-v1.md) | RESOLVED |
-| OQ-004 | `docs/research/phase-0/OQ-004-task-lifecycle.md` | 허용·거부 전이, `FAILED`·`CANCELLED`, reopen과 completion/learning 순서 fixture | Lifecycle | OPEN |
+| OQ-004 | `docs/research/phase-0/OQ-004-task-lifecycle.md` | 허용·거부 전이, `FAILED`·`CANCELLED`, reopen과 completion/learning 순서 fixture + user receipt | [ADR-0013](./adr/0013-task-lifecycle-recovery.md) | RESOLVED |
 | OQ-005 | `docs/research/phase-0/OQ-005-project-workspace-identity.md` | clone, fork, rename, 동명 repository와 worktree identity fixture | Storage ADR | OPEN |
 | OQ-006 | `docs/research/phase-0/OQ-006-schema-lineage.md` | frontmatter/DB round-trip, stable ID lineage, stale write와 projection recovery fixture | Schema/Storage ADR | OPEN |
 | OQ-007 | `docs/research/phase-0/OQ-007-digest-canonicalization.md` | versioned test vector, editorial/semantic 변경과 spec/plan invalidation fixture | Specification ADR | OPEN |
@@ -1385,6 +1387,7 @@ Phase 0 감사에서 발견한 다음 교차 concern은 관련 packet에 명시�
 - [x] OQ-001 Go runtime 선택과 user decision receipt를 [ADR-0010](./adr/0010-controller-runtime-go.md)에 반영
 - [x] OQ-002 canonical command API 선택과 user decision receipt를 [ADR-0011](./adr/0011-canonical-command-api.md)에 반영
 - [x] OQ-003 two-process heartbeat·grace·takeover fixture evidence와 C-01 user decision receipt를 [ADR-0012](./adr/0012-no-background-daemon-v1.md)에 반영
+- [x] OQ-004 lifecycle recovery C-01 fixture evidence와 user decision receipt를 [ADR-0013](./adr/0013-task-lifecycle-recovery.md)에 반영
 - [x] [OQ-015 threat model](./research/phase-0/OQ-015-threat-model-permission-policy.md)과 C-01 권한 정책·user receipt 작성
 - [ ] 사용자 권한의 결정을 받고 관련 ADR과 규범 문서에 반영
 - [ ] Open Questions의 `Resolved` 표와 위 Status를 근거 링크로 동기화
@@ -1994,6 +1997,7 @@ approval, digest, lease와 completion 규칙은 [Lifecycle](./02_TASK_LIFECYCLE.
 | 2026-08-20 | DOC-01 handoff contract를 추가하고 Issue body, checkpoint, session start/end checklist를 `AGENTS.md`와 정렬. |
 | 2026-08-22 | 사용자 결정: v1 Controller runtime은 Go + Go modules + CGO + 명시적 `sqlite_fts5` build contract를 사용하며, ADR-0010과 OQ-001 receipt에 기록. |
 | 2026-08-22 | 사용자 결정: 공통 application service를 canonical command API로 채택하고 CLI/MCP는 thin transport로 유지하며, ADR-0011과 OQ-002 receipt에 기록. |
+| 2026-08-22 | 사용자 결정: OQ-004 C-01 recovery policy를 채택해 explicit user receipt가 있는 `FAILED`만 reopen하고 `CANCELLED`는 terminal로 유지하며, ADR-0013과 OQ-004 receipt에 기록. |
 | 2026-08-10 | 초기 계획 작성. 인터뷰, dual-host plugin, target `.geness/`, local memory/runtime 및 실패 교훈 lifecycle 합의 반영. |
 | 2026-08-10 | docs-first 구조, Ouroboros·MCX 출처와 차용 경계, plan approval actor 및 completion lease 순서 정렬. |
 | 2026-08-10 | 전체 문서 감사 결과를 반영해 Phase 0 OQ/evidence matrix, 교차 concern Gate, trace lineage, memory bootstrap과 transport/installed-host E2E 단계 경계를 보강. |

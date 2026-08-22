@@ -27,6 +27,7 @@ ADR은 되돌리기 어렵거나 여러 계층의 계약을 바꾸는 결정을 
 | [0010](./0010-controller-runtime-go.md) | Accepted | v1 Controller는 Go + Go modules + CGO + 명시적 `sqlite_fts5`를 사용한다. |
 | [0011](./0011-canonical-command-api.md) | Accepted | 공통 application service가 canonical command API이며 CLI/MCP는 thin transport다. |
 | [0012](./0012-no-background-daemon-v1.md) | Accepted | v1은 required background daemon/host-owned sidecar 없이 explicit lease liveness를 사용한다. |
+| [0013](./0013-task-lifecycle-recovery.md) | Accepted | C-01: 명시적 user receipt가 있는 `FAILED`만 `REOPENED`; `CANCELLED`는 terminal이다. |
 
 ## ADR이 필요한 변경
 

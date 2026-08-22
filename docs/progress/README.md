@@ -137,9 +137,10 @@ DENIED stale-digest PLAN_APPROVED → RUNNING, DENIED invalid INTERVIEWING → R
 sequential first-writer ALLOWED/second-writer DENIED probe, and equality-equivalent terminal
 replay with completed=true and lease_active=false. The separate heartbeat/grace/takeover
 observation is recorded below. Complete lifecycle and CANCELLED semantics, Plan Gate actor
-policy, crash-point matrix and production transaction atomicity remain unobserved. No
-language, package, runtime, schema, daemon, lease policy, approval actor or completion
-transaction was selected; no ADR was created.
+policy, crash-point matrix and production transaction atomicity remain unobserved. At that
+original observation point no language, package, runtime, schema, daemon, lease policy,
+approval actor or completion transaction was selected; the later decisions are recorded in
+the dedicated decision sections below.
 
 ### Phase 0 OQ-003 liveness fixture — VERIFIED OBSERVATION
 
@@ -176,8 +177,57 @@ Accepted [ADR-0012](../adr/0012-no-background-daemon-v1.md)에 기록했다.
 
 이 결정은 fixture-local logical-clock liveness evidence를 production clock, SQLite
 transaction, cross-workspace authority, exact threshold 또는 installed-host E2E로
-승격하지 않는다. OQ-004/OQ-008/OQ-009와 나머지 Phase 0 decision, product
-Implementation `HOLD`는 유지한다.
+승격하지 않는다. OQ-008/OQ-009와 나머지 Phase 0 decision, product Implementation
+`HOLD`는 유지한다.
+
+### Phase 0 OQ-004 lifecycle recovery fixture — VERIFIED OBSERVATION
+
+2026-08-22에 기존 OQ-003/OQ-008/OQ-009 evidence runner를 변경하지 않고,
+[`FX-LIFECYCLE-RECOVERY-002`](../research/phase-0/fixtures/FX-LIFECYCLE-RECOVERY-002/README.md)를
+OQ-004 follow-up fixture로 추가했다. 이 fixture는 C-01/C-02/C-03 후보별
+`FAILED`·`CANCELLED` recovery, explicit user receipt guard, completion exposure guard와
+failure candidate 승격 차단을 비교 관찰한다.
+
+정확한 command는 다음과 같다.
+
+    python3 -m py_compile docs/research/phase-0/fixtures/FX-LIFECYCLE-RECOVERY-002/runner.py
+    PYTHONDONTWRITEBYTECODE=1 python3 docs/research/phase-0/fixtures/FX-LIFECYCLE-RECOVERY-002/runner.py
+
+compile은 exit `0`이었다. fixture를 두 번 실행해 각각 exit `0`, 14/14 assertions와
+`all_assertions_pass=true`를 확인했고, 두 raw JSON output을 `cmp`로 비교해 동일성을
+확인했다. C-01/C-02의 explicit-receipt `FAILED → REOPENED`, C-02의
+`CANCELLED → REOPENED`, receipt 없는 reopen 거부, checkpoint/lease guard와
+independent evidence 없는 candidate 비승격과
+`READY_TO_COMPLETE` → final run projection → terminal checkpoint → lease release →
+`COMPLETED` 노출의 synthetic 순서를 관찰했다. 결과는
+[`RUN-OQ004-002`](../research/phase-0/evidence/OQ-004/FX-LIFECYCLE-RECOVERY-002/RUN-OQ004-002/RUN.md)에
+보존했다.
+
+이 fixture output 자체는 후보 비교 evidence이며 user decision을 대신하지 않는다. C-01
+선택과 Lifecycle ADR 반영은 아래의 별도 decision section에 기록한다. Plan Gate actor
+policy, production transaction과 Implementation `CLEAR`는 이 observation으로 확정하지
+않는다.
+
+### Phase 0 OQ-004 — VERIFIED DECISION
+
+2026-08-22에 사용자는 앞서 제시된 OQ-004 C-01 권고안을 기준으로 진행하도록 확인했다.
+task-level `FAILED`는 명시적인 user reopen receipt가 있을 때만 `REOPENED`로 전환하고,
+자동 reopen은 허용하지 않는다. `CANCELLED`는 terminal이며 `CANCELLED → REOPENED`는
+허용하지 않는다. attempt-level `FAIL`은 task-level `FAILED`와 구분한다.
+
+결정은 [USER-DECISION-OQ004-001](../research/phase-0/evidence/OQ-004/USER-DECISION-RECEIPT-001.md)과
+Accepted [ADR-0013](../adr/0013-task-lifecycle-recovery.md)에 기록했다. OQ-004 packet은
+`resolved`로 동기화했으며, C-02/C-03은 선택하지 않았다.
+
+이 결정은 follow-up fixture의 14/14 deterministic assertion과 두 raw JSON output의
+`cmp` 동일성에 근거하지만, production persistence, receipt validation, crash replay,
+lease takeover과 전체 state graph를 증명하지 않는다. OQ-008 Plan Gate actor/risk policy,
+OQ-009 completion atomicity와 제품 Implementation `HOLD`는 유지한다.
+
+이번 decision sync에서 `python3 -m json.tool docs/research/phase-0/fixtures/FX-LIFECYCLE-RECOVERY-002/input/fixture.json >/dev/null`,
+YAML frontmatter parse, read-only Markdown local-link check와 `git diff --check --`를
+실행했다. JSON/frontmatter parse와 diff check는 exit `0`이었고, Markdown check는
+`markdown_files=79`, `local_links=327`, `errors=0`을 반환했다.
 
 ### Phase 0 P0-05 #17 identity·schema·digest·config research — VERIFIED OBSERVATION
 
@@ -340,10 +390,10 @@ merged main `23a6e75` 기준으로 수행했다. OQ-002 command API 14 assertion
 OQ-015 threat model 17 assertions를 각각 재실행해 모두 exit `0`과
 `all_assertions_pass=true`를 확인했다.
 
-현재 Gate 판정은 `HOLD`다. OQ-004~OQ-014 중 남은 user decision receipt가 있고,
-OQ-004/OQ-008/OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제할
-근거가 없다. OQ-003은 evidence, user receipt와 ADR-0012까지 정렬됐지만 다른 Phase 0
-결정과 production evidence가 남아 있다.
+현재 Gate 판정은 `HOLD`다. OQ-005~OQ-014 중 남은 user decision receipt가 있고,
+OQ-008/OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제할
+근거가 없다. OQ-003과 OQ-004는 각각 evidence, user receipt와 ADR까지 정렬됐지만 다른
+Phase 0 결정과 production evidence가 남아 있다.
 
 ## 3. 검증된 repository 사실
 
@@ -368,7 +418,7 @@ OQ-004/OQ-008/OQ-009는 packet-level `blocked` 상태이며, Implementation `HOL
 | Controller runtime | Accepted — Go + Go modules + CGO + `sqlite_fts5` | [ADR-0010](../adr/0010-controller-runtime-go.md) |
 | Canonical command API | Accepted — shared application service + thin CLI/MCP transports | [ADR-0011](../adr/0011-canonical-command-api.md) |
 | Lease liveness / daemon policy | Accepted — v1 required daemon/host-owned sidecar 제외, explicit heartbeat/checkpoint/grace/takeover | [ADR-0012](../adr/0012-no-background-daemon-v1.md) |
-| Lifecycle | Proposed, Phase 0 decisions open | [02_TASK_LIFECYCLE](../02_TASK_LIFECYCLE.md) |
+| Lifecycle | Proposed, OQ-004 C-01 recovery policy Accepted; other Phase 0 decisions open | [ADR-0013](../adr/0013-task-lifecycle-recovery.md), [02_TASK_LIFECYCLE](../02_TASK_LIFECYCLE.md) |
 | Storage boundary | Accepted, schema TBD | [ADR-0002](../adr/0002-project-and-local-state-boundary.md) |
 | Dual-host boundary | Accepted, manifest prototype TBD | [ADR-0001](../adr/0001-dual-host-shared-core.md) |
 | Interview principles | Accepted, implementation TBD | [ADR-0004](../adr/0004-ouroboros-interview-principles.md) |
@@ -392,11 +442,11 @@ OQ-004/OQ-008/OQ-009는 packet-level `blocked` 상태이며, Implementation `HOL
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-004 task lifecycle packet의 `FAILED`·`CANCELLED`·reopen과 completion/learning 순서
-fixture evidence를 보강해 decision-ready 상태로 만든다. 그 뒤 OQ-008/OQ-009의
-approval·atomicity evidence와 P0-05/P0-06/P0-07 recommendation의 user decision을
-순서대로 검토한다. 이 결정을 선택하기 전에는 Architecture/Storage/Host/Specification/
-Learning ADR을 Accepted로 바꾸거나 제품 scaffold를 만들지 않는다.
+OQ-004 C-01 recovery decision이 정렬됐으므로, 다음 하나의 검증 가능한 목표는
+OQ-008 Plan Gate actor/risk policy와 OQ-009 completion/lease atomicity 중 다음 decision
+packet의 evidence를 작성하고 사용자 결정을 받는 것이다. 그 뒤 P0-05/P0-06/P0-07
+recommendation의 user decision을 순서대로 검토한다. 제품 scaffold와 Implementation
+`CLEAR`는 남은 blocking decision과 production evidence 전까지 시작하지 않는다.
 
 이번 DOC-01 문서 변경 뒤 다음을 검증했다.
 
