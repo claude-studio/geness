@@ -88,16 +88,19 @@ have no user decision receipts:
 | --- | --- | --- | --- | --- |
 | OQ-003 | [OQ-003-daemon-lease-liveness.md](./OQ-003-daemon-lease-liveness.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md); [FX-LEASE-LIVENESS-TAKEOVER-001/README.md](./fixtures/FX-LEASE-LIVENESS-TAKEOVER-001/README.md) | [RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ003-001/RUN.md); [liveness RUN-OQ003-001/RUN.md](./evidence/OQ-003/FX-LEASE-LIVENESS-TAKEOVER-001/RUN-OQ003-001/RUN.md); [USER-DECISION-OQ003-001](./evidence/OQ-003/USER-DECISION-RECEIPT-001.md) | resolved / [ADR-0012](../../adr/0012-no-background-daemon-v1.md) Accepted |
 | OQ-004 | [OQ-004-task-lifecycle.md](./OQ-004-task-lifecycle.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ004-001/RUN.md](./evidence/OQ-004/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ004-001/RUN.md) | blocked / user decision pending |
-| OQ-008 | [OQ-008-plan-approval-policy.md](./OQ-008-plan-approval-policy.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ008-001/RUN.md](./evidence/OQ-008/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ008-001/RUN.md) | blocked / user decision pending |
+| OQ-008 | [OQ-008-plan-approval-policy.md](./OQ-008-plan-approval-policy.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md); [FX-PLAN-APPROVAL-POLICY-001/README.md](./fixtures/FX-PLAN-APPROVAL-POLICY-001/README.md) | [RUN-OQ008-001/RUN.md](./evidence/OQ-008/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ008-001/RUN.md); [RUN-OQ008-002-A/RUN.md](./evidence/OQ-008/FX-PLAN-APPROVAL-POLICY-001/RUN-OQ008-002-A/RUN.md); [RUN-OQ008-002-B/RUN.md](./evidence/OQ-008/FX-PLAN-APPROVAL-POLICY-001/RUN-OQ008-002-B/RUN.md) | blocked / user decision pending |
 | OQ-009 | [OQ-009-completion-lease-atomicity.md](./OQ-009-completion-lease-atomicity.md) | [FX-LIFECYCLE-LEASE-COMPLETION-001/README.md](./fixtures/FX-LIFECYCLE-LEASE-COMPLETION-001/README.md) | [RUN-OQ009-001/RUN.md](./evidence/OQ-009/FX-LIFECYCLE-LEASE-COMPLETION-001/RUN-OQ009-001/RUN.md) | blocked / user decision pending |
 
 The original shared fixture is an evidence-only Python runner. It does not select product
 language, package manager, runtime, schema, lease policy, approval actor, or completion
 transaction. Its observed two-run result is 7 assertions per run with equality-equivalent JSON
-output. The new OQ-003 liveness fixture adds two actual child processes, logical-clock
-heartbeat/grace/takeover and 17/17 assertions per run. It supports the selected no-daemon
-policy, while complete lifecycle and CANCELLED semantics, Plan Gate actor policy, crash-point
-matrix and production atomicity remain unobserved.
+output. The OQ-008 follow-up fixture compares three approval candidates across seven synthetic
+scenarios, passes 31/31 assertions twice with byte-identical stdout, and leaves candidate
+selection null. It does not calibrate product risk tiers or receipt storage. The new OQ-003
+liveness fixture adds two actual child processes, logical-clock heartbeat/grace/takeover and
+17/17 assertions per run. It supports the selected no-daemon policy, while complete lifecycle
+and CANCELLED semantics, Plan Gate actor policy, crash-point matrix and production atomicity
+remain unobserved.
 
 ## Issue #17 research index
 

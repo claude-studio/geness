@@ -229,6 +229,34 @@ YAML frontmatter parse, read-only Markdown local-link check와 `git diff --check
 실행했다. JSON/frontmatter parse와 diff check는 exit `0`이었고, Markdown check는
 `markdown_files=79`, `local_links=327`, `errors=0`을 반환했다.
 
+### Phase 0 OQ-008 approval-policy fixture — VERIFIED OBSERVATION
+
+2026-08-22에 기존 shared lifecycle fixture와 별도로
+[`FX-PLAN-APPROVAL-POLICY-001`](../research/phase-0/fixtures/FX-PLAN-APPROVAL-POLICY-001/README.md)을
+추가해 OQ-008의 세 candidate를 같은 합성 scenario에 대입했다. C-01은 current digest의
+모든 scenario에서 `user`, C-02는 routine에서 `policy`·`user_sensitive`에서 `user`,
+C-03은 routine read-only에서 `policy`·side effect와 sensitive boundary에서 `user`를
+관찰하도록 비교했다. stale digest는 세 candidate 모두 `DENIED/none`이었다.
+
+정확한 fixture command는 다음과 같다.
+
+    PYTHONDONTWRITEBYTECODE=1 python3 docs/research/phase-0/fixtures/FX-PLAN-APPROVAL-POLICY-001/runner.py
+
+입력 JSON parse와 runner compile은 각각 exit `0`이었다. fixture를 두 번 실행한 paired
+검사는 exit `0`, 각 실행 31/31 assertions와 `all_assertions_pass=true`, stdout/stderr
+byte-identical을 확인했다. `selected_candidate`는 `null`이었다. runner SHA-256은
+`a8d5b86389230531ddf0afe7c956882c730a67d9844d1b2cdec93c6cd59c5e5f`, input은
+`1b3e1106847ceb3d57119ba82d84f86326723d289b880f1cc3d341f2012f7654`, paired stdout는
+`cd964c1db1a12f390301896dd92a89386fcef17e7897f3c7eb70246936513684`이다. redacted
+execution records는 [RUN-OQ008-002-A](../research/phase-0/evidence/OQ-008/FX-PLAN-APPROVAL-POLICY-001/RUN-OQ008-002-A/RUN.md)와
+[RUN-OQ008-002-B](../research/phase-0/evidence/OQ-008/FX-PLAN-APPROVAL-POLICY-001/RUN-OQ008-002-B/RUN.md)에
+보존했다.
+
+이 결과는 candidate comparison evidence일 뿐 OQ-008 policy 선택, 일반 risk threshold,
+receipt schema, production enforcement 또는 Implementation `CLEAR`를 의미하지 않는다.
+OQ-008은 `blocked / user decision pending`으로 유지하며, 다음 목표는 OQ-009
+completion/lease atomicity의 crash-point replay evidence 작성이다.
+
 ### Phase 0 P0-05 #17 identity·schema·digest·config research — VERIFIED OBSERVATION
 
 2026-08-21에 [OQ-005](../research/phase-0/OQ-005-project-workspace-identity.md),
@@ -442,11 +470,11 @@ Phase 0 결정과 production evidence가 남아 있다.
 
 ## 6. 다음 하나의 검증 가능한 목표
 
-OQ-004 C-01 recovery decision이 정렬됐으므로, 다음 하나의 검증 가능한 목표는
-OQ-008 Plan Gate actor/risk policy와 OQ-009 completion/lease atomicity 중 다음 decision
-packet의 evidence를 작성하고 사용자 결정을 받는 것이다. 그 뒤 P0-05/P0-06/P0-07
-recommendation의 user decision을 순서대로 검토한다. 제품 scaffold와 Implementation
-`CLEAR`는 남은 blocking decision과 production evidence 전까지 시작하지 않는다.
+OQ-008 candidate comparison evidence가 정렬됐으므로, 다음 하나의 검증 가능한 목표는
+OQ-009 completion/lease atomicity의 각 crash point replay evidence를 작성하고 사용자
+결정을 받는 것이다. 그 뒤 P0-05/P0-06/P0-07 recommendation의 user decision을 순서대로
+검토한다. 제품 scaffold와 Implementation `CLEAR`는 남은 blocking decision과 production
+evidence 전까지 시작하지 않는다.
 
 이번 DOC-01 문서 변경 뒤 다음을 검증했다.
 
