@@ -1,13 +1,14 @@
 # OQ-001 — Controller 언어·패키지·runtime 후보 비교
 
-> 상태: Research packet / 사용자 결정 대기
+> 상태: Resolved research packet / 사용자 결정 기록됨
 > 조사일: 2026-08-20
 > 결정 권한: 사용자
 > 범위: Phase 0 disposable spike
 
-이 문서는 [OQ-001](../OPEN_QUESTIONS.md)의 관찰과 후보 비교를 기록한다. 아직
-Architecture ADR이나 구현 언어를 확정하지 않는다. 이 문서와 아래 spike는 제품
-Controller source, plugin manifest 또는 Phase 1 scaffold가 아니다.
+이 문서는 [OQ-001](../OPEN_QUESTIONS.md)의 조사 관찰과 후보 비교를 기록한다. 조사
+시점의 spike와 packet은 제품 Controller source, plugin manifest 또는 Phase 1 scaffold가
+아니다. 현재 채택 결정은 [ADR-0010](../../adr/0010-controller-runtime-go.md)과 사용자
+decision receipt에 기록한다.
 
 ## 질문과 범위
 
@@ -265,10 +266,9 @@ Node 설치에서 SDK가 요구하는 Zod 버전보다 낮은 `zod@4.1.12`를 �
 - host가 Python을 보유하지 않는 환경에서는 `uv`/embedded Python 또는 별도 packaging
 policy가 필요하다.
 
-## 권고안과 사용자 결정지
+## 권고안과 사용자 결정
 
-현재 evidence만으로는 다음 순서를 권고한다. 이는 `Proposed`이며 사용자 결정 전에는
-Architecture 규범이 아니다.
+조사 시점의 evidence만으로는 다음 순서를 권고했다.
 
 1. **Go + CGO + 명시적 `sqlite_fts5`** — 단일 binary, 공식 SDK, 배포 크기와 개발
    복잡성의 균형이 가장 좋다.
@@ -279,7 +279,7 @@ Architecture 규범이 아니다.
 4. **Python** — Controller 본체보다 research/bootstrap 또는 Python runtime이 이미
    보장되는 배포 환경에 적합하다.
 
-사용자에게 필요한 결정은 다음 하나다.
+조사 시점의 사용자 결정지는 다음과 같았다.
 
 ```text
 A. Go + CGO를 허용하고, macOS/Linux/Windows release binary를 별도 검증한다.
@@ -288,9 +288,16 @@ C. host-managed Node >=20을 전제로 TypeScript/Node를 채택한다.
 D. host-managed Python/uv를 전제로 Python을 채택한다.
 ```
 
-A 또는 B를 고르면 다음 packet에서 cross-platform artifact와 FTS5/release matrix를
-추가 검증해야 한다. C 또는 D를 고르면 host runtime discovery, version gate와 install
-rollback 정책을 먼저 고정해야 한다.
+사용자는 **A. Go + CGO + 명시적 `sqlite_fts5`**를 선택했다. 이 선택은 단일 binary
+방향을 채택하지만, cross-platform artifact와 FTS5/release matrix를 후속 검증해야 한다.
+
+### User/authority decision receipt
+
+- **Decision:** candidate A — Go + standard Go modules + CGO + explicit `sqlite_fts5`
+- **Actor:** `user`
+- **Recorded at:** `2026-08-22T16:05:46+09:00`
+- **Receipt:** [USER-DECISION-OQ001-001](./evidence/OQ-001/USER-DECISION-RECEIPT-001.md)
+- **Accepted ADR:** [ADR-0010](../../adr/0010-controller-runtime-go.md)
 
 daemon 여부는 이 packet의 결론이 아니다. stdio 단발 process가 lease heartbeat 요구를
 충족하는지는 별도 OQ-003에서 두 process trace로 조사한다.
@@ -331,7 +338,7 @@ license/notice를 다시 검토한다.
 
 ## Next gate
 
-이 packet은 OQ-001의 조사 evidence와 사용자 선택지를 충족하지만 OQ-001을 `Resolved`로
-닫지 않는다. 다음 검증 가능한 목표는 **사용자가 A–D 중 하나를 선택하고, 선택된 후보의
-Architecture ADR 초안을 검토하는 것**이다. 그 결정 전까지 Progress의 product
-Implementation `HOLD`와 Phase 0 `OPEN` 상태를 유지한다.
+이 packet은 OQ-001의 조사 evidence와 사용자 선택, receipt와 Accepted ADR을 연결한다.
+다음 검증 가능한 목표는 **OQ-002의 사용자 결정 receipt 기록**이다. OQ-003/OQ-004/
+OQ-008/OQ-009의 packet-level evidence gap과 나머지 Phase 0 decision이 남아 있으므로
+Progress의 product Implementation `HOLD`와 Phase 0 `HOLD`는 유지한다.

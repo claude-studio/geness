@@ -162,7 +162,10 @@ revision과 idempotent projection으로 crash recovery한다.
 
 ## 8. 최소 package 방향
 
-정확한 언어와 package manager는 아직 TBD다. 논리적 구조는 다음을 유지한다.
+OQ-001과 [ADR-0010](./adr/0010-controller-runtime-go.md)에 따라 v1 Controller runtime은
+Go와 standard Go modules를 사용한다. SQLite FTS5는 CGO와 명시적인 `sqlite_fts5` build
+tag를 요구한다. macOS·Linux·Windows artifact와 exact dependency/toolchain matrix는
+후속 검증 대상이며, 아래는 여전히 논리적 package 구조다.
 
 ```text
 skills/              host-neutral workflow
@@ -189,8 +192,10 @@ tests/               unit, contract, integration, E2E
 
 ## 10. 구현 전 결정
 
-구현 언어, CLI/MCP entrypoint, daemon 여부, DB migration 도구와 package 배포 방식은
-[Open Questions](./research/OPEN_QUESTIONS.md)와 [PLAN Phase 0](./PLAN.md#phase-0-핵심-계약과-adr-확정)에서 닫는다.
+구현 언어와 package 경계는 [ADR-0010](./adr/0010-controller-runtime-go.md)으로 Go와
+Go modules를 채택했다. CLI/MCP entrypoint, daemon 여부, DB migration 도구, exact
+dependency versions와 package 배포 방식은 여전히 [Open Questions](./research/OPEN_QUESTIONS.md)와
+[PLAN Phase 0](./PLAN.md#phase-0-핵심-계약과-adr-확정)에서 닫는다.
 
 ## 11. Threat model and permission boundary
 

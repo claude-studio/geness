@@ -55,6 +55,29 @@ Phase 0의 Open Question 조사를 서로 비교할 수 있는 evidence로 남�
 | [`OQ-000-example-packet.md`](./OQ-000-example-packet.md) | 모든 필드와 실행 evidence를 채운 비규범 예시 |
 | [`fixtures/FX-PACKET-SELF-CHECK-001/README.md`](./fixtures/FX-PACKET-SELF-CHECK-001/README.md) | 표준 문서 자체를 검사하는 최소 disposable fixture |
 
+## Issue #14 research index
+
+OQ-001은 조사 evidence와 사용자의 runtime 선택, durable decision receipt와 Accepted
+Architecture ADR이 기록되어 `Resolved` 상태다. 이 결정은 제품 scaffold나
+Implementation `CLEAR`를 의미하지 않는다.
+
+| OQ | packet | spike | decision receipt | status |
+| --- | --- | --- | --- | --- |
+| OQ-001 | [OQ-001-controller-runtime.md](./OQ-001-controller-runtime.md) | [oq-001-controller-runtime](./spikes/oq-001-controller-runtime/README.md) | [USER-DECISION-OQ001-001](./evidence/OQ-001/USER-DECISION-RECEIPT-001.md) | resolved / [ADR-0010](../../adr/0010-controller-runtime-go.md) Accepted |
+
+The selected runtime is Go with Go modules, CGO and an explicit `sqlite_fts5` build
+contract. Cross-platform release and installed-host validation remain open.
+
+## Issue #15 research index
+
+OQ-002 remains decision-ready and user-decision pending. Its fixture compares the shared
+application service boundary with CLI and MCP-like thin transports; it does not select the
+runtime already resolved by OQ-001.
+
+| OQ | packet | fixture | RUN evidence | status |
+| --- | --- | --- | --- | --- |
+| OQ-002 | [OQ-002-canonical-command-api.md](./OQ-002-canonical-command-api.md) | [FX-COMMAND-API-TYPED-RESULT-001/README.md](./fixtures/FX-COMMAND-API-TYPED-RESULT-001/README.md) | [RUN-OQ002-001/result.json](./evidence/OQ-002/FX-COMMAND-API-TYPED-RESULT-001/RUN-OQ002-001/result.json) | decision-ready / user decision pending |
+
 ## Issue #16 research index
 
 The following are observed Phase 0 research packets for lifecycle, lease and completion.
@@ -148,9 +171,9 @@ test or user decision.
 ## Issue #21 Phase 0 Gate audit
 
 [PHASE-0-GATE-AUDIT-001](./PHASE-0-GATE-AUDIT-001.md) records the current Gate result as
-`HOLD`. The disposable OQ fixtures pass, but OQ-001~014 user decision receipts and the
-missing OQ-003/OQ-004/OQ-008/OQ-009 evidence remain blockers. No product implementation
-or Phase 0 `CLEAR` is claimed.
+`HOLD` as of its 2026-08-21 audit. OQ-001 was resolved afterward through the user receipt
+and ADR-0010; OQ-002~014 user decision receipts and the missing OQ-003/OQ-004/OQ-008/OQ-009
+evidence remain blockers. No product implementation or Phase 0 `CLEAR` is claimed.
 
 ## Packet 작성 순서
 

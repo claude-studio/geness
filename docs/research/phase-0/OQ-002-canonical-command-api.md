@@ -26,8 +26,9 @@ updated_at: "2026-08-20T12:58:39Z"
   생성하지 않는다. OQ-001 사용자 결정을 대신하지 않는다.
 - **Dependencies:** #14 / OQ-001 packet merged evidence. #14는 PR #64가
   `MERGED`이고 issue가 `CLOSED`이며 `origin/main`에 `Closes #14` commit이 반영됐다.
-  OQ-001은 여전히 `OPEN`이며 이 fixture의 Python stdlib는 runner 선택일 뿐 제품
-  runtime 선택이 아니다.
+  OQ-001은 [ADR-0010](../../adr/0010-controller-runtime-go.md)과 user receipt로
+  `Resolved`됐으며, 이 fixture의 Python stdlib는 runner 선택일 뿐 제품 runtime 선택이
+  아니다.
 - **Research owner:** Codex
 
 이 packet은 관찰과 권고를 보존한다. `OQ-002`를 `Resolved`로 옮기거나 ADR을 만들지
@@ -149,9 +150,9 @@ runner output. No secret, credential, environment dump, target `.geness/` state 
 - **Rejected/deferred candidates:** C-02 and C-03 remain deferred; they were not selected
   or rejected as product policy because their production cost and official host behavior
   were not measured.
-- **Unresolved impact:** Until the user chooses, no Architecture ADR, product command
-  language, package/runtime, production schema, daemon policy, or scaffold may be created.
-  Implementation remains `HOLD`; OQ-001 remains `OPEN`.
+- **Unresolved impact:** Until the user chooses, no OQ-002 command API ADR, production
+  schema, daemon policy or scaffold may be created. The product runtime is already fixed by
+  ADR-0010; Implementation remains `HOLD`.
 
 ### User/authority decision receipt
 
@@ -164,8 +165,8 @@ runner output. No secret, credential, environment dump, target `.geness/` state 
 ## 9. Next verifiable goal
 
 User reviews C-01/C-02/C-03 and decides whether the shared library/application-service
-boundary should become an Architecture ADR candidate. If accepted, separately decide the
-language/runtime/schema/transport details; if not, authorize a follow-up candidate spike.
+boundary should become an Architecture ADR candidate. The Go runtime is already fixed by
+OQ-001/ADR-0010; schema and transport details remain separate Phase 0 decisions.
 
 ## 10. Completeness checklist
 

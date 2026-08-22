@@ -1,6 +1,6 @@
 # Geness Progress
 
-> 마지막 검증: 2026-08-21
+> 마지막 검증: 2026-08-22
 > Documentation foundation: CLEAR
 > Implementation: HOLD
 
@@ -30,7 +30,8 @@ Controller나 plugin scaffold 구현을 시작할 수 없다. 다음 이유가 �
 
 - repository에는 아직 구현 source, package manifest와 test harness가 없다.
 - [Open Questions](../research/OPEN_QUESTIONS.md)의 Phase 0 blocking decision이 열려 있다.
-- Controller 언어, canonical API 경계와 schema v1이 확정되지 않았다.
+- canonical API 경계와 schema v1이 확정되지 않았고, Go runtime의 cross-platform/release
+  validation도 남아 있다.
 - 두 host의 최소 prototype과 threat model evidence가 없다.
 
 HOLD 중 허용되는 작업은 문서 정렬, 공식 계약 조사, 읽기 전용 prototype/spike 설계와
@@ -56,7 +57,27 @@ Python은 각각 dependency tree/site-packages disk usage를 측정했다.
 - `git diff --check` → exit `0`; Markdown 31개·local link 108개 integrity 검사 `errors=[]`
 
 이 결과는 후보 비교 evidence이지 구현 `CLEAR`, host 설치 E2E 또는 사용자 결정이 아니다.
-OQ-001은 사용자 후보 선택 전까지 `OPEN`으로 유지한다.
+OQ-001은 사용자 후보 선택 전까지 `OPEN`으로 유지했으며, 현재는 별도 decision receipt와
+Accepted [ADR-0010](../adr/0010-controller-runtime-go.md)로 `Resolved` 상태다.
+
+### Phase 0 OQ-001 — VERIFIED DECISION
+
+2026-08-22에 사용자는 OQ-001 후보 A인 Go + standard Go modules + CGO + 명시적
+`sqlite_fts5` build contract를 선택했다. 결정은
+[USER-DECISION-OQ001-001](../research/phase-0/evidence/OQ-001/USER-DECISION-RECEIPT-001.md)와
+[ADR-0010](../adr/0010-controller-runtime-go.md)에 기록했다.
+
+이 결정은 runtime 방향을 고정하지만 macOS·Linux·Windows release artifact, cross-build,
+exact dependency/toolchain matrix, installed-host E2E와 제품 scaffold를 검증하거나
+Implementation `CLEAR`로 바꾸지 않는다.
+
+현재 decision sync 검증은 다음과 같다.
+
+- `git diff --check --` → exit `0`
+- OQ-001 receipt YAML parse (`ruby`/Psych) → exit `0`
+- read-only Node Markdown integrity check → exit `0`, `markdown_files=72`,
+  `local_links=271`, `local_anchor_links=25`, `fence_delimiters=154`,
+  `trailing_whitespace=0`, `errors=[]`
 
 ### Phase 0 OQ-002 disposable fixture — VERIFIED OBSERVATION
 
@@ -75,8 +96,8 @@ unknown MCP method는 typed transport error로 분리됐고, valid domain `HOLD`
 14 assertions를 exit `0`으로 통과했고, `git diff --check --`는 exit `0`, read-only Markdown
 검사는 39개 파일·119개 local link·8개 local anchor link·errors `[]`를 반환했다. 이 결과는
 공통 service 경계의 조사 관찰이지 OQ-002 `Resolved`, Architecture ADR, 제품 schema/runtime
-선택 또는 Implementation `CLEAR`가 아니다. OQ-001 사용자 결정과 OQ-002 사용자 decision
-receipt는 모두 pending/open으로 유지한다.
+선택 또는 Implementation `CLEAR`가 아니다. OQ-001 사용자 decision receipt는 현재
+기록됐고, OQ-002 사용자 decision receipt는 pending/open으로 유지한다.
 
 ### Phase 0 P0-04 #16 lifecycle·lease·completion research — VERIFIED OBSERVATION
 
@@ -267,9 +288,9 @@ merged main `23a6e75` 기준으로 수행했다. OQ-002 command API 14 assertion
 OQ-015 threat model 17 assertions를 각각 재실행해 모두 exit `0`과
 `all_assertions_pass=true`를 확인했다.
 
-현재 Gate 판정은 `HOLD`다. OQ-001~014의 user decision receipt가 없고, OQ-003/OQ-004/OQ-008/
+현재 Gate 판정은 `HOLD`다. OQ-002~014의 user decision receipt가 없고, OQ-003/OQ-004/OQ-008/
 OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제할 근거가 없다.
-다음 하나의 검증 목표는 OQ-001 사용자 결정 receipt 기록이다.
+다음 하나의 검증 목표는 OQ-002 사용자 결정 receipt 기록이다.
 
 ## 3. 검증된 repository 사실
 
@@ -291,6 +312,7 @@ OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제�
 | --- | --- | --- |
 | Constitution | Accepted baseline | [00_GENESS](../00_GENESS.md) |
 | Architecture | Proposed | [01_ARCHITECTURE](../01_ARCHITECTURE.md) |
+| Controller runtime | Accepted — Go + Go modules + CGO + `sqlite_fts5` | [ADR-0010](../adr/0010-controller-runtime-go.md) |
 | Lifecycle | Proposed, Phase 0 decisions open | [02_TASK_LIFECYCLE](../02_TASK_LIFECYCLE.md) |
 | Storage boundary | Accepted, schema TBD | [ADR-0002](../adr/0002-project-and-local-state-boundary.md) |
 | Dual-host boundary | Accepted, manifest prototype TBD | [ADR-0001](../adr/0001-dual-host-shared-core.md) |
@@ -316,7 +338,7 @@ OQ-009는 packet-level `blocked` 상태이며, Implementation `HOLD`를 해제�
 ## 6. 다음 하나의 검증 가능한 목표
 
 사용자가 남은 Phase 0 blocking packet의 후보를 검토하고 decision receipt를 기록한다. 특히
-[OQ-001](../research/OPEN_QUESTIONS.md)의 runtime 후보, P0-05의 OQ-005/006/007/013
+OQ-002, P0-05의 OQ-005/006/007/013
 identity·schema·digest·config recommendation, P0-06의 OQ-012/014 host·command
 recommendation, P0-07의 OQ-010/011 memory·retention·bootstrap recommendation과 OQ-008의
 일반 plan approval policy를

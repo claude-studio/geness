@@ -24,6 +24,7 @@ ADR은 되돌리기 어렵거나 여러 계층의 계약을 바꾸는 결정을 
 | [0007](./0007-v1-contract-and-verification-artifacts.md) | Accepted | V1 contract schema, artifact projection, acting verification과 bounded successor를 정의한다. |
 | [0008](./0008-host-command-surface.md) | Proposed | Host compatibility matrix와 canonical `gee` command surface 후보를 정의한다. |
 | [0009](./0009-threat-model-permission-boundaries.md) | Accepted | Threat model과 Controller 중심 fail-closed permission boundary를 정의한다. |
+| [0010](./0010-controller-runtime-go.md) | Accepted | v1 Controller는 Go + Go modules + CGO + 명시적 `sqlite_fts5`를 사용한다. |
 
 ## ADR이 필요한 변경
 

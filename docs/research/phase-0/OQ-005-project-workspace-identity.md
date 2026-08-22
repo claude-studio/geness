@@ -23,8 +23,9 @@ updated_at: "2026-08-21T00:57:55Z"
 - **Non-goals:** project ID 생성 알고리즘의 제품 채택, fork 자동 감지, workspace registry,
   runtime lease, cloud sync, 제품 schema·Controller·plugin scaffold와 user decision receipt
   확정
-- **Dependencies:** #14 / OQ-001·OQ-002의 사용자 결정은 아직 pending이다. #14는
-  `closed`·`status:done`으로 확인했으며 이 packet은 그 언어/runtime 결정을 대신하지 않는다.
+- **Dependencies:** #14 / OQ-001은 [ADR-0010](../../adr/0010-controller-runtime-go.md)과
+  receipt로 resolved됐고 OQ-002의 사용자 결정은 아직 pending이다. #14는
+  `closed`·`status:done`으로 확인했으며 이 packet은 command API 결정을 대신하지 않는다.
 - **Research owner:** Codex review
 
 이 packet은 관찰과 권고를 보존한다. `OQ-005`를 `Resolved`로 옮기거나 Storage ADR을
