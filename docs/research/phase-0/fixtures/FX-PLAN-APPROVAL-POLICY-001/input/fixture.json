@@ -1,0 +1,120 @@
+{
+  "fixture_id": "FX-PLAN-APPROVAL-POLICY-001",
+  "fixture_schema": "fixture.plan-approval-policy.input.v1",
+  "deterministic": true,
+  "candidates": [
+    {
+      "id": "C-01",
+      "description": "all PLAN_APPROVED actions require a user actor"
+    },
+    {
+      "id": "C-02",
+      "description": "routine low-risk plans may use policy; sensitive actions require user"
+    },
+    {
+      "id": "C-03",
+      "description": "user approves scope or side effect; policy handles the remainder"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "routine_read_only",
+      "approval_class": "routine",
+      "digest_current": true,
+      "scope_changed": false,
+      "side_effect": "none",
+      "external_write": false,
+      "destructive_action": false,
+      "security_boundary_change": false
+    },
+    {
+      "id": "routine_local_write",
+      "approval_class": "routine",
+      "digest_current": true,
+      "scope_changed": false,
+      "side_effect": "approved_local_write",
+      "external_write": false,
+      "destructive_action": false,
+      "security_boundary_change": false
+    },
+    {
+      "id": "scope_expansion",
+      "approval_class": "user_sensitive",
+      "digest_current": true,
+      "scope_changed": true,
+      "side_effect": "approved_local_write",
+      "external_write": false,
+      "destructive_action": false,
+      "security_boundary_change": false
+    },
+    {
+      "id": "external_write",
+      "approval_class": "user_sensitive",
+      "digest_current": true,
+      "scope_changed": false,
+      "side_effect": "external_write",
+      "external_write": true,
+      "destructive_action": false,
+      "security_boundary_change": false
+    },
+    {
+      "id": "destructive_action",
+      "approval_class": "user_sensitive",
+      "digest_current": true,
+      "scope_changed": false,
+      "side_effect": "destructive_action",
+      "external_write": false,
+      "destructive_action": true,
+      "security_boundary_change": false
+    },
+    {
+      "id": "security_boundary_change",
+      "approval_class": "user_sensitive",
+      "digest_current": true,
+      "scope_changed": false,
+      "side_effect": "security_boundary_change",
+      "external_write": false,
+      "destructive_action": false,
+      "security_boundary_change": true
+    },
+    {
+      "id": "stale_digest_routine",
+      "approval_class": "routine",
+      "digest_current": false,
+      "scope_changed": false,
+      "side_effect": "none",
+      "external_write": false,
+      "destructive_action": false,
+      "security_boundary_change": false
+    }
+  ],
+  "expected": {
+    "C-01": {
+      "routine_read_only": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "routine_local_write": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "scope_expansion": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "external_write": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "destructive_action": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "security_boundary_change": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "stale_digest_routine": {"decision": "DENIED", "approval_actor": "none", "reason": "stale_digest"}
+    },
+    "C-02": {
+      "routine_read_only": {"decision": "ALLOWED", "approval_actor": "policy", "reason": "fixture_candidate_rule"},
+      "routine_local_write": {"decision": "ALLOWED", "approval_actor": "policy", "reason": "fixture_candidate_rule"},
+      "scope_expansion": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "external_write": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "destructive_action": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "security_boundary_change": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "stale_digest_routine": {"decision": "DENIED", "approval_actor": "none", "reason": "stale_digest"}
+    },
+    "C-03": {
+      "routine_read_only": {"decision": "ALLOWED", "approval_actor": "policy", "reason": "fixture_candidate_rule"},
+      "routine_local_write": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "scope_expansion": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "external_write": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "destructive_action": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "security_boundary_change": {"decision": "ALLOWED", "approval_actor": "user", "reason": "fixture_candidate_rule"},
+      "stale_digest_routine": {"decision": "DENIED", "approval_actor": "none", "reason": "stale_digest"}
+    }
+  }
+}
